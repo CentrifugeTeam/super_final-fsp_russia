@@ -6,10 +6,6 @@ from crud.openapi_responses import no_content_response
 from pydantic import BaseModel
 
 
-class TokenResponse(BaseModel):
-    token_type: str = 'refresher'
-    access_token: str
-    refresh_token: str
 
 
 class BearerTransport(_BearerTransport):

@@ -1,4 +1,4 @@
-from shared.settings import Settings
+from .settings import Settings
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from pathlib import Path
 from redis.asyncio import ConnectionPool

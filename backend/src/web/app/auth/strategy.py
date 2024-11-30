@@ -1,5 +1,4 @@
 from datetime import datetime, date, timezone
-import time
 from logging import getLogger
 from typing import Optional
 import jwt
@@ -9,7 +8,6 @@ from fastapi_users.jwt import decode_jwt, generate_jwt, SecretType
 from fastapi_users.authentication.strategy import JWTStrategy as _JWTStrategy
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from ..dependencies.session import get_session
 from ..dependencies.redis import get_redis
 from contextlib import asynccontextmanager
 from storage.db.models import User
@@ -73,7 +71,7 @@ class JWTStrategy(_JWTStrategy):
 
     def _decode_token(self, token: str):
         try:
-            payload = decode_jwt(
+            payload = jwt.decode(
                 token, self.decode_key, self.token_audience, algorithms=[self.algorithm]
             )
             payload['sub'] = int(payload.get("sub"))
