@@ -1,12 +1,6 @@
-import base64
-import datetime
-import logging
-from typing import Annotated
-
-from fastapi import Form, Request, Depends, Response, status, APIRouter
-from httpx_oauth.oauth2 import OAuth2Token
-
+from fastapi import APIRouter, Depends, HTTPException, Request, status, Body
 from ...auth.auth2 import google_sso
+
 
 r = APIRouter()
 
@@ -19,8 +13,7 @@ async def login(request: Request):
 
 @r.get('/google/callback')
 async def callback(request: Request, code: str):
-    access_token: OAuth2Token = await google_sso.get_access_token(code,
-                                                                  'http://localhost:8000/api/oauth/google/callback')
+    access_token = await google_sso.get_access_token(code, 'http://localhost:8000/api/oauth/google/callback')
 
     info = await google_sso.get_id_email(access_token)
     return info

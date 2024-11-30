@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..dependencies.session import get_session
 from ..dependencies.redis import get_redis
 from contextlib import asynccontextmanager
-from storage.db.models import User, Session
+from storage.db.models import User
 
 logger = getLogger(__name__)
 
@@ -44,14 +44,6 @@ class JWTStrategy(_JWTStrategy):
         if refresh_token is None:
             return refresh_token
 
-        async with asynccontextmanager(get_session)() as session:
-            session: AsyncSession
-            user = await session.get(User, payload['sub'])
-            if user is None:
-                return user
-            principals = await user.principals()
-
-        payload['roles'] = principals
         access_token, refresh_token = self.generate_pair_of_tokens(payload)
         async with asynccontextmanager(get_redis)() as redis:
             redis: Redis
@@ -97,30 +89,9 @@ class JWTStrategy(_JWTStrategy):
         if res is None:
             return res
 
-        async with asynccontextmanager(get_session)() as session:
-            session: AsyncSession
-            user_session = await session.get(Session, res['sid'])
-            await session.delete(user_session)
-            await session.commit()
-
-        async with asynccontextmanager(get_redis)() as redis:
-            redis: Redis
-            await redis.delete(f'session:{user_session.id}')
-
     async def write_token(self, user: User) -> dict:
-        async with asynccontextmanager(get_session)() as session:
-            session: AsyncSession
-            user_session = Session(user_id=user.id)
-            session.add(user_session)
-            principals = await user.principals()
-            await session.commit()
 
-        payload = {"sub": str(user.id), "aud": self.token_audience, 'sid': str(user_session.id), 'roles': principals}
+        payload = {"sub": str(user.id), "aud": self.token_audience}
         access_token, refresh_token = self.generate_pair_of_tokens(payload)
-
-        logger.info('start execute redis ')
-        async with asynccontextmanager(get_redis)() as redis:
-            redis: Redis
-            await redis.set(f'session:{user_session.id}', refresh_token)
 
         return {'access_token': access_token, 'refresh_token': refresh_token}

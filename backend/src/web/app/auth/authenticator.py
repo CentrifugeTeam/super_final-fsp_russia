@@ -12,7 +12,7 @@ logger = getLogger(__name__)
 
 
 
-class Authenticator(_Authenticator):
+class Authenticator:
 
     def __init__(
             self,
@@ -22,14 +22,14 @@ class Authenticator(_Authenticator):
         self.get_session = get_session
         self.backends = backends
 
-    async def _authenticate(self, *args,
+    async def authenticate(self, *args,
                             optional: bool = False,
                             active: bool = False,
                             verified: bool = False,
                             superuser: bool = False,
-                            get_enabled_backends: Optional[
-                                EnabledBackendsDependency] = None,
                             session, **kwargs) -> tuple[Optional[User], Optional[str]]:
+
+
         user: User | None = None
         token: Optional[str] = None
         enabled_backends: Sequence[AuthenticationBackend] = (
@@ -66,48 +66,6 @@ class Authenticator(_Authenticator):
 
         return user, token
 
-    def _get_dependency_signature(
-            self, get_enabled_backends: Optional[EnabledBackendsDependency] = None
-    ) -> Signature:
-        """
-        Generate a dynamic signature for the current_user dependency.
+    async def _authenticate(self):
+        pass
 
-        Here comes some blood magic 🧙‍♂️
-        Thank to "makefun", we are able to generate callable
-        with a dynamic number of dependencies at runtime.
-        This way, each security schemes are detected by the OpenAPI generator.
-        """
-        try:
-            parameters: list[Parameter] = [
-                Parameter(
-                    name="session",
-                    kind=Parameter.POSITIONAL_OR_KEYWORD,
-                    default=Depends(self.get_session),
-                )
-            ]
-
-            for backend in self.backends:
-                parameters += [
-                    Parameter(
-                        name=name_to_variable_name(backend.name),
-                        kind=Parameter.POSITIONAL_OR_KEYWORD,
-                        default=Depends(cast(Callable, backend.transport.scheme)),
-                    ),
-                    Parameter(
-                        name=name_to_strategy_variable_name(backend.name),
-                        kind=Parameter.POSITIONAL_OR_KEYWORD,
-                        default=Depends(backend.get_strategy),
-                    ),
-                ]
-
-            if get_enabled_backends is not None:
-                parameters += [
-                    Parameter(
-                        name="enabled_backends",
-                        kind=Parameter.POSITIONAL_OR_KEYWORD,
-                        default=Depends(get_enabled_backends),
-                    )
-                ]
-            return Signature(parameters)
-        except ValueError:
-            raise DuplicateBackendNamesError()
