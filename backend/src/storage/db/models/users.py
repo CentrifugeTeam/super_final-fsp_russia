@@ -8,8 +8,7 @@ class User(IDMixin, Base):
     User model
     """
     __tablename__ = 'users'
-    username = mapped_column(String, unique=True)
-    password = mapped_column(String, nullable=True)
-    provider = Column(String, default=None, nullable=True)
+    username: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
+    password: Mapped[str] = mapped_column(String, nullable=False)
 
-    __table_args__ = (UniqueConstraint('username', 'provider', name='unique_username_per_provider'),)
+    oauth_accounts: Mapped[list['OAuthAccount']] = relationship(back_populates='user')

@@ -1,39 +1,50 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, status, Body
+from fastapi import APIRouter, Request, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
+from httpx_oauth.oauth2 import GetAccessTokenError
+from logging import getLogger
+import caldav
 
-from ...auth.auth2 import google_sso
+from ...services.yandex_oauth import YandexOAuth2
 
+yandex_oauth2 = YandexOAuth2()
 r = APIRouter()
 
-
-@r.get('/login', status_code=status.HTTP_303_SEE_OTHER, response_class=RedirectResponse)
-async def login(request: Request):
-    async with google_sso:
-        login_uri = await google_sso.get_login_url(redirect_uri=None,
-                                                   params={"prompt": "consent", "access_type": "offline"}, state=None)
-        response = RedirectResponse(login_uri, 303)
-        return response
+logger = getLogger(__name__)
 
 
-@r.get('/google/callback')
-async def callback(request: Request, code: str):
+@r.get("/{username}/yandex/login", description="Перенаправление на Yandex для входа", response_class=RedirectResponse)
+async def yandex_login(username: str, request: Request):
+    url = await yandex_oauth2.get_authorization_url(request.url_for('yandex_callback'),
+                                                    state=username,
+                                                    extras_params={"force_confirm": 1})
+    return RedirectResponse(url)
+
+
+@r.get("/yandex/callback", description="Callback после входа в Yandex", responses={
+    status.HTTP_400_BAD_REQUEST:
+        {"description": "Could not get access token"},
+})
+async def yandex_callback(request: Request, code: str, state: str):
+    """
+    Callback после входа в Yandex и получение refresh и access токена пользователя
+    :param request:
+    :param code:
+    :return:
+    """
     try:
-        async with google_sso:
-            user = await google_sso.verify_and_process(request)
-    #     user_stored = db_crud.get_user(db, user.email, provider=user.provider)
-    #     if not user_stored:
-    #         user_to_add = UserSignUp(
-    #             username=user.email,
-    #             fullname=user.display_name
-    #         )
-    #         user_stored = db_crud.add_user(db, user_to_add, provider=user.provider)
-    #     access_token = create_access_token(username=user_stored.username, provider=user.provider)
-    #     response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
-    #     return response
-    # except db_crud.DuplicateError as e:
-    #     raise HTTPException(status_code=403, detail=f"{e}")
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"{e}")
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"An unexpected error occurred. Report this message to support: {e}")
+        oauth2_response = await yandex_oauth2.get_access_token(code)
+    except GetAccessTokenError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Could not get access token')
+
+    response = await yandex_oauth2.get_user_info(oauth2_response.access_token)
+
+    def get_principal(username, leg_token):
+        client = caldav.DAVClient(url="https://caldav.yandex.ru/", username=username, password=leg_token)
+        principal = client.principal()
+        return principal
+
+    logger.info(response)
+    my_principal = get_principal(response['default_email'], oauth2_response.access_token)
+    logger.info(my_principal)
+    return my_principal
+    # return await yandex_oauth2.get_user_info(response.access_token)

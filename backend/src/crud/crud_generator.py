@@ -11,70 +11,27 @@ from .openapi_responses import not_found_response
 NOT_FOUND = HTTPException(404, "Item not found")
 
 
-class RouteDict(TypedDict, total=False):
-    path: str
-    name: str
-    dependencies: list[Depends]
-    responses: dict
-
-
-class Context(TypedDict, total=False):
-    schema: Type[BaseModel]
-    manager: ModelManager
-    get_session: Callable
-    create_schema: Type[BaseModel]
-    update_schema: Type[BaseModel]
-    get_all_route: bool
-    get_one_route: bool
-    create_route: bool
-    update_route: bool
-    delete_one_route: bool
-    delete_all_route: bool
-
-
 class CRUDTemplate(APIRouter):
-    schema: Type[BaseModel]
-    create_schema: Type[BaseModel]
-    update_schema: Type[BaseModel]
-    _base_path: str = "/"
 
     def __init__(
             self,
-            context: Context,
+            schema: Type[BaseModel],
+            manager: ModelManager,
+            get_session: Callable,
+            create_schema: Type[BaseModel],
+            update_schema: Type[BaseModel],
             **kwargs: Any,
     ) -> None:
-
         super().__init__(**kwargs)
 
-        self.ctx = context
-        self.schema = self.ctx['schema']
-        self.create_schema = self.ctx['create_schema']
-        self.update_schema = self.ctx['update_schema']
-        self.manager = self.ctx['manager']
-        self.get_session = self.ctx['get_session']
+        self.schema = schema
+        self.create_schema = create_schema
+        self.update_schema = update_schema
+        self.manager = manager
+        self.get_session = get_session
 
-
-        if self.ctx.get('get_all_route', True):
-            self._get_all()
-
-        if self.ctx.get('create_route', True):
-            self._create()
-
-        if self.ctx.get('get_one_route', True):
-            self._get_one()
-
-        if self.ctx.get('update_route', True):
-            self._update()
-
-        if self.ctx.get('delete_one_route', True):
-            self._delete_one()
-
-        if self.ctx.get('delete_all_route', True):
-            self._delete_all()
-
-
-
-
+        for route in self._register_routes():
+            route()
 
     @abstractmethod
     def _get_all(self) -> Callable[..., Any]:
@@ -99,3 +56,8 @@ class CRUDTemplate(APIRouter):
     @abstractmethod
     def _delete_all(self) -> Callable[..., Any]:
         raise NotImplementedError
+
+    def _register_routes(self) -> list[Callable[..., Any]]:
+        return [
+            self._get_all, self._get_one, self._create, self._update, self._delete_one, self._delete_all
+        ]

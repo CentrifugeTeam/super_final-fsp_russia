@@ -18,6 +18,7 @@ get_current_user_token = authenticator.current_user_token(
 )
 
 
+
 @r.post(
     "/login",
     name=f"auth:{backend.name}.login",

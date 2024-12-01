@@ -1,4 +1,3 @@
-from inspect import Signature, Parameter
 from typing import Optional, Sequence, cast, Callable
 from fastapi import status, Depends, HTTPException
 from fastapi_users.authentication import AuthenticationBackend, Strategy
@@ -13,6 +12,9 @@ logger = getLogger(__name__)
 
 
 class Authenticator:
+    """
+    A helper class to authenticate users.
+    """
 
     def __init__(
             self,
@@ -29,6 +31,17 @@ class Authenticator:
                             superuser: bool = False,
                             session, **kwargs) -> tuple[Optional[User], Optional[str]]:
 
+        """
+        Authenticate a user.
+        :param args:
+        :param optional:
+        :param active:
+        :param verified:
+        :param superuser:
+        :param session:
+        :param kwargs:
+        :return:
+        """
 
         user: User | None = None
         token: Optional[str] = None

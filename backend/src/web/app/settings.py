@@ -2,5 +2,8 @@ from shared.settings import Settings as _Settings
 
 
 class Settings(_Settings):
-    GOOGLE_CLIENT_ID: str
-    GOOGLE_CLIENT_SECRET: str
+    """
+    Settings for the Google OAuth2 provider.
+    """
+    YANDEX_CLIENT_ID: str
+    YANDEX_CLIENT_SECRET: str
