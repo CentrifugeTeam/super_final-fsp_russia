@@ -3,8 +3,10 @@ from typing import Callable, Any
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from crud.openapi_responses import missing_token_or_inactive_user_response, forbidden_response
-from ...utils.crud import CrudAPIRouter, Context
+from shared.crud import missing_token_or_inactive_user_response, forbidden_response
+from ...utils.crud import CrudAPIRouter
+from ...schemas.users import ReadUser, CreateUser, UpdateUser
+from ...utils.users import user_manager
 
 
 class UsersRouter(CrudAPIRouter):

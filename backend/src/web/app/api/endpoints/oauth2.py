@@ -1,7 +1,15 @@
+import string
+from random import random
+
 from fastapi import APIRouter, Request, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 from httpx_oauth.oauth2 import GetAccessTokenError
 from logging import getLogger
+from random import choices
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ...utils.users import user_manager
 
 from ...services.yandex_oauth import YandexOAuth2
 
@@ -22,7 +30,9 @@ async def yandex_login(request: Request):
     status.HTTP_400_BAD_REQUEST:
         {"description": "Could not get access token"},
 })
-async def yandex_callback(request: Request, code: str):
+async def yandex_callback(request: Request, code: str,
+                          session: AsyncSession = Depends(user_manager.get_session),
+                          ):
     """
     Callback после входа в Yandex и получение refresh и access токена пользователя
     :param request:
@@ -34,7 +44,10 @@ async def yandex_callback(request: Request, code: str):
     except GetAccessTokenError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Could not get access token')
 
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(choices(characters))
     response = await yandex_oauth2.get_user_info(oauth2_response.access_token)
+    user = await user_manager.create(session,
+                                     response.model_dump(include={'first_name', 'last_name', 'default_email', 'login'},
+                                                         by_alias=True), password=password)
     return response
-
-

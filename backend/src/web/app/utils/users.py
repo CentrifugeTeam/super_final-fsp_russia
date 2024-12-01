@@ -17,4 +17,4 @@ def get_strategy():
 backend = AuthenticationBackend(name='jwt', get_strategy=get_strategy, transport=transport)
 user_manager = UsersManager()
 
-authenticator = Authenticator([backend], get_session)
+authenticator = Authenticator(backend, get_session)

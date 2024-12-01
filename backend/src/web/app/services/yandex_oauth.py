@@ -1,15 +1,16 @@
 import time
-from datetime import datetime
-from typing import Optional, Literal, List, Type, Dict, Any
+from typing import Optional, Literal, List, Type, Dict, Any, TypeVar
 from urllib.parse import urlencode
 
 import httpx
-from pydantic import BaseModel, field_validator, ValidationError
+from pydantic import BaseModel, field_validator, ValidationError, ConfigDict, Field
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token, GetAccessTokenError, OAuth2RequestError, RefreshTokenError
 from ..conf import settings
 from logging import getLogger
 
 logger = getLogger(__name__)
+
+Model = TypeVar('Model', bound=BaseModel)
 
 
 class OAuth2Response(BaseModel):
@@ -25,6 +26,24 @@ class OAuth2Response(BaseModel):
 
     def is_expired(self) -> bool:
         return time.time() > self.expires_in
+
+
+class GetUserInfoError(OAuth2RequestError):
+    pass
+
+
+class UserInfo(BaseModel):
+    model_config = ConfigDict(extra='allow')
+    first_name: str
+    last_name: str
+    display_name: str
+    real_name: str
+    login: str = Field(alias='username')
+    default_email: str = Field(alias='email')
+    old_social_login: str
+    id: int
+    client_id: str
+    psuid: str
 
 
 class YandexOAuth2(BaseOAuth2):
@@ -87,13 +106,13 @@ class YandexOAuth2(BaseOAuth2):
                 client, request, auth, exc_class=GetAccessTokenError
             )
 
-            return self.get_json(response, exc_class=GetAccessTokenError)
+            return self.parse_response_to_model(OAuth2Response, response, exc_class=GetAccessTokenError)
 
-    def get_json(
-            self, response: httpx.Response, *, exc_class: Type[OAuth2RequestError]
-    ) -> OAuth2Response:
+    def parse_response_to_model[Model](
+            self, model: type[Model], response: httpx.Response, *, exc_class: Type[OAuth2RequestError]
+    ) -> Model:
         try:
-            return OAuth2Response.model_validate_json(response.content)
+            return model.model_validate_json(response.content)
         except ValidationError as e:
             message = "Invalid JSON content"
             raise exc_class(message, response) from e
@@ -131,7 +150,8 @@ class YandexOAuth2(BaseOAuth2):
             response = await self.send_request(
                 client, request, auth, exc_class=RefreshTokenError
             )
-            return self.get_json(response, exc_class=RefreshTokenError)
+            # TODO
+            # return self.(response, exc_class=RefreshTokenError)
 
     @property
     def authorization_url(self):
@@ -147,8 +167,13 @@ class YandexOAuth2(BaseOAuth2):
 
         return f"{self.authorize_endpoint}?{urlencode(params)}"
 
-    async def get_user_info(self, token: str):
+    async def get_user_info(self, token: str) -> UserInfo:
+        """
+        raise GetUserInfoError
+        :param token:
+        :return:
+        """
         async with self.get_httpx_client() as client:
             response = await client.get('https://login.yandex.ru/info', headers={
                 'Authorization': f'OAuth {token}'})
-        return response.json()
+        return self.parse_response_to_model(UserInfo, response, exc_class=GetUserInfoError)

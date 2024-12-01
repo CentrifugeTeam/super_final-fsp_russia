@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, ConfigDict, EmailStr
 
 
 class BaseUser(BaseModel):
+    username: str
     first_name: str
     middle_name: str
     last_name: str
@@ -19,12 +20,12 @@ class BaseUser(BaseModel):
 
 
 class CreateUser(BaseUser):
-    pass
+    password: str
 
 
 class ReadUser(BaseUser):
     id: int
-    is_superuser: bool
+    # is_superuser: bool
 
 
 UpdateUser = make_partial_model(CreateUser)

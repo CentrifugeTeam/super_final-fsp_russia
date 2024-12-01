@@ -1,13 +1,16 @@
-from typing import Optional, Sequence
-from fastapi import status, HTTPException
-from fastapi_users.authentication import AuthenticationBackend, Strategy
-from fastapi_users.authentication.authenticator import name_to_variable_name, name_to_strategy_variable_name
+from typing import Optional, Sequence, Annotated
+from fastapi import status, HTTPException, Depends
+from fastapi_users.authentication import AuthenticationBackend
+from .strategy import JWTStrategy
+from .transport import BearerTransport
 from logging import getLogger
+from fastapi.security import OAuth2PasswordBearer
+
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from shared.storage.db import User
 
 logger = getLogger(__name__)
-
 
 
 class Authenticator:
@@ -17,67 +20,40 @@ class Authenticator:
 
     def __init__(
             self,
-            backends: Sequence[AuthenticationBackend],
+            backend: AuthenticationBackend,
             get_session
     ):
         self.get_session = get_session
-        self.backends = backends
+        self.backend = backend
 
-    async def authenticate(self, *args,
-                            optional: bool = False,
-                            active: bool = False,
-                            verified: bool = False,
-                            superuser: bool = False,
-                            session, **kwargs) -> tuple[Optional[User], Optional[str]]:
-
+    def authenticate(self, optional: bool = False,
+                     active: bool = False,
+                     verified: bool = False,
+                     superuser: bool = False):
         """
         Authenticate a user.
-        :param args:
-        :param optional:
-        :param active:
-        :param verified:
-        :param superuser:
-        :param session:
-        :param kwargs:
-        :return:
         """
 
-        user: User | None = None
-        token: Optional[str] = None
-        enabled_backends: Sequence[AuthenticationBackend] = (
-            kwargs.get("enabled_backends", self.backends)
-        )
+        async def wrapped(
+                token: Annotated[OAuth2PasswordBearer, Depends()],
+                session: AsyncSession = Depends(self.get_session),
+                strategy: JWTStrategy = Depends(self.backend.get_strategy),
+        ):
+            user = await strategy.read_token(token, session)  # type: ignore
+            status_code = status.HTTP_401_UNAUTHORIZED
+            # if user:
+            #     status_code = status.HTTP_403_FORBIDDEN
+            #     if active and not user.is_active:
+            #         status_code = status.HTTP_401_UNAUTHORIZED
+            #         user = None
+            #     elif (
+            #             verified and not user.is_verified or superuser and not user.is_superuser
+            #     ):
+            #         user = None
 
-        for backend in self.backends:
-            if backend in enabled_backends:
-                logger.info('kwargs is %s', kwargs)
-                token = kwargs[name_to_variable_name(backend.name)]
-                logger.info('token is %s', token)
-                strategy: Strategy = kwargs[
-                    name_to_strategy_variable_name(backend.name)
-                ]
-                logger.info('strategy is %s', strategy)
-                if token is not None:
-                    user = await strategy.read_token(token, session)
+            if not user and not optional:
+                raise HTTPException(status_code=status_code)
 
-                    if user:
-                        break
+            return user, token
 
-        status_code = status.HTTP_401_UNAUTHORIZED
-        if user:
-            status_code = status.HTTP_403_FORBIDDEN
-            if active and not user.is_active:
-                status_code = status.HTTP_401_UNAUTHORIZED
-                user = None
-            elif (
-                    verified and not user.is_verified or superuser and not user.is_superuser
-            ):
-                user = None
-        if not user and not optional:
-            raise HTTPException(status_code=status_code)
-
-        return user, token
-
-    async def _authenticate(self):
-        pass
-
+        return wrapped

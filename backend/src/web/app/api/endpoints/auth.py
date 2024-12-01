@@ -13,7 +13,7 @@ from ...dependencies.session import get_session
 
 r = APIRouter()
 
-get_current_user_token = authenticator.current_user_token(
+get_current_user_token = authenticator.authenticate(
     active=True,
 )
 

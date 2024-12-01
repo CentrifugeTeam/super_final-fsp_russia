@@ -1,1 +1,0 @@
-from .crud_generator import  CRUDTemplate

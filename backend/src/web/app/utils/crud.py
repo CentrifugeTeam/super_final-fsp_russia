@@ -1,17 +1,19 @@
+# from fastapi_sqlalchemy_toolkit import ModelManager
 from fastapi_sqlalchemy_toolkit import ModelManager
 from pydantic import BaseModel
 
-from crud import CRUDTemplate
-from crud.openapi_responses import (
-    missing_token_or_inactive_user_response, auth_responses, not_found_response, forbidden_response,
+from shared.crud import CRUDTemplate
+from shared.crud import (
+    missing_token_or_inactive_user_response, not_found_response, forbidden_response,
 )
-from typing import Any, TypeVar, Type, TypedDict, Callable
-from fastapi import Depends, Request, status
+from typing import Any, TypeVar, Type, TypedDict
+from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from polyfactory.factories.pydantic_factory import ModelFactory
 from ..dependencies.session import get_session
 
 Resource = TypeVar('Resource')
+
 
 
 class Context(TypedDict, total=False):

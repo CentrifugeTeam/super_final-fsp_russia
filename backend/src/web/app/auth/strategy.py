@@ -83,7 +83,6 @@ class JWTStrategy(_JWTStrategy):
 
     async def destroy_token(self, access_token: str, user: models.UP) -> None:
         res = self._decode_token(access_token)
-        logger.info('res is %s', res)
         if res is None:
             return res
 
