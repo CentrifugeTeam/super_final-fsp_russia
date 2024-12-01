@@ -6,7 +6,7 @@ from fastapi_users.password import PasswordHelperProtocol, PasswordHelper
 from sqlalchemy import UnaryExpression, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
-from storage.db.models import User, Role
+from shared.storage.db.models import User, Role
 from .base import BaseManager
 
 

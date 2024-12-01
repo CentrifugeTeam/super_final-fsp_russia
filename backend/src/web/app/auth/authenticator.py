@@ -1,11 +1,10 @@
-from typing import Optional, Sequence, cast, Callable
-from fastapi import status, Depends, HTTPException
+from typing import Optional, Sequence
+from fastapi import status, HTTPException
 from fastapi_users.authentication import AuthenticationBackend, Strategy
-from fastapi_users.authentication.authenticator import Authenticator as _Authenticator, DuplicateBackendNamesError, \
-    EnabledBackendsDependency, name_to_variable_name, name_to_strategy_variable_name
+from fastapi_users.authentication.authenticator import name_to_variable_name, name_to_strategy_variable_name
 from logging import getLogger
 
-from storage.db.models import User
+from shared.storage.db import User
 
 logger = getLogger(__name__)
 

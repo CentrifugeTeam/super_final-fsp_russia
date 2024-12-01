@@ -1,16 +1,16 @@
-from datetime import datetime, date, timezone
+from datetime import datetime, timezone
 from logging import getLogger
 from typing import Optional
 import jwt
 from asyncpg.pgproto.pgproto import timedelta
 from fastapi_users import models
-from fastapi_users.jwt import decode_jwt, generate_jwt, SecretType
+from fastapi_users.jwt import SecretType
 from fastapi_users.authentication.strategy import JWTStrategy as _JWTStrategy
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..dependencies.redis import get_redis
 from contextlib import asynccontextmanager
-from storage.db.models import User
+from shared.storage.db import User
 
 logger = getLogger(__name__)
 

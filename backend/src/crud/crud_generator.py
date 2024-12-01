@@ -6,9 +6,9 @@ from fastapi.params import Depends
 from fastapi.types import DecoratedCallable
 from fastapi_sqlalchemy_toolkit import ModelManager
 from pydantic import BaseModel
-from .openapi_responses import not_found_response
+from sqlalchemy.ext.asyncio import AsyncSession
 
-NOT_FOUND = HTTPException(404, "Item not found")
+from .openapi_responses import not_found_response
 
 
 class CRUDTemplate(APIRouter):
@@ -56,6 +56,12 @@ class CRUDTemplate(APIRouter):
     @abstractmethod
     def _delete_all(self) -> Callable[..., Any]:
         raise NotImplementedError
+
+    def get_or_404(self):
+        async def wrapper(id: int, session: AsyncSession = Depends(self.get_session)):
+            return self.manager.get_or_404(session, id=id)
+
+        return wrapper
 
     def _register_routes(self) -> list[Callable[..., Any]]:
         return [

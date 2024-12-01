@@ -20,6 +20,7 @@ class UsersRouter(CrudAPIRouter):
         async def func(objs: create_schema, session: AsyncSession = Depends(self.get_session)):
             return await self.manager.create(session, objs)
 
+
     def _register_routes(self) -> list[Callable[..., Any]]:
         return [self._create]
 

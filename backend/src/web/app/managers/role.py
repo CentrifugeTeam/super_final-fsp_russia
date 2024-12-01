@@ -4,10 +4,8 @@ from fastapi_sqlalchemy_toolkit.model_manager import ModelT
 from sqlalchemy import UnaryExpression, Row, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
-from storage.db.models import UserRole, Role
+from shared.storage.db.models import UserRole, Role
 from .base import BaseManager
-from logging import getLogger
-
 
 
 class RoleManager(BaseManager):
