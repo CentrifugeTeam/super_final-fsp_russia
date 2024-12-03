@@ -96,5 +96,3 @@ class MockCrudAPIRouter(CrudAPIRouter):
         )
         async def func(request: Request, objs: create_schema, session: AsyncSession = Depends(self.get_session)):
             return self.factory.build(**objs.model_dump())
-
-

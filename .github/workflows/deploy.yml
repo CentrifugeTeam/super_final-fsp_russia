@@ -1,0 +1,31 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main  # Триггер на пуш в ветку main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Шаг 1. Клонирование репозитория
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Шаг 2. Настройка SSH для подключения к серверу
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.server }}
+
+    # Шаг 3. Выполнение команд на сервере
+    - name: Deploy application
+      run: |
+        ssh ubuntu@158.160.32.99 "
+          cd /home/ubuntu/deploy &&
+          git pull origin main &&
+          docker compose down &&
+          docker compose up -d --build
+        "
