@@ -11,10 +11,6 @@ jobs:
 
     steps:
 
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.DEPLOY }}
     # Шаг 1. Клонирование репозитория
     - name: Checkout code
       uses: actions/checkout@v4
