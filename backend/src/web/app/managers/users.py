@@ -1,3 +1,4 @@
+from secrets import token_urlsafe
 from typing import Iterable, Any, Optional
 
 from fastapi.security import OAuth2PasswordRequestForm
@@ -6,11 +7,14 @@ from fastapi_users.password import PasswordHelperProtocol, PasswordHelper
 from sqlalchemy import UnaryExpression, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute, joinedload
+
+from shared.storage.cache.redis_client import RedisClient
 from shared.storage.db.models import User, Role, OAuthAccount
 from .base import BaseManager
 from ..schemas.users import UserCredentials
 from ..services.oauth import YandexUserInfo
-from ..services.oauth.yandex_oauth import OAuth2Response
+from ..services.oauth.base import OAuth2Response
+from ..services.oauth.vk_oauth import VKUserInfo
 
 
 class UsersManager(BaseManager):
@@ -67,6 +71,15 @@ class UsersManager(BaseManager):
         await session.commit()
         return user
 
+
+    async def create_vk_user(
+            self,
+            session: AsyncSession,
+            user_info: VKUserInfo,
+            tokens: OAuth2Response,
+    ):
+        pass
+
     async def authenticate(self, session: AsyncSession, credentials: UserCredentials):
         stmt = select(User).where(credentials.login == User.username)
         user = (await session.execute(stmt)).scalar()
@@ -90,3 +103,16 @@ class UsersManager(BaseManager):
             await session.commit()
 
         return user
+
+    async def _create_partial_user(self, redis: RedisClient, user_info: YandexUserInfo):
+        token = self._generate_partial_token()
+        await redis.hset(token, mapping=user_info.model_dump())
+        return token
+
+    async def create_partial_user(self, redis: RedisClient, access_token: str):
+        user_info = await self.get_user_info(access_token)
+        return await self._create_partial_user(redis, user_info)
+
+    def _generate_partial_token(self):
+        return token_urlsafe()
+

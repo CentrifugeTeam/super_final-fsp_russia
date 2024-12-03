@@ -14,14 +14,11 @@ from ...auth.transport import TransportResponse
 from ...dependencies.session import get_session
 from ...schemas.users import UserCredentials
 
-
-
 r = APIRouter()
 
 get_current_user_token = authenticator.get_user_token(
     active=True
 )
-
 
 
 @r.post(
@@ -54,17 +51,11 @@ async def login(
 ):
     user = await user_manager.authenticate(session, user_credentials)
 
-    if user is None or not user.is_active:
+    if user is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=ErrorCode.LOGIN_BAD_CREDENTIALS,
         )
-
-    # if not user.is_verified:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_400_BAD_REQUEST,
-    #         detail=ErrorCode.LOGIN_USER_NOT_VERIFIED,
-    #     )
     response = await backend.login(strategy, user)
     return response
 
