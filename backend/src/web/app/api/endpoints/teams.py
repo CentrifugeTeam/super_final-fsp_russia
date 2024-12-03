@@ -19,7 +19,7 @@ class TeamsRouter(MockCrudAPIRouter):
 
         @self.post('/{id}/yandex/calendar',
                    description='Регистрация команды в Yandex Calendar для дальнейшей отправки событий в календарь команды',
-                   dependencies=[Depends(authenticator.authenticate())])
+                   dependencies=[Depends(authenticator.get_user_token())])
         async def register_team_to_yandex_calendar(credentials: RegisterTeamToYandexCalendar,
                                                    team: Team = Depends(get_or_404())):
             calendar = YandexCalendar(credentials.email, credentials.password)

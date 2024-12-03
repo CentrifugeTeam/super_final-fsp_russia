@@ -3,16 +3,20 @@ from logging import getLogger
 from typing import Optional
 import jwt
 from asyncpg.pgproto.pgproto import timedelta
+from fastapi import HTTPException
 from fastapi_users import models
 from fastapi_users.jwt import SecretType
 from fastapi_users.authentication.strategy import JWTStrategy as _JWTStrategy
-from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from ..dependencies.redis import get_redis
-from contextlib import asynccontextmanager
+from starlette import status
+
 from shared.storage.db.models import User
 
 logger = getLogger(__name__)
+
+
+class InvalidTokenException(Exception):
+    pass
 
 
 class JWTStrategy(_JWTStrategy):
@@ -35,19 +39,9 @@ class JWTStrategy(_JWTStrategy):
         if payload is None:
             return payload
 
-        async with asynccontextmanager(get_redis)() as redis:
-            redis: Redis
-            refresh_token = await redis.get(f'session:{payload["sid"]}')
-
-        if refresh_token is None:
-            return refresh_token
-
         access_token, refresh_token = self.generate_pair_of_tokens(payload)
-        async with asynccontextmanager(get_redis)() as redis:
-            redis: Redis
-            await redis.set(f'session:{payload["sid"]}', refresh_token)
 
-        return {'access_token': access_token, 'refresh_token': refresh_token, 'type': 'refresher'}
+        return {'access_token': access_token, 'refresh_token': refresh_token}
 
     def generate_pair_of_tokens(self, payload: dict):
 
@@ -72,13 +66,14 @@ class JWTStrategy(_JWTStrategy):
     def _decode_token(self, token: str):
         try:
             payload = jwt.decode(
-                token, self.decode_key, self.token_audience, algorithms=[self.algorithm]
+                token, self.decode_key, audience=self.token_audience, algorithms=[self.algorithm]
             )
             payload['sub'] = int(payload.get("sub"))
-            payload['sid'] = int(payload.get('sid'))
 
         except (jwt.PyJWTError, ValueError, jwt.ExpiredSignatureError):
-            return None
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing token or inactive user."
+            )
         return payload
 
     async def destroy_token(self, access_token: str, user: models.UP) -> None:
@@ -87,7 +82,6 @@ class JWTStrategy(_JWTStrategy):
             return res
 
     async def write_token(self, user: User) -> dict:
-
         payload = {"sub": str(user.id), "aud": self.token_audience}
         access_token, refresh_token = self.generate_pair_of_tokens(payload)
 

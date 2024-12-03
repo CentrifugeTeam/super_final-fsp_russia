@@ -1,4 +1,3 @@
-from typing import Literal
 from redis.asyncio import Redis
 
 
@@ -13,6 +12,5 @@ class RedisClient(Redis):
             last_id, payload = messages[0]
             ids[key] = last_id
             yield key, payload
-
 
 

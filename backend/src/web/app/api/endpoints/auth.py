@@ -3,18 +3,23 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status, Body
 from fastapi.security import OAuth2PasswordRequestForm
 
 from fastapi_users import models
-from fastapi_users.authentication.transport.bearer import BearerResponse
 from fastapi_users.router.common import ErrorCode, ErrorModel
 from typing import Annotated
 
+from shared.crud import missing_token_or_inactive_user_response
+from shared.crud.openapi_responses import forbidden_response
 from ...auth.strategy import JWTStrategy
 from ...utils.users import authenticator, backend, user_manager
+from ...auth.transport import TransportResponse
 from ...dependencies.session import get_session
+from ...schemas.users import UserCredentials
+
+
 
 r = APIRouter()
 
-get_current_user_token = authenticator.authenticate(
-    active=True,
+get_current_user_token = authenticator.get_user_token(
+    active=True
 )
 
 
@@ -22,7 +27,8 @@ get_current_user_token = authenticator.authenticate(
 @r.post(
     "/login",
     name=f"auth:{backend.name}.login",
-    response_model=BearerResponse,
+    description='Авторизация пользователя',
+    response_model=TransportResponse,
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "model": ErrorModel,
@@ -33,10 +39,6 @@ get_current_user_token = authenticator.authenticate(
                             "summary": "Bad credentials or the user is inactive.",
                             "value": {"detail": ErrorCode.LOGIN_BAD_CREDENTIALS},
                         },
-                        # ErrorCode.LOGIN_USER_NOT_VERIFIED: {
-                        #     "summary": "The user is not verified.",
-                        #     "value": {"detail": ErrorCode.LOGIN_USER_NOT_VERIFIED},
-                        # },
                     }
                 }
             },
@@ -46,11 +48,11 @@ get_current_user_token = authenticator.authenticate(
 )
 async def login(
         request: Request,
-        credentials: OAuth2PasswordRequestForm = Depends(),
+        user_credentials: UserCredentials,
         session=Depends(get_session),
         strategy: JWTStrategy = Depends(backend.get_strategy),
 ):
-    user = await user_manager.authenticate(session, credentials)
+    user = await user_manager.authenticate(session, user_credentials)
 
     if user is None or not user.is_active:
         raise HTTPException(
@@ -89,10 +91,12 @@ async def logout(
 
 @r.post(
     "/refresh_token", name=f"auth:{backend.name}.refresh",
-    responses={**backend.transport.get_openapi_login_responses_success()},
-    response_model=BearerResponse
+    dependencies=[Depends(get_current_user_token)],
+    responses={**backend.transport.get_openapi_login_responses_success(), **missing_token_or_inactive_user_response},
+    response_model=TransportResponse
 )
 async def refresh(refresh_token: Annotated[str, Body(embed=True)],
                   strategy: JWTStrategy = Depends(backend.get_strategy), ):
     strategy: JWTStrategy
+
     return await strategy.refresh_token(refresh_token)

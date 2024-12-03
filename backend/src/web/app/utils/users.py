@@ -1,13 +1,13 @@
 from asyncpg.pgproto.pgproto import timedelta
 from fastapi_users.authentication.backend import AuthenticationBackend
-from fastapi_users.authentication.transport.bearer import BearerTransport
 from ..auth.authenticator import Authenticator
 from ..auth.strategy import JWTStrategy
+from ..auth.transport import AppTransport
 from ..conf import settings
 from ..managers.users import UsersManager
 from ..dependencies.session import get_session
 
-transport = BearerTransport('auth/jwt/login')
+transport = AppTransport()
 
 
 def get_strategy():

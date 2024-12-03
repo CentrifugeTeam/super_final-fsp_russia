@@ -7,9 +7,10 @@ from pydantic import BaseModel, Field, ConfigDict, EmailStr
 class BaseUser(BaseModel):
     username: str
     first_name: str
-    middle_name: str
+    middle_name: str | None = None
     last_name: str
-    email: EmailStr
+    email: EmailStr | None = None
+    photo_url: str
 
     def __acl__(self):
         return [
@@ -29,3 +30,8 @@ class ReadUser(BaseUser):
 
 
 UpdateUser = make_partial_model(CreateUser)
+
+
+class UserCredentials(BaseModel):
+    login: str
+    password: str

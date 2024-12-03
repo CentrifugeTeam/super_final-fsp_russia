@@ -5,9 +5,12 @@ from fastapi_sqlalchemy_toolkit.model_manager import CreateSchemaT, ModelT
 from fastapi_users.password import PasswordHelperProtocol, PasswordHelper
 from sqlalchemy import UnaryExpression, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import InstrumentedAttribute
-from shared.storage.db.models import User, Role
+from sqlalchemy.orm import InstrumentedAttribute, joinedload
+from shared.storage.db.models import User, Role, OAuthAccount
 from .base import BaseManager
+from ..schemas.users import UserCredentials
+from ..services.oauth import YandexUserInfo
+from ..services.oauth.yandex_oauth import OAuth2Response
 
 
 class UsersManager(BaseManager):
@@ -40,13 +43,39 @@ class UsersManager(BaseManager):
 
         return user
 
-    async def authenticate(self, session: AsyncSession, credentials: OAuth2PasswordRequestForm):
-        stmt = select(User).where(credentials.username == User.username)
+    async def create_yandex_user(
+            self,
+            session: AsyncSession,
+            user_info: YandexUserInfo,
+            yandex_tokens: OAuth2Response,
+
+    ):
+        stmt = self.assemble_stmt(username=user_info.login, options=[joinedload(User.oauth_accounts)])
+        user = await session.scalar(stmt)
+        if user:
+            return user
+
+        user = User(username=user_info.login, password=None, first_name=user_info.first_name, middle_name=None,
+                    last_name=user_info.last_name,
+                    email=user_info.default_email,
+                    photo_url=f'https://avatars.yandex.net/get-yapic/{user_info.default_avatar_id}')
+        account = OAuthAccount(provider='yandex', access_token=yandex_tokens.access_token,
+                               refresh_token=yandex_tokens.refresh_token)
+        user.oauth_accounts = [account]
+        session.add(user)
+
+        await session.commit()
+        return user
+
+    async def authenticate(self, session: AsyncSession, credentials: UserCredentials):
+        stmt = select(User).where(credentials.login == User.username)
         user = (await session.execute(stmt)).scalar()
         if not user:
             # Run the hasher to mitigate timing attack
             # Inspired from Django: https://code.djangoproject.com/ticket/20760
             self.password_helper.hash(credentials.password)
+            return None
+        if user.password is None:
             return None
 
         verified, updated_password_hash = self.password_helper.verify_and_update(

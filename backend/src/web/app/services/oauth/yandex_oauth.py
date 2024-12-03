@@ -1,11 +1,14 @@
 import time
+from secrets import token_urlsafe
 from typing import Optional, Literal, List, Type, Dict, Any, TypeVar
 from urllib.parse import urlencode
 
 import httpx
 from pydantic import BaseModel, field_validator, ValidationError, ConfigDict, Field
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token, GetAccessTokenError, OAuth2RequestError, RefreshTokenError
-from ..conf import settings
+
+from shared.storage.cache.redis_client import RedisClient
+from web.app.conf import settings
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -32,15 +35,15 @@ class GetUserInfoError(OAuth2RequestError):
     pass
 
 
-class UserInfo(BaseModel):
+class YandexUserInfo(BaseModel):
     model_config = ConfigDict(extra='allow')
     first_name: str
     last_name: str
     display_name: str
     real_name: str
-    login: str = Field(alias='username')
-    default_email: str = Field(alias='email')
-    old_social_login: str
+    login: str
+    default_email: str
+    default_avatar_id: str
     id: int
     client_id: str
     psuid: str
@@ -167,7 +170,7 @@ class YandexOAuth2(BaseOAuth2):
 
         return f"{self.authorize_endpoint}?{urlencode(params)}"
 
-    async def get_user_info(self, token: str) -> UserInfo:
+    async def get_user_info(self, token: str) -> YandexUserInfo:
         """
         raise GetUserInfoError
         :param token:
@@ -176,4 +179,16 @@ class YandexOAuth2(BaseOAuth2):
         async with self.get_httpx_client() as client:
             response = await client.get('https://login.yandex.ru/info', headers={
                 'Authorization': f'OAuth {token}'})
-        return self.parse_response_to_model(UserInfo, response, exc_class=GetUserInfoError)
+        return self.parse_response_to_model(YandexUserInfo, response, exc_class=GetUserInfoError)
+
+    # async def _create_partial_user(self, redis: RedisClient, user_info: YandexUserInfo):
+    #     token = self._generate_partial_token()
+    #     await redis.hset(token, mapping=user_info.model_dump())
+    #     return token
+    #
+    # async def create_partial_user(self, redis: RedisClient, access_token: str):
+    #     user_info = await self.get_user_info(access_token)
+    #     return await self._create_partial_user(redis, user_info)
+
+    def _generate_partial_token(self):
+        return token_urlsafe()
