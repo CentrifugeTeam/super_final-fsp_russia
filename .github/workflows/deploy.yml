@@ -11,19 +11,28 @@ jobs:
 
     steps:
 
-    # Шаг 1. Клонирование репозитория
-    - name: Checkout code
-      uses: actions/checkout@v4
 
-    # Шаг 2. Настройка SSH для подключения к серверу
+      # Шаг 1. Клонирование репозитория
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SSH and run commands
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }} # Reference the private key stored in GitHub Secrets
+        run: |
+          echo "$PRIVATE_KEY" > private_key.pem # Write the private key to a file
+          chmod 600 private_key.pem # Set the appropriate permissions for the key file
+
+          # Establish an SSH connection and execute commands on the remote server
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@centrifugo.tech <<EOF
+            cd /home/ubuntu/deploy &&
+            git pull origin main &&
+            docker compose down &&
+            docker compose up -d --build
+          EOF
+
+          rm -f private_key.pem # Remove the private key file after use for security
 
 
-    # Шаг 3. Выполнение команд на сервере
-    - name: Deploy application
-      run: |
-        ssh ubuntu@158.160.32.99 "
-          cd /home/ubuntu/deploy &&
-          git pull origin main &&
-          docker compose down &&
-          docker compose up -d --build
-        "
+
+    
