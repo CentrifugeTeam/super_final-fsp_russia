@@ -86,6 +86,12 @@ class MockCrudAPIRouter(CrudAPIRouter):
         async def func(request: Request, id: int, session: AsyncSession = Depends(self.get_session)):
             return self.factory.build(id=id)
 
+    def get_or_404(self):
+        async def wrapper(id: int):
+            return self.factory.build(id=id)
+
+        return wrapper
+
     def _create(self):
         create_schema = self.create_schema
 

@@ -3,7 +3,7 @@ from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 
-class OAuthAccount(Base, IDMixin):
+class OAuthAccount(IDMixin, Base):
     """
     A user's OAuth account
     """

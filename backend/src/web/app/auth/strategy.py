@@ -10,7 +10,7 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..dependencies.redis import get_redis
 from contextlib import asynccontextmanager
-from shared.storage.db import User
+from shared.storage.db.models import User
 
 logger = getLogger(__name__)
 

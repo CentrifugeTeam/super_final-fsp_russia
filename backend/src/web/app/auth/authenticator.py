@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shared.storage.db import User
+from shared.storage.db.models import User
 
 logger = getLogger(__name__)
 
