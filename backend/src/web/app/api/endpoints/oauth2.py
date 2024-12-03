@@ -1,6 +1,4 @@
 import string
-from random import random
-
 from fastapi import APIRouter, Request, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 from httpx_oauth.oauth2 import GetAccessTokenError
@@ -9,6 +7,7 @@ from random import choices
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ...dependencies.session import get_session
 from ...utils.users import user_manager
 
 from ...services.yandex_oauth import YandexOAuth2
@@ -31,7 +30,7 @@ async def yandex_login(request: Request):
         {"description": "Could not get access token"},
 })
 async def yandex_callback(request: Request, code: str,
-                          session: AsyncSession = Depends(user_manager.get_session),
+                          session: AsyncSession = Depends(get_session),
                           ):
     """
     Callback после входа в Yandex и получение refresh и access токена пользователя
