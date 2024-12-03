@@ -46,6 +46,7 @@ async def yandex_callback(request: Request, code: str,
     characters = string.ascii_letters + string.digits + string.punctuation
     password = ''.join(choices(characters))
     response = await yandex_oauth2.get_user_info(oauth2_response.access_token)
+
     user = await user_manager.create(session,
                                      response.model_dump(include={'first_name', 'last_name', 'default_email', 'login'},
                                                          by_alias=True), password=password)
