@@ -28,7 +28,7 @@ class UsersRouter(CrudAPIRouter):
             return await backend.login(strategy, user)
 
     def _register_routes(self) -> list[Callable[..., Any]]:
-        return [self._create]
+        return [self._create, self._get_one, self._get_all, self._update]
 
 
 r = UsersRouter(ReadUser, user_manager, CreateUser, UpdateUser)
