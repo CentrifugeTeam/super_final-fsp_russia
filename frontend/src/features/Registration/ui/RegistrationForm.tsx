@@ -4,6 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const RegistrationForm = () => {
+  const handleYandexLogin = () => {
+    window.location.href =
+      "https://oauth.yandex.ru/authorize?force_confirm=1&client_id=91926807198745df874fea559c810a19&response_type=code&redirect_uri=https://centrifugo.tech/auth_loading";
+  };
+
   return (
     <div className={styles.content}>
       <h1 className={styles.title}>Регистрация</h1>
@@ -21,7 +26,9 @@ export const RegistrationForm = () => {
       </div>
       <Button>Зарегистрироваться</Button>
       <p className="text-center text-s">или</p>
-      <Button className="bg-[#ffcc00] text-black">Войти с Яндекс ID</Button>
+      <Button className="bg-[#ffcc00] text-black" onClick={handleYandexLogin}>
+        Войти с Яндекс ID
+      </Button>
       <Button className="bg-[#0077FF]">Войти через VK ID</Button>
     </div>
   );
