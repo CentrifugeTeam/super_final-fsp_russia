@@ -10,15 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Шаг 1. Клонирование репозитория
-    - name: Checkout code
-      uses: actions/checkout@v3
 
-    # Шаг 2. Настройка SSH для подключения к серверу
     - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.7.0
+      uses: webfactory/ssh-agent@v0.9.0
       with:
         ssh-private-key: ${{ secrets.server }}
+    # Шаг 1. Клонирование репозитория
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Шаг 2. Настройка SSH для подключения к серверу
+
 
     # Шаг 3. Выполнение команд на сервере
     - name: Deploy application
