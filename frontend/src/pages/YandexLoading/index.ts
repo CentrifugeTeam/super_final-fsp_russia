@@ -1,0 +1,1 @@
+export { YandexLoading } from "./YandexLoading";
