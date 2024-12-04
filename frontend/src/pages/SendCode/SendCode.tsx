@@ -1,15 +1,16 @@
 import { BeatLoader } from "react-spinners";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom"; // Для извлечения строки запроса
 import { useMutation } from "@tanstack/react-query";
 import styles from "./sendcode.module.scss";
 import { fetchYandexAuth } from "@/shared/api/auth";
 
 export const SendCode = () => {
-  const location = useLocation();
+  const location = useLocation(); // Получаем объект location
 
+  // Извлекаем параметр code из строки запроса
   const searchParams = new URLSearchParams(location.search);
-  const code = searchParams.get("code");
+  const code = searchParams.get("code"); // Получаем значение параметра code
 
   const mutation = useMutation({
     mutationFn: fetchYandexAuth,
@@ -23,7 +24,7 @@ export const SendCode = () => {
 
   useEffect(() => {
     if (code) {
-      mutation.mutate(code);
+      mutation.mutate(code); // Мутируем код, если он есть
     } else {
       console.error("Code not found in URL");
     }
