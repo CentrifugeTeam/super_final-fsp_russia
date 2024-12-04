@@ -3,23 +3,42 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLoginMutation } from "@/features/AuthByLogin/model/authByLogin";
+import { useDispatch } from "react-redux"; // Для dispatch в Redux
+import { login } from "@/app/redux/slices/authSlice"; // Действие login для обновления состояния
 
 export const LoginForm = () => {
-  const [login, setLogin] = useState("");
+  const [loginInput, setLogin] = useState("");
   const [password, setPassword] = useState("");
-  const { mutate, status, error } = useLoginMutation();
+  const { mutate, status, error, data } = useLoginMutation(); // data - это результат успешного запроса
   const nav = useNavigate();
+  const dispatch = useDispatch();
 
   // Обработчик отправки формы
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Предотвращаем стандартное поведение формы
-    mutate({ login, password }); // Вызываем мутацию для авторизации с логином и паролем
+    mutate({ login: loginInput, password }); // Вызываем мутацию для авторизации с логином и паролем
   };
 
   // Проверяем, идет ли мутация
   const isLoading = status === "pending";
+
+  // Перенаправляем на страницу профиля, если запрос успешен
+
+  useEffect(() => {
+    if (status === "success" && data) {
+      // Диспатчим данные в Redux
+      dispatch(
+        login({
+          accessToken: data.access_token, // Используем access_token
+          refreshToken: data.refresh_token, // Используем refresh_token
+        })
+      );
+      // Перенаправляем пользователя на страницу профиля
+      nav("/profile");
+    }
+  }, [status, data, dispatch, nav]);
 
   return (
     <div className={styles.content}>
@@ -34,7 +53,7 @@ export const LoginForm = () => {
             type="text"
             id="login"
             placeholder="Логин"
-            value={login}
+            value={loginInput}
             onChange={(e) => setLogin(e.target.value)} // Обновляем состояние логина при изменении
           />
         </div>
