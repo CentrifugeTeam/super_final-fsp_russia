@@ -7,15 +7,30 @@ export const LoginForm = () => {
   return (
     <div className={styles.content}>
       <h1 className={styles.title}>Авторизация</h1>
-      <div className="items-center gap-1.5">
+      <div className="items-center">
         <Label htmlFor="login">Логин</Label>
-        <Input type="text" id="login" placeholder="Логин" />
+        <Input
+          className="rounded-[5px]"
+          type="text"
+          id="login"
+          placeholder="Логин"
+        />
       </div>
-      <div className="items-center gap-1.5">
+      <div className="items-center">
         <Label htmlFor="password">Пароль</Label>
-        <Input type="password" id="password" placeholder="Пароль" />
+        <Input
+          className="rounded-[5px]"
+          type="password"
+          id="password"
+          placeholder="Пароль"
+        />
       </div>
-      <Button>Войти</Button>
+      <Button className="bg-[#463ACB] rounded-[5px]">Войти</Button>
+
+      <p className={styles.or}>или</p>
+      <Button className="bg-[#FFCC02] rounded-[5px]">Войти с Яндекс ID</Button>
+      <Button className="bg-[#0277FF] rounded-[5px]">Войти через VK ID</Button>
+      <p>Нет аккаунта? Зарегистрироваться</p>
     </div>
   );
 };
