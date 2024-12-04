@@ -1,8 +1,24 @@
 import { api } from "./base";
 
-export const fetchYandexAuth = async (code: string) => {
-  const response = await api.post(`/oauth/yandex?code=${code}`);
+export interface AuthResponse {
+  access_token: string;
+  refresh_token: string;
+}
+
+export const fetchYandexAuth = async (code: string): Promise<AuthResponse> => {
+  const response = await api.post<AuthResponse>(`/oauth/yandex?code=${code}`);
   return response.data;
 };
 
-// TODO запрос на логин и на ВК
+export const loginRequest = async (
+  login: string,
+  password: string
+): Promise<AuthResponse> => {
+  const response = await api.post<AuthResponse>("/auth/login", {
+    login,
+    password,
+  });
+  return response.data;
+};
+
+// TODO запрос на ВК

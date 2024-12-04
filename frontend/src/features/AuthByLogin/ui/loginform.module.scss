@@ -17,6 +17,11 @@
     color: #333333;
     font-weight: 700;
   }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
   .or {
     font-size: 14px;
@@ -29,9 +34,9 @@
     &::before,
     &::after {
       content: "";
-      flex-grow: 1; /* Линия растягивается до максимальной доступной ширины */
+      flex-grow: 1;
       height: 1px;
-      background-color: #dcdcdc; /* Цвет линий */
+      background-color: #dcdcdc;
       margin-top: 4px;
     }
   }
