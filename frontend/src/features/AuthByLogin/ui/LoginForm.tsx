@@ -2,8 +2,11 @@ import styles from "./loginform.module.scss";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
 
 export const LoginForm = () => {
+  const nav = useNavigate();
+
   return (
     <div className={styles.content}>
       <h1 className={styles.title}>Авторизация</h1>
@@ -30,7 +33,12 @@ export const LoginForm = () => {
       <p className={styles.or}>или</p>
       <Button className="bg-[#FFCC02] rounded-[5px]">Войти с Яндекс ID</Button>
       <Button className="bg-[#0277FF] rounded-[5px]">Войти через VK ID</Button>
-      <p>Нет аккаунта? Зарегистрироваться</p>
+      <p className={styles.registerText}>
+        Нет аккаунта?
+        <span className={styles.link} onClick={() => nav("/login")}>
+          Зарегистрироваться
+        </span>
+      </p>
     </div>
   );
 };
