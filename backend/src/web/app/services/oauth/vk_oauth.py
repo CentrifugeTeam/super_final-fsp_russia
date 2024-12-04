@@ -32,7 +32,7 @@ class VKOAuth2(BaseOAuth2):
                          name='vk',
                          token_endpoint_auth_method='client_secret_post')
 
-        self.redirect_uri = 'https://centrifuge.tech/api/oauth/vk/callback'
+        self.redirect_uri = 'https://centrifugo.tech/api/oauth/vk/callback'
 
     async def get_access_token(
             self, code: str, code_verifier: str,
