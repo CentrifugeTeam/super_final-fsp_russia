@@ -57,12 +57,12 @@ async def vk_callback(request: Request, code: str,
     try:
         oauth2_response = await vk_oauth2.get_access_token(code, state, device_id)
     except GetAccessTokenError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='OAUTH2 error')
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     try:
         user_info = await vk_oauth2.get_user_info(oauth2_response.access_token)
-    except GetUserInfoError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='OAUTH2 error')
+    except GetUserInfoError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     user = await user_manager.create_vk_user(session, user_info, oauth2_response)
 
