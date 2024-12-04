@@ -13,19 +13,22 @@ export const RegistrationForm = () => {
     <div className={styles.content}>
       <h1 className={styles.title}>Регистрация</h1>
       <div className="items-center gap-1.5">
-        <Label htmlFor="login">Логин</Label>
+        <Label size={"text-lg"} htmlFor="login">Логин</Label>
         <Input type="text" id="login" placeholder="Логин" />
       </div>
       <div className="items-center gap-1.5">
-        <Label htmlFor="password">Пароль</Label>
+        <Label size={"text-lg"} htmlFor="password">Пароль</Label>
         <Input type="password" id="password" placeholder="Пароль" />
       </div>
       <div className="items-center gap-1.5">
-        <Label htmlFor="password">Повторите пароль</Label>
+        <Label size={"text-lg"} htmlFor="password">Повторите пароль</Label>
         <Input type="password" id="repeat_password" placeholder="Пароль" />
       </div>
       <Button>Зарегистрироваться</Button>
-      <p className="text-center text-s">или</p>
+
+
+			<p className={styles.or}>или</p>
+
       <Button className="bg-[#ffcc00] text-black" onClick={handleYandexLogin}>
         Войти с Яндекс ID
       </Button>
