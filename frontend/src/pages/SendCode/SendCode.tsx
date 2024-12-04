@@ -1,6 +1,6 @@
 import { BeatLoader } from "react-spinners";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom"; // Для извлечения строки запроса
+import { useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import styles from "./sendcode.module.scss";
 import { fetchYandexAuth } from "@/shared/api/auth";
@@ -28,7 +28,8 @@ export const SendCode = () => {
     } else {
       console.error("Code not found in URL");
     }
-  }, [code, mutation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [code]); // Убираем mutation из зависимостей
 
   return (
     <div className={styles.wrapper}>
