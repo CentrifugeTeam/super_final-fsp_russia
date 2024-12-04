@@ -26,7 +26,9 @@ export const LoginForm = () => {
       <h1 className={styles.title}>Вход</h1>
       <form onSubmit={handleSubmit}>
         <div className="items-center">
-          <Label size="text-lg" htmlFor="login">Логин</Label>
+          <Label size="text-lg" htmlFor="login">
+            Логин
+          </Label>
           <Input
             className="rounded-[5px]"
             type="text"
@@ -37,7 +39,9 @@ export const LoginForm = () => {
           />
         </div>
         <div className="items-center">
-          <Label size="text-lg" htmlFor="password">Пароль</Label>
+          <Label size="text-lg" htmlFor="password">
+            Пароль
+          </Label>
           <Input
             className="rounded-[5px]"
             type="password"
@@ -48,7 +52,7 @@ export const LoginForm = () => {
           />
         </div>
         <Button
-					size="auth"
+          size="auth"
           type="submit"
           className="bg-[#463ACB] hover:bg-[#3d33b0]"
           disabled={isLoading} // Отключаем кнопку, если идет загрузка
@@ -64,10 +68,15 @@ export const LoginForm = () => {
       )}
       <p className={styles.or}>или</p>
 
-      <Button size="auth" className="bg-[#FFCC02] text-[#333333] hover:bg-[#e1b400]">
+      <Button
+        size="auth"
+        className="bg-[#FFCC02] text-[#333333] hover:bg-[#e1b400]"
+      >
         Войти с Яндекс ID
       </Button>
-      <Button size="auth" className="bg-[#0277FF] hover:bg-[#0067dd]">Войти через VK ID</Button>
+      <Button size="auth" className="bg-[#0277FF] hover:bg-[#0067dd]">
+        Войти через VK ID
+      </Button>
       <p className={styles.registerText}>
         Нет аккаунта?
         <span className={styles.link} onClick={() => nav("/registration")}>
