@@ -21,11 +21,12 @@ r = APIRouter()
 logger = getLogger(__name__)
 
 
-@r.post("/yandex", description="Callback после входа в Yandex", responses={
+@r.get("/yandex", description="Callback после входа в Yandex", responses={
     status.HTTP_400_BAD_REQUEST:
         {"description": "OAUTH2 error"},
 }, response_model=TransportResponse)
 async def yandex_callback(request: Request, code: str,
+                          device_id: str,
                           session: AsyncSession = Depends(get_session),
                           strategy: JWTStrategy = Depends(backend.get_strategy),
                           ):
@@ -51,30 +52,24 @@ async def yandex_callback(request: Request, code: str,
 
 
 @r.get('/vk')
-async def vk_login(request: Request,
-                    code_challenge: str,
-                    device_id: str,
-                    state: str,
-                    ):
+async def vk_login(request: Request):
     """
     Получение ссылки для входа в VK
     :param request:
-    :param code_challenge:
-    :param device_id:
-    :param state:
     :return:
     """
-    url =  await vk_oauth2.get_authorization_url(redirect_uri=vk_oauth2.redirect_uri, code_challenge=token_urlsafe(), code_challenge_method='S256')
+    url = await vk_oauth2.get_authorization_url(redirect_uri=vk_oauth2.redirect_uri, code_challenge=token_urlsafe(),
+                                                code_challenge_method='S256')
     return RedirectResponse(url)
+
 
 @r.post("/vk/callback", description="Callback после входа в VK", responses={
     status.HTTP_400_BAD_REQUEST:
         {"description": "OAUTH2 error"},
-}, response_model=TransportResponse,deprecated=True)
+}, response_model=TransportResponse, deprecated=True)
 async def vk_callback(request: Request, code: str,
                       code_verifier: str,
                       device_id: str,
-                      state: str,
                       session: AsyncSession = Depends(get_session),
                       strategy: JWTStrategy = Depends(backend.get_strategy),
                       ):
@@ -85,7 +80,7 @@ async def vk_callback(request: Request, code: str,
     :return:
     """
     try:
-        oauth2_response = await vk_oauth2.get_access_token(code, code_verifier, device_id, state)
+        oauth2_response = await vk_oauth2.get_access_token(code, code_verifier, device_id)
     except GetAccessTokenError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='OAUTH2 error')
 

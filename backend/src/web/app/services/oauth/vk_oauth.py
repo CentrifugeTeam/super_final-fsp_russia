@@ -32,12 +32,11 @@ class VKOAuth2(BaseOAuth2):
                          name='vk',
                          token_endpoint_auth_method='client_secret_post')
 
-        self.redirect_uri = '/auth/vk/callback'
+        self.redirect_uri = 'https://centrifuge.tech/api/oauth/vk/callback'
 
     async def get_access_token(
             self, code: str, code_verifier: str,
             device_id: str,
-            state: str,
     ) -> OAuth2Response:
         """
         Requests an access token using the authorization code obtained
@@ -63,8 +62,6 @@ class VKOAuth2(BaseOAuth2):
                 "code": code,
                 "code_verifier": code_verifier,
                 'device_id': device_id,
-                'rredirection_uri': self.redirect_uri,
-                'state': state,
             }
 
             request, auth = self.build_request(

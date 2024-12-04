@@ -41,7 +41,7 @@ class BaseOAuth2(_BaseOAuth2):
             client_secret: str,
             authorize_endpoint: str,
             access_token_endpoint: str,
-            user_info_endpoint:str,
+            user_info_endpoint: str,
             refresh_token_endpoint: Optional[str] = None,
             revoke_token_endpoint: Optional[str] = None,
             *,
@@ -87,6 +87,7 @@ class BaseOAuth2(_BaseOAuth2):
             data = {
                 "grant_type": "authorization_code",
                 "code": code,
+                **kwargs
             }
 
             if code_verifier:
