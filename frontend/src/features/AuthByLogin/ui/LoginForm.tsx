@@ -1,10 +1,10 @@
-import styles from "./loginform.module.scss"; // Импорт стилей для формы
-import { Button } from "@/components/ui/button"; // Импорт кнопки
-import { Input } from "@/components/ui/input"; // Импорт поля ввода
-import { Label } from "@/components/ui/label"; // Импорт метки для полей
-import { useNavigate } from "react-router-dom"; // Импорт хука для навигации
-import { useState } from "react"; // Импорт хука состояния
-import { useLoginMutation } from "@/features/AuthByLogin/model/authByLogin"; // Импорт хука для мутации авторизации
+import styles from "./loginform.module.scss";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useLoginMutation } from "@/features/AuthByLogin/model/authByLogin";
 
 export const LoginForm = () => {
   const [login, setLogin] = useState("");
