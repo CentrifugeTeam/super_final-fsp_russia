@@ -1,6 +1,7 @@
 from secrets import token_urlsafe
 from typing import Iterable, Any, Optional
 
+from fastapi import UploadFile
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_sqlalchemy_toolkit.model_manager import CreateSchemaT, ModelT
 from fastapi_users.password import PasswordHelperProtocol, PasswordHelper
@@ -15,6 +16,9 @@ from ..schemas.users import UserCredentials
 from ..services.oauth import YandexUserInfo
 from ..services.oauth.base import OAuth2Response
 from ..services.oauth.vk_oauth import VKUserInfo
+from ..managers.files import _save_file_to_static
+
+default_user_photo_url = '/staticfiles/img/user.png'
 
 
 class UsersManager(BaseManager):
@@ -29,23 +33,41 @@ class UsersManager(BaseManager):
             self.password_helper = password_helper  # pragma: no cover
         super().__init__(User, default_ordering)
 
-    async def create(
+    async def create_user(
             self,
             session: AsyncSession,
             in_obj: CreateSchemaT | None = None,
-            refresh_attribute_names: Iterable[str] | None = None,
+            file: UploadFile | None = None,
             *,
             commit: bool = True,
             **attrs: Any,
     ) -> ModelT:
         async with session.begin():
             in_obj.password = self.password_helper.hash(in_obj.password)
-            user = await super().create(session, in_obj, commit=False, **attrs)
+            create_data = in_obj.model_dump()
+            create_data.update({'photo_url': default_user_photo_url})
+
+            # Добавляем дефолтные значения полей для валидации уникальности
+            for field, default in self.defaults.items():
+                if field not in create_data:
+                    create_data[field] = default
+
+            await self.run_db_validation(session, in_obj=create_data)
+            if file is not None:
+                try:
+                    photo_url = await _save_file_to_static(file)
+                    create_data['photo_url'] = photo_url
+                except Exception as e:
+                    pass
+
+            db_obj = self.model(**create_data)
+            session.add(db_obj)
+            await self.save(session, commit=commit)
+            await session.refresh(db_obj)
+            return db_obj
             # stmt = select(Role).where(Role.name == 'role:costumer')
             # costumer_role = await session.scalar(stmt)
             # user.roles = [costumer_role]
-
-        return user
 
     async def create_yandex_user(
             self,
@@ -70,7 +92,6 @@ class UsersManager(BaseManager):
 
         await session.commit()
         return user
-
 
     async def create_vk_user(
             self,
@@ -115,4 +136,3 @@ class UsersManager(BaseManager):
 
     def _generate_partial_token(self):
         return token_urlsafe()
-

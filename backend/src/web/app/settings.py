@@ -7,3 +7,5 @@ class Settings(_Settings):
     """
     YANDEX_CLIENT_ID: str
     YANDEX_CLIENT_SECRET: str
+    VK_CLIENT_ID: str
+    VK_CLIENT_SECRET: str

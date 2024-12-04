@@ -24,8 +24,8 @@ class VKUserInfo(BaseModel):
 class VKOAuth2(BaseOAuth2):
 
     def __init__(self):
-        super().__init__(settings.YANDEX_CLIENT_ID, settings.YANDEX_CLIENT_SECRET,
-                         "https://oauth.yandex.ru/authorize",
+        super().__init__(settings.VK_CLIENT_ID, settings.YANDEX_CLIENT_SECRET,
+                         "https://id.vk.com/authorize",
                          "https://id.vk.com/oauth2/auth ",
                          'https://id.vk.com/oauth2/user_info ',
                          refresh_token_endpoint="https://oauth.yandex.ru/token",

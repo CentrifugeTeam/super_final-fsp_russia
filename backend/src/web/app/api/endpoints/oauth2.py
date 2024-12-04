@@ -1,5 +1,8 @@
+from secrets import token_urlsafe
+
 from fastapi import APIRouter, Request, Depends, HTTPException, status
 from httpx_oauth.oauth2 import GetAccessTokenError
+from fastapi.responses import RedirectResponse
 from logging import getLogger
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,7 +50,24 @@ async def yandex_callback(request: Request, code: str,
     return await backend.login(strategy, user)
 
 
-@r.post("/vk", description="Callback после входа в VK", responses={
+@r.get('/vk')
+async def vk_login(request: Request,
+                    code_challenge: str,
+                    device_id: str,
+                    state: str,
+                    ):
+    """
+    Получение ссылки для входа в VK
+    :param request:
+    :param code_challenge:
+    :param device_id:
+    :param state:
+    :return:
+    """
+    url =  await vk_oauth2.get_authorization_url(redirect_uri=vk_oauth2.redirect_uri, code_challenge=token_urlsafe(), code_challenge_method='S256')
+    return RedirectResponse(url)
+
+@r.post("/vk/callback", description="Callback после входа в VK", responses={
     status.HTTP_400_BAD_REQUEST:
         {"description": "OAUTH2 error"},
 }, response_model=TransportResponse,deprecated=True)
@@ -59,7 +79,7 @@ async def vk_callback(request: Request, code: str,
                       strategy: JWTStrategy = Depends(backend.get_strategy),
                       ):
     """
-    Callback после входа в Yandex и получение refresh и access токена пользователя
+    Callback после входа в VK и получение refresh и access токена пользователя
     :param request:
     :param code:
     :return:
