@@ -21,12 +21,11 @@ r = APIRouter()
 logger = getLogger(__name__)
 
 
-@r.get("/yandex", description="Callback после входа в Yandex", responses={
+@r.post("/yandex", description="Callback после входа в Yandex", responses={
     status.HTTP_400_BAD_REQUEST:
         {"description": "OAUTH2 error"},
 }, response_model=TransportResponse)
 async def yandex_callback(request: Request, code: str,
-                          device_id: str,
                           session: AsyncSession = Depends(get_session),
                           strategy: JWTStrategy = Depends(backend.get_strategy),
                           ):
@@ -63,7 +62,7 @@ async def vk_login(request: Request):
     return RedirectResponse(url)
 
 
-@r.post("/vk/callback", description="Callback после входа в VK", responses={
+@r.get("/vk/callback", description="Callback после входа в VK", responses={
     status.HTTP_400_BAD_REQUEST:
         {"description": "OAUTH2 error"},
 }, response_model=TransportResponse, deprecated=True)
