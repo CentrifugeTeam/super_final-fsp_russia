@@ -113,7 +113,7 @@ class BaseOAuth2(_BaseOAuth2):
             return model.model_validate_json(response.content)
         except ValidationError as e:
             message = "Invalid JSON content"
-            raise exc_class(message, response) from e
+            raise exc_class(str(response.content), response) from e
 
     async def refresh_token(self, refresh_token: str):
         """
