@@ -1,3 +1,7 @@
+import base64
+import hashlib
+import os
+import re
 from secrets import token_urlsafe
 
 from fastapi import APIRouter, Request, Depends, HTTPException, status
@@ -24,8 +28,13 @@ async def vk_login(request: Request):
     :param request:
     :return:
     """
-    url = await vk_oauth2.get_authorization_url(redirect_uri=vk_oauth2.redirect_uri, code_challenge=token_urlsafe(),
-                                                code_challenge_method='S256')
+    code_verifier = base64.urlsafe_b64encode(os.urandom(40)).decode('utf-8')
+    code_verifier = re.sub('[^a-zA-Z0-9]+', '', code_verifier)
+    code_challenge = hashlib.sha256(code_verifier.encode('utf-8')).digest()
+    code_challenge = base64.urlsafe_b64encode(code_challenge).decode('utf-8')
+    code_challenge = code_challenge.replace('=', '')
+    url = await vk_oauth2.get_authorization_url(redirect_uri=vk_oauth2.redirect_uri, code_challenge=code_challenge,
+                                                code_challenge_method='S256', state=code_verifier)
     return RedirectResponse(url)
 
 
@@ -34,7 +43,7 @@ async def vk_login(request: Request):
         {"description": "OAUTH2 error"},
 }, response_model=TransportResponse)
 async def vk_callback(request: Request, code: str,
-                      code_verifier: str,
+                      state: str,
                       device_id: str,
                       session: AsyncSession = Depends(get_session),
                       strategy: JWTStrategy = Depends(backend.get_strategy),
@@ -46,7 +55,7 @@ async def vk_callback(request: Request, code: str,
     :return:
     """
     try:
-        oauth2_response = await vk_oauth2.get_access_token(code, code_verifier, device_id)
+        oauth2_response = await vk_oauth2.get_access_token(code, state, device_id)
     except GetAccessTokenError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='OAUTH2 error')
 
