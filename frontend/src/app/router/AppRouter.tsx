@@ -18,7 +18,7 @@ export const AppRouter = () => {
       {/* Другие маршруты */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/registration" element={<RegistrationPage />} />
-      <Route path="/auth_loading" element={<SendCode />} />
+      <Route path="/auth_loading/:code" element={<SendCode />} />
       {/* Если путь не определен, перенаправляем на /registration */}
       <Route path="*" element={<Navigate to="/registration" replace />} />
     </Route>
