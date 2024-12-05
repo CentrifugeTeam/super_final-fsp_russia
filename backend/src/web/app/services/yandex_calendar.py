@@ -1,48 +1,54 @@
 import uuid
 from datetime import datetime, timedelta
 
-from caldav import DAVClient, Calendar
-import icalendar
+import aiofiles
+from icalendar import Calendar, Event, Alarm
+
+from ..conf import BASE_PATH
+from ..exceptions import FileDoesntSave
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 class YandexCalendar:
     """
-    Yandex Calendar API
+    Yandex Calendar
     """
 
-    def __init__(self, email: str, password: str):
-        self.client = DAVClient(url="https://caldav.yandex.ru/", username=email, password=password)
+    def create_calendar(self):
+        calendar = Calendar()
+        calendar.add('prodid', '-//Yandex.ru//NONSGML CalDAV Server//RU')
+        calendar.add('version', '2.0')
+        return calendar
 
-    def get_principal(self, username, leg_token):
-        client = DAVClient(url="https://caldav.yandex.ru/", username=username, password=leg_token)
-        principal = client.principal()
-        # my_principal = get_principal(response['default_email'], 'gsxsyriilompmelx')
-        # return principal
-
-    def add_event(self, calendar: Calendar, title: str, start: datetime, end: datetime):
-
-        caldata = icalendar.Calendar()
-        caldata.add('prodid', '-//Yandex.ru//NONSGML CalDAV Server//RU')
-        caldata.add('version', '2.0')
-        event = icalendar.Event()
+    def add_event_to_calendar(self, calendar: Calendar, title: str, start: datetime, end: datetime,
+                              description: str, location: str):
+        event = Event()
         uid = uuid.uuid1()
         event.add('summary', title)
         event.add('dtstamp', start)
         event.add('dtstart', start)
         event.add('dtend', end)
         event.add('uid', uid)
-        event.add('description', 'Event created by Yandex.ru CalDAV Server')
-        event.add('location', 'Yandex.ru')
+        event.add('description', description)
+        event.add('location', location)
         # event.add('status', 'CONFIRMED')
-        caldata.add_component(event)
-
-        alarm = icalendar.Alarm()
+        alarm = Alarm()
         alarm.add('action', 'DISPLAY')
-        alarm.add('trigger', timedelta(minutes=-1))
+        alarm.add('trigger', timedelta(minutes=-5))
         alarm.add('summary', 'Reminder')
         event.add_component(alarm)
+        calendar.add_component(event)
 
-        attendees = [self.client.principal().get_vcal_address()]
-        calendar.save_with_invites(caldata, attendees)
+    async def save_calendar_to_staticfiles(self, calendar: Calendar, filename: str):
+        url = 'calendars/' + filename
+        filename = BASE_PATH / 'static' / url
+        try:
+            async with aiofiles.open(filename, 'wb') as f:
+                await f.write(calendar.to_ical())
+        except Exception as e:
+            logger.exception('Icalendar failed to save to staticfiles', exc_info=e)
+            raise FileDoesntSave from e
 
-
+        return f'/staticfiles/{url}'
