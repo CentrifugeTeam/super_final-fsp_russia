@@ -1,24 +1,35 @@
 import { BeatLoader } from "react-spinners";
 import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom"; // Импортируем useNavigate
+import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import styles from "./sendcode.module.scss";
 import { fetchYandexAuth } from "@/shared/api/auth";
+import { useDispatch } from "react-redux";
+import { login } from "@/app/redux/slices/authSlice";
 
 export const SendCode = () => {
   const location = useLocation(); // Получаем объект location
-  const navigate = useNavigate(); // Получаем функцию для навигации
+  const navigate = useNavigate(); // Для перенаправления
+  const dispatch = useDispatch(); // Для работы с Redux
 
   // Извлекаем параметр code из строки запроса
   const searchParams = new URLSearchParams(location.search);
   const code = searchParams.get("code"); // Получаем значение параметра code
 
+  // Мутация для получения токенов
   const mutation = useMutation({
     mutationFn: fetchYandexAuth,
     onSuccess: (data) => {
-      console.log("Successfully authenticated:", data);
-      // После успешной аутентификации перенаправляем на защищенную страницу
-      navigate("/profile"); // Перенаправление на страницу профиля
+      // Сохраняем токены в Redux
+      dispatch(
+        login({
+          accessToken: data.access_token,
+          refreshToken: data.refresh_token,
+        })
+      );
+
+      // Перенаправляем пользователя на страницу профиля
+      navigate("/profile");
     },
     onError: (error) => {
       console.error("Error during authentication:", error);
@@ -32,7 +43,7 @@ export const SendCode = () => {
       console.error("Code not found in URL");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [code]);
+  }, [code]); // Убираем mutation из зависимостей
 
   return (
     <div className={styles.wrapper}>
@@ -41,10 +52,10 @@ export const SendCode = () => {
           <BeatLoader color="#ffffff" margin={10} size={39} />
         )}
         {mutation.status === "success" && (
-          <p className={styles.title}> Successfully authenticated</p>
+          <p className={styles.title}>Успешная авторизация</p>
         )}
         {mutation.status === "error" && (
-          <p className={styles.title}>Error occurred during authentication</p>
+          <p className={styles.title}>Ошибка при авторизации</p>
         )}
       </div>
     </div>
