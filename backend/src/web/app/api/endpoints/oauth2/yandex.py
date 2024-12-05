@@ -14,7 +14,7 @@ r = APIRouter()
 yandex_oauth2 = YandexOAuth2()
 
 
-@r.post("/", description="Callback после входа в Yandex", responses={
+@r.post("", description="Callback после входа в Yandex", responses={
     status.HTTP_400_BAD_REQUEST:
         {"description": "OAUTH2 error"},
 }, response_model=TransportResponse)

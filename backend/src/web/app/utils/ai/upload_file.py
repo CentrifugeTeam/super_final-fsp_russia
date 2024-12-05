@@ -5,8 +5,7 @@ from uuid import uuid4
 import aiofiles
 from gigachat import GigaChat
 from gigachat.models import Image
-from openai.types.chat import ChatCompletion
-
+from gigachat.models import ChatCompletion
 from ...conf import BASE_PATH
 from ...exceptions import FileDoesntSave
 from logging import getLogger
@@ -18,9 +17,20 @@ default_prompt = 'сгенерируй изображение без людей,
 class IAFile:
 
     def __init__(self, model: GigaChat):
+        """
+        Инициализация класса IAFile.
+
+        :param model: Модель GigaChat для работы с изображениями.
+        """
         self.model = model
 
     async def prompt_for_file(self, prompt: str):
+        """
+        Генерация изображения по заданному prompt.
+
+        :param prompt: Запрос для генерации изображения.
+        :return: URL изображения.
+        """
         response = await self.model.achat({
             "messages": [
                 {"role": "user", "content": prompt}], "function_call": "auto"})
@@ -29,11 +39,24 @@ class IAFile:
         return await self.save_to_file(file_id, image)
 
     def get_file_id_from_response(self, response: ChatCompletion):
+        """
+        Получение идентификатора файла из ответа.
+
+        :param response: Ответ от модели GigaChat.
+        :return: Идентификатор файла.
+        """
         content = response.choices[0].message.content
         found = re.findall(r'(\w+)="(\S+)"', content)
         return found[0][1]
 
     async def save_to_file(self, url: str, file: Image):
+        """
+        Сохранение изображения в файл.
+
+        :param url: URL изображения.
+        :param file: Объект изображения.
+        :return: URL сохраненного изображения.
+        """
         url = f"{uuid4()}_{url}.jpg"
         filename = BASE_PATH / 'static' / url
         try:

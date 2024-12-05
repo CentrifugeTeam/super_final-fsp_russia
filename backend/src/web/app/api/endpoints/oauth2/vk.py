@@ -45,6 +45,7 @@ async def vk_login(request: Request):
 async def vk_callback(request: Request, code: str,
                       state: str,
                       device_id: str,
+                      code_verifier: str,
                       session: AsyncSession = Depends(get_session),
                       strategy: JWTStrategy = Depends(backend.get_strategy),
                       ):

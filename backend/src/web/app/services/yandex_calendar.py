@@ -1,5 +1,4 @@
 import uuid
-from calendar import calendar
 from datetime import datetime, timedelta
 
 from caldav import DAVClient, Calendar
@@ -21,6 +20,7 @@ class YandexCalendar:
         # return principal
 
     def add_event(self, calendar: Calendar, title: str, start: datetime, end: datetime):
+
         caldata = icalendar.Calendar()
         caldata.add('prodid', '-//Yandex.ru//NONSGML CalDAV Server//RU')
         caldata.add('version', '2.0')
@@ -44,3 +44,5 @@ class YandexCalendar:
 
         attendees = [self.client.principal().get_vcal_address()]
         calendar.save_with_invites(caldata, attendees)
+
+
