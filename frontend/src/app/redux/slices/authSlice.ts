@@ -7,9 +7,9 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  accessToken: null,
-  refreshToken: null,
-  isAuthenticated: false,
+  accessToken: localStorage.getItem("accessToken") || null,
+  refreshToken: localStorage.getItem("refreshToken") || null,
+  isAuthenticated: !!localStorage.getItem("accessToken"),
 };
 
 const authSlice = createSlice({
@@ -23,11 +23,19 @@ const authSlice = createSlice({
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
       state.isAuthenticated = true;
+
+      // Сохраняем токены в localStorage
+      localStorage.setItem("accessToken", action.payload.accessToken);
+      localStorage.setItem("refreshToken", action.payload.refreshToken);
     },
     logout(state) {
       state.accessToken = null;
       state.refreshToken = null;
       state.isAuthenticated = false;
+
+      // Удаляем токены из localStorage
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
     },
     updateTokens(
       state,
@@ -35,6 +43,10 @@ const authSlice = createSlice({
     ) {
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
+
+      // Обновляем токены в localStorage
+      localStorage.setItem("accessToken", action.payload.accessToken);
+      localStorage.setItem("refreshToken", action.payload.refreshToken);
     },
   },
 });
