@@ -10,6 +10,7 @@ import { RegistrationPage } from "@/pages/RegistrationPage";
 import { SendCode } from "@/pages/SendCode";
 import { ProtectedRoute } from "@/features/ProtectedRoute"; // Импортируем защищенный маршрут
 import { ProfilePage } from "@/pages/ProfilePage";
+import SendCodeVk from "@/pages/SendCodeVk/SendCodeVk";
 
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
@@ -18,6 +19,7 @@ export const AppRouter = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/registration" element={<RegistrationPage />} />
       <Route path="/auth_loading" element={<SendCode />} />
+      <Route path="/auth_loading_vk" element={<SendCodeVk />} />
 
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
