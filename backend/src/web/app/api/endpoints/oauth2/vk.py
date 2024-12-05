@@ -21,24 +21,7 @@ r = APIRouter()
 vk_oauth2 = VKOAuth2()
 
 
-@r.get('/')
-async def vk_login(request: Request):
-    """
-    Получение ссылки для входа в VK
-    :param request:
-    :return:
-    """
-    code_verifier = base64.urlsafe_b64encode(os.urandom(40)).decode('utf-8')
-    code_verifier = re.sub('[^a-zA-Z0-9]+', '', code_verifier)
-    code_challenge = hashlib.sha256(code_verifier.encode('utf-8')).digest()
-    code_challenge = base64.urlsafe_b64encode(code_challenge).decode('utf-8')
-    code_challenge = code_challenge.replace('=', '')
-    url = await vk_oauth2.get_authorization_url(redirect_uri=vk_oauth2.redirect_uri, code_challenge=code_challenge,
-                                                code_challenge_method='S256', state=code_verifier)
-    return RedirectResponse(url)
-
-
-@r.get("/callback", description="Callback после входа в VK", responses={
+@r.post("/callback", description="Callback после входа в VK", responses={
     status.HTTP_400_BAD_REQUEST:
         {"description": "OAUTH2 error"},
 }, response_model=TransportResponse)
@@ -56,13 +39,9 @@ async def vk_callback(request: Request, code: str,
     :return:
     """
     try:
-        oauth2_response = await vk_oauth2.get_access_token(code, state, device_id)
-    except GetAccessTokenError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-
-    try:
+        oauth2_response = await vk_oauth2.get_vk_access_token(code, code_verifier, device_id, state)
         user_info = await vk_oauth2.get_user_info(oauth2_response.access_token)
-    except GetUserInfoError as e:
+    except (GetAccessTokenError, GetUserInfoError) as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     user = await user_manager.create_vk_user(session, user_info, oauth2_response)

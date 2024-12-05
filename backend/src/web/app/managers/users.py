@@ -99,7 +99,23 @@ class UsersManager(BaseManager):
             user_info: VKUserInfo,
             tokens: OAuth2Response,
     ):
-        pass
+        user_info = user_info.user
+        stmt = self.assemble_stmt(username=user_info.email, options=[joinedload(User.oauth_accounts)])
+        user = await session.scalar(stmt)
+        if user:
+            return user
+
+        user = User(username=user_info, password=None, first_name=user_info.first_name, middle_name=None,
+                    last_name=user_info.last_name,
+                    email=user_info.email,
+                    photo_url=user_info.avatar)
+        account = OAuthAccount(provider='yandex', access_token=tokens.access_token,
+                               refresh_token=tokens.refresh_token)
+        user.oauth_accounts = [account]
+        session.add(user)
+
+        await session.commit()
+        return user
 
     async def authenticate(self, session: AsyncSession, credentials: UserCredentials):
         stmt = select(User).where(credentials.login == User.username)
