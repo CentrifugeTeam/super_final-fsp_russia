@@ -63,8 +63,8 @@ class IAFile:
             async with aiofiles.open(filename, 'wb') as f:
                 await f.write(base64.b64decode(file.content))
 
+            return f'/staticfiles/{url}'
+
         except Exception as e:
             logger.exception('Downloaded file with url %s from gigachat', url, exc_info=e)
             raise FileDoesntSave from e
-        finally:
-            await f.close()
