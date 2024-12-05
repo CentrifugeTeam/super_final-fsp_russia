@@ -14,7 +14,7 @@ from ...utils.users import user_manager, backend
 class UsersRouter(CrudAPIRouter):
 
     def __init__(self):
-        super().__init__(ReadUser, user_manager, CreateUser, UpdateUser)
+        super().__init__(ReadUser, user_manager, CreateUser, UpdateUser, resource_identifier='username')
 
     def _create(self):
         create_schema = self.create_schema
@@ -59,6 +59,12 @@ class UsersRouter(CrudAPIRouter):
 
     def _register_routes(self) -> list[Callable[..., Any]]:
         return [self._create, self._get_one, self._get_all, self._update]
+
+    def get_or_404(self):
+        async def wrapper(username: str, session: AsyncSession = Depends(self.get_session)):
+            return await self.manager.get_or_404(session, username=username)
+
+        return wrapper
 
 
 r = UsersRouter()

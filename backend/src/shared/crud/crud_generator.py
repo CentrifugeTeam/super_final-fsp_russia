@@ -57,11 +57,7 @@ class CRUDTemplate(APIRouter):
     def _delete_all(self) -> Callable[..., Any]:
         raise NotImplementedError
 
-    def get_or_404(self):
-        async def wrapper(id: int, session: AsyncSession = Depends(self.get_session)):
-            return self.manager.get_or_404(session, id=id)
 
-        return wrapper
 
     def _register_routes(self) -> list[Callable[..., Any]]:
         return [

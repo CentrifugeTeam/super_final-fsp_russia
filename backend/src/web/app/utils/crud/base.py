@@ -18,10 +18,14 @@ from typing import TypeVar
 
 Resource = TypeVar('Resource')
 
+
 class CrudAPIRouter(CRUDTemplate):
 
     def __init__(self, schema: Type[BaseModel], manager: ModelManager,
-                 create_schema: Type[BaseModel], update_schema: Type[BaseModel], **kwargs: Any):
+                 create_schema: Type[BaseModel], update_schema: Type[BaseModel],
+                 resource_identifier: str = 'id',
+                 **kwargs: Any):
+        self.resource_identifier = resource_identifier
         super().__init__(schema, manager, get_session, create_schema, update_schema, **kwargs)
 
     def _get_all(self):
@@ -35,13 +39,13 @@ class CrudAPIRouter(CRUDTemplate):
 
     def _get_one(self):
         @self.get(
-            path='/{id}',
+            '/{%s}' % self.resource_identifier,
             response_model=self.schema,
             responses={**not_found_response}
 
         )
-        async def func(request: Request, id: int, session: AsyncSession = Depends(self.get_session)):
-            return await self.manager.get_or_404(session, id=id)
+        async def func(request: Request, response=Depends(self.get_or_404())):
+            return response
 
     def _create(self):
         create_schema = self.create_schema
@@ -59,15 +63,15 @@ class CrudAPIRouter(CRUDTemplate):
         update_schema = self.update_schema
 
         @self.patch(
-            '/{id}',
+            '/{%s}' % self.resource_identifier,
             response_model=self.schema,
             dependencies=[Depends(authenticator.get_user())],
             responses={**missing_token_or_inactive_user_response, **forbidden_response
                        }
         )
-        async def func(request: Request, id: int, scheme: update_schema,
+        async def func(request: Request, scheme: update_schema,
+                       model=Depends(self.get_or_404()),
                        session: AsyncSession = Depends(self.get_session)):
-            model = await self.manager.get_or_404(session, id=id)
             return await self.manager.update(session, model, scheme)
 
     def _delete_all(self, *args: Any, **kwargs: Any):
@@ -85,13 +89,17 @@ class CrudAPIRouter(CRUDTemplate):
 
     def _delete_one(self, *args: Any, **kwargs: Any):
         @self.delete(
-            '/{id}',
+            '/{%s}' % self.resource_identifier,
             status_code=status.HTTP_204_NO_CONTENT,
             dependencies=[Depends(authenticator.get_user(superuser=True))],
             responses={**auth_responses, **not_found_response}
         )
-        async def route(id: int, session: AsyncSession = Depends(self.get_session)):
-            obj_in_db = await self.manager.get_or_404(session, id=id)
+        async def route(obj_in_db=Depends(self.get_or_404()), session: AsyncSession = Depends(self.get_session)):
             await self.manager.delete(session, obj_in_db)
             return
 
+    def get_or_404(self):
+        async def wrapper(id: int, session: AsyncSession = Depends(self.get_session)):
+            return await self.manager.get_or_404(session, id=id)
+
+        return wrapper

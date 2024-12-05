@@ -6,6 +6,8 @@ from fastapi import UploadFile, File
 from fastapi_sqlalchemy_toolkit import make_partial_model
 from fastapi_permissions import Authenticated, Deny, Allow, All
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
+
+
 class BaseUser(BaseModel):
     """
     Это базовый класс для данных пользователя. Он содержит следующие поля:
@@ -56,7 +58,11 @@ class ReadUser(BaseUser):
     # is_superuser: bool
 
 
-UpdateUser = make_partial_model(CreateUser)
+_UpdateUser = make_partial_model(BaseUser)
+
+
+class UpdateUser(_UpdateUser):
+    photo_url: str | None
 
 
 class UserCredentials(BaseModel):
