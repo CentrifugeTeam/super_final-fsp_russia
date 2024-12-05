@@ -7,7 +7,10 @@ import { useState, useEffect } from "react";
 import { useLoginMutation } from "@/features/AuthByLogin/model/authByLogin";
 import { useDispatch } from "react-redux";
 import { login } from "@/app/redux/slices/authSlice";
-import { validateLoginLength, validatePasswordLength } from "../../Registration/utils/validators";
+// import {
+//   validateLoginLength,
+//   validatePasswordLength,
+// } from "@/features/Registration/utils/validators";
 
 export const LoginForm = () => {
   const [loginInput, setLogin] = useState("");
@@ -19,7 +22,7 @@ export const LoginForm = () => {
   // Состояния для ошибок
   const [errors, setErrors] = useState({
     login: "",
-    password: ""
+    password: "",
   });
 
   // Проверяем, идет ли мутация
@@ -30,18 +33,18 @@ export const LoginForm = () => {
     e.preventDefault();
 
     // Проверка длины логина и пароля
-    const loginValid = validateLoginLength(loginInput);
-    const passwordValid = validatePasswordLength(password);
+    // const loginValid = validateLoginLength(loginInput);
+    // const passwordValid = validatePasswordLength(password);
 
-		if (!loginValid || !passwordValid) {
+    if (!loginValid || !passwordValid) {
       if (!loginValid) setLogin("");
       if (!passwordValid) setPassword("");
     }
 
     // Обновляем ошибки
     setErrors({
-      login: loginValid ? "" : "Логин менее 1 символ",
-      password: passwordValid ? "" : "Пароль менее 6 символов"
+      login: loginValid ? "" : "Логин менее 1 символа",
+      password: passwordValid ? "" : "Пароль менее 6 символов",
     });
 
     // Если есть ошибки, не отправляем форму
