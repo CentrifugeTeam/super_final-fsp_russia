@@ -72,14 +72,14 @@ export const LoginForm = () => {
             id="password"
             placeholder="Пароль"
             value={password}
-            onChange={(e) => setPassword(e.target.value)} // Обновляем состояние пароля при изменении
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <Button
           size="auth"
           type="submit"
           className="bg-[#463ACB] hover:bg-[#3d33b0]"
-          disabled={isLoading} // Отключаем кнопку, если идет загрузка
+          disabled={isLoading}
         >
           {isLoading ? "Загрузка..." : "Войти"}
         </Button>
