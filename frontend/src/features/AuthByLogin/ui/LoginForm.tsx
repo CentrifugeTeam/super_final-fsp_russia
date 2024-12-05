@@ -5,8 +5,8 @@ import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useLoginMutation } from "@/features/AuthByLogin/model/authByLogin";
-import { useDispatch } from "react-redux"; // Для dispatch в Redux
-import { login } from "@/app/redux/slices/authSlice"; // Действие login для обновления состояния
+import { useDispatch } from "react-redux";
+import { login } from "@/app/redux/slices/authSlice";
 
 export const LoginForm = () => {
   const [loginInput, setLogin] = useState("");
@@ -14,6 +14,11 @@ export const LoginForm = () => {
   const { mutate, status, error, data } = useLoginMutation(); // data - это результат успешного запроса
   const nav = useNavigate();
   const dispatch = useDispatch();
+
+  const handleYandexLogin = () => {
+    window.location.href =
+      "https://oauth.yandex.ru/authorize?force_confirm=1&client_id=91926807198745df874fea559c810a19&response_type=code&redirect_uri=https://centrifugo.tech/auth_loading";
+  };
 
   // Обработчик отправки формы
   const handleSubmit = (e: React.FormEvent) => {
@@ -76,7 +81,7 @@ export const LoginForm = () => {
           className="bg-[#463ACB] hover:bg-[#3d33b0]"
           disabled={isLoading} // Отключаем кнопку, если идет загрузка
         >
-          {isLoading ? "Загрузка..." : "Войти"} {/* Текст на кнопке */}
+          {isLoading ? "Загрузка..." : "Войти"}
         </Button>
       </form>
       {/* Если есть ошибка, отображаем сообщение об ошибке */}
@@ -90,6 +95,7 @@ export const LoginForm = () => {
       <Button
         size="auth"
         className="bg-[#FFCC02] text-[#333333] hover:bg-[#e1b400]"
+        onClick={handleYandexLogin}
       >
         Войти с Яндекс ID
       </Button>
