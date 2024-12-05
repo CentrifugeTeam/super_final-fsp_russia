@@ -23,6 +23,7 @@ async def _save_file_to_static(file: UploadFile):
         logger.exception('Downloaded file with size %d', file.size, exc_info=e)
         raise FileDoesntSave from e
     finally:
+        await f.close()
         await file.close()
 
     return f'/staticfiles/{url}'
