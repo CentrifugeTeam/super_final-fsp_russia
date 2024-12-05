@@ -23,6 +23,7 @@ export const RegistrationForm: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState(""); // Добавили новое состояние
+  const [profilePicture, setProfilePicture] = useState<File | null>(null); // State for profile picture
 
   // Состояние для отслеживания текущего шага
   const [step, setStep] = useState(1); // 1 - шаг с именем, фамилией и отчеством, 2 - шаг с логином и паролем
@@ -46,8 +47,7 @@ export const RegistrationForm: React.FC = () => {
         last_name: surname,
         email: email,
         password: password,
-        // Передаем пустой файл, если фото не добавлено
-        photo: new File([], ""),
+        photo: profilePicture || new File([], ""), // Send the profile picture or an empty file
       };
 
       // Отправляем данные на сервер
@@ -78,6 +78,7 @@ export const RegistrationForm: React.FC = () => {
           onNameChange={setName}
           onSurnameChange={setSurname}
           onPatronymicChange={setPatronymic}
+          onProfilePictureChange={setProfilePicture} // Handle profile picture change
         />
       ) : (
         <RegistrationStep2
