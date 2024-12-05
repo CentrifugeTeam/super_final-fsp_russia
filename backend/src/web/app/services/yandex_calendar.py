@@ -13,10 +13,15 @@ logger = getLogger(__name__)
 
 class YandexCalendar:
     """
-    Yandex Calendar
+    Класс для работы с календарем Яндекса.
     """
 
     def create_calendar(self):
+        """
+        Создает новый календарь.
+
+        :return: Объект календаря.
+        """
         calendar = Calendar()
         calendar.add('prodid', '-//Yandex.ru//NONSGML CalDAV Server//RU')
         calendar.add('version', '2.0')
@@ -24,6 +29,16 @@ class YandexCalendar:
 
     def add_event_to_calendar(self, calendar: Calendar, title: str, start: datetime, end: datetime,
                               description: str, location: str):
+        """
+        Добавляет событие в календарь.
+
+        :param calendar: Объект календаря.
+        :param title: Название события.
+        :param start: Начало события.
+        :param end: Конец события.
+        :param description: Описание события.
+        :param location: Место проведения события.
+        """
         event = Event()
         uid = uuid.uuid1()
         event.add('summary', title)
@@ -42,6 +57,13 @@ class YandexCalendar:
         calendar.add_component(event)
 
     async def save_calendar_to_staticfiles(self, calendar: Calendar, filename: str):
+        """
+        Сохраняет календарь в файл.
+
+        :param calendar: Объект календаря.
+        :param filename: Имя файла.
+        :return: URL файла.
+        """
         url = 'calendars/' + filename
         filename = BASE_PATH / 'static' / url
         try:
