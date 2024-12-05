@@ -7,10 +7,10 @@ import { useState, useEffect } from "react";
 import { useLoginMutation } from "@/features/AuthByLogin/model/authByLogin";
 import { useDispatch } from "react-redux";
 import { login } from "@/app/redux/slices/authSlice";
-// import {
-//   validateLoginLength,
-//   validatePasswordLength,
-// } from "@/features/Registration/utils/validators";
+import {
+  validateLogin,
+  validatePassword,
+} from "@/features/Registration/utils/validators";
 
 export const LoginForm = () => {
   const [loginInput, setLogin] = useState("");
@@ -25,38 +25,31 @@ export const LoginForm = () => {
     password: "",
   });
 
-  // Проверяем, идет ли мутация
+  // Проверка, идет ли мутация
   const isLoading = status === "pending";
 
   // Функция для обработки отправки формы
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Проверка длины логина и пароля
-    // const loginValid = validateLoginLength(loginInput);
-    // const passwordValid = validatePasswordLength(password);
+    // Валидация логина и пароля
+    const loginError = validateLogin(loginInput);
+    const passwordError = validatePassword(password);
 
-    if (!loginValid || !passwordValid) {
-      if (!loginValid) setLogin("");
-      if (!passwordValid) setPassword("");
-    }
-
-    // Обновляем ошибки
+    // Обновление состояния ошибок
     setErrors({
-      login: loginValid ? "" : "Логин менее 1 символа",
-      password: passwordValid ? "" : "Пароль менее 6 символов",
+      login: loginError,
+      password: passwordError,
     });
 
-    // Если есть ошибки, не отправляем форму
-    if (!loginValid || !passwordValid) {
-      return;
-    }
+    // Если есть ошибки валидации, не продолжаем
+    if (loginError || passwordError) return;
 
-    // Если всё валидно, отправляем запрос
+    // Если все поля валидны, отправляем запрос
     mutate({ login: loginInput, password });
   };
 
-  // Перенаправляем на страницу профиля, если запрос успешен
+  // Перенаправление на страницу профиля после успешного входа
   useEffect(() => {
     if (status === "success" && data) {
       dispatch(
@@ -75,13 +68,17 @@ export const LoginForm = () => {
       "https://oauth.yandex.ru/authorize?force_confirm=1&client_id=91926807198745df874fea559c810a19&response_type=code&redirect_uri=https://centrifugo.tech/auth_loading";
   };
 
+  // Проверка, валидны ли текущие входные данные
+  const isInputValid =
+    !validateLogin(loginInput) && !validatePassword(password);
+
   return (
     <div className={styles.content}>
       <h1 className={styles.title}>Вход</h1>
       <form onSubmit={handleSubmit}>
         <div className="items-center">
           <Label size="text-lg" htmlFor="login">
-            Логин
+            Логин (английский)
           </Label>
           <Input
             className="rounded-[5px]"
@@ -92,6 +89,7 @@ export const LoginForm = () => {
             onChange={(e) => setLogin(e.target.value)}
             errorText={errors.login}
           />
+          {errors.login && <p className={styles.errorText}>{errors.login}</p>}
         </div>
         <div className="items-center">
           <Label size="text-lg" htmlFor="password">
@@ -106,12 +104,15 @@ export const LoginForm = () => {
             onChange={(e) => setPassword(e.target.value)}
             errorText={errors.password}
           />
+          {errors.password && (
+            <p className={styles.errorText}>{errors.password}</p>
+          )}
         </div>
         <Button
           size="auth"
           type="submit"
           className="bg-[#463ACB] hover:bg-[#3d33b0]"
-          disabled={isLoading}
+          disabled={isLoading || !isInputValid}
         >
           {isLoading ? "Загрузка..." : "Войти"}
         </Button>

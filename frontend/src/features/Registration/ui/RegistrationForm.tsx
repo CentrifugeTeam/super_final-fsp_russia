@@ -13,7 +13,7 @@ import {
 // Интерфейс для компонента
 export const RegistrationForm: React.FC = () => {
   const nav = useNavigate();
-  const { mutate: registerUser } = useRegisterUserMutation(); // Хук для регистрации
+  const { mutate: registerUser, isError, error } = useRegisterUserMutation(); // Get error state from mutation
 
   // Состояния для хранения значений полей
   const [name, setName] = useState("");
@@ -52,9 +52,6 @@ export const RegistrationForm: React.FC = () => {
 
       // Отправляем данные на сервер
       registerUser(registerData);
-
-      // Переходим к следующему шагу (или завершаем регистрацию)
-      nav("/login");
     }
   };
 
@@ -105,6 +102,14 @@ export const RegistrationForm: React.FC = () => {
       >
         Далее
       </Button>
+
+      {/* Show error message if registration fails */}
+      {isError && error && (
+        <p className={styles.errorMessage}>
+          {error.response?.data?.message ||
+            "Ошибка регистрации. Попробуйте снова."}
+        </p>
+      )}
 
       <p className={styles.or}>или</p>
 

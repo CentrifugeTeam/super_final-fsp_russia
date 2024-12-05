@@ -37,9 +37,11 @@ export const SendCode = () => {
         {mutation.status === "pending" && (
           <BeatLoader color="#ffffff" margin={10} size={39} />
         )}
-        {mutation.status === "success" && <p>Successfully authenticated</p>}
+        {mutation.status === "success" && (
+          <p className={styles.title}> Successfully authenticated</p>
+        )}
         {mutation.status === "error" && (
-          <p>Error occurred during authentication</p>
+          <p className={styles.title}>Error occurred during authentication</p>
         )}
       </div>
     </div>
