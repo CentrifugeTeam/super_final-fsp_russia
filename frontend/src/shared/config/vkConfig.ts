@@ -8,7 +8,7 @@ export const initVkAuth = () => {
     app: clientId,
     redirectUrl: redirectUrl,
     state: "<случайно сгенерированная строка состояния>",
-    codeVerifier: "<ваш сгенерированный code_verifier>",
+    codeChallenge: "<ваш сгенерированный code_verifier>",
     scope: "email phone", // Права доступа
     responseMode: VKID.ConfigResponseMode.Callback,
     mode: VKID.ConfigAuthMode.InNewWindow, // Авторизация в новом окне
