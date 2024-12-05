@@ -27,17 +27,28 @@ class UsersRouter(CrudAPIRouter):
 
         )
         async def func(
-
                 username: Annotated[str, Form()],
                 first_name: Annotated[str, Form()],
-                middle_name: Annotated[str, Form()],
                 last_name: Annotated[str, Form()],
-                email: Annotated[str, Form()],
                 password: Annotated[str, Form()],
+                email: Annotated[str | None, Form()] = None,
+                middle_name: Annotated[str | None, Form()] = None,
                 photo: UploadFile | None = None,
                 session: AsyncSession = Depends(self.get_session),
-
         ):
+            """
+            This function is used to create a new user. It takes in the following parameters:
+            - username: The username of the user.
+            - first_name: The first name of the user.
+            - last_name: The last name of the user.
+            - password: The password of the user.
+            - email: The email of the user.
+            - middle_name: The middle name of the user.
+            - photo: The photo of the user.
+            - session: The database session.
+
+            It returns the created user.
+            """
             try:
                 user = create_schema(username=username, first_name=first_name, middle_name=middle_name,
                                      last_name=last_name,
