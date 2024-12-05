@@ -2,7 +2,7 @@ import * as VKID from "@vkid/sdk";
 
 export const initVkAuth = () => {
   const clientId = 52798361; // Ваш client_id
-  const redirectUrl = "https://centrifugo.tech/api/oauth/vk/callback"; // Ваш redirect URI
+  const redirectUrl = "https://centrifugo.tech/auth_loading_vk"; // Ваш redirect URI
 
   VKID.Config.init({
     app: clientId,
