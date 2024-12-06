@@ -8,7 +8,7 @@ from crud.openapi_responses import not_found_response
 from ...dependencies.session import get_session
 from ...schemas.competition import CompetitionSearch
 from ...utils.crud import CrudAPIRouter
-from storage.db.models import SportEvent, Competition, EventType
+from shared.storage.db.models import SportEvent, Competition, EventType
 from ...managers import BaseManager
 from ...schemas.event import EventBulkRead, CompetitionRead
 

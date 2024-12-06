@@ -21,11 +21,10 @@ export const AppRouter = () => {
       <Route path="/registration" element={<RegistrationPage />} />
       <Route path="/auth_loading" element={<SendCode />} />
       <Route path="/auth_loading_vk" element={<SendCodeVk />} />
-      <Route path="/feed" element={<FeedPage />} />
-
+      <Route path="/feed" element={<FeedPage />} /> {/* Открытый маршрут */}
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
-        {/* Эти маршруты будут доступны только для авторизованных пользователей */}
+        {/* Эти маршруты доступны только для авторизованных пользователей */}
         <Route path="/profile" element={<ProfilePage />} />
       </Route>
     </Route>

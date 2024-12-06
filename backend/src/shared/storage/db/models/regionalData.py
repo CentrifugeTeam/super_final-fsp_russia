@@ -7,10 +7,11 @@ class RegionalRepresentation(IDMixin, Base):
     __tablename__ = 'regional_representations'
 
     region_name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    region_url: Mapped[str] = mapped_column(String, nullable=True)
     leader_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
     contacts: Mapped[str] = mapped_column(String, nullable=True)
 
-    leader: Mapped['User'] = relationship('User', back_populates='regions', foreign_keys=[leader_id])
+    leader: Mapped['User'] = relationship(back_populates='leader')
 
     def __repr__(self):
         return f"<RegionalRepresentation(region_name={self.region_name}, leader={self.leader_id})>"
@@ -20,10 +21,9 @@ class RegionalUsers(IDMixin, Base):
 
     representation_id: Mapped[int] = mapped_column(ForeignKey('regional_representations.id', ondelete='CASCADE'))
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
-    is_staff: Mapped[bool] = mapped_column(Integer, default=False)
 
-    region: Mapped['RegionalRepresentation'] = relationship('RegionalRepresentation', back_populates='users')
-    user: Mapped['User'] = relationship('User', back_populates='regions')
+    # region: Mapped['RegionalRepresentation'] = relationship('RegionalRepresentation', back_populates='users')
+    # user: Mapped['User'] = relationship('User', back_populates='regions')
 
-RegionalRepresentation.users = relationship('RegionalUsers', back_populates='region')
-User.regions = relationship('RegionalUsers', back_populates='user')
+# RegionalRepresentation.users = relationship('RegionalUsers', back_populates='region')
+# User.regions = relationship('RegionalUsers', back_populates='user')

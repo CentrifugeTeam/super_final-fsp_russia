@@ -10,7 +10,7 @@ from fastapi_sqlalchemy_toolkit.ordering import ordering_depends
 from crud.openapi_responses import not_found_response
 from ...dependencies.session import get_session
 from ...utils.crud import CrudAPIRouter
-from storage.db.models import SportEvent, Location, AgeGroup, Competition, EventType
+from shared.storage.db.models import SportEvent, Location, AgeGroup, Competition, EventType
 from ...managers import EventManager
 from ...schemas.event import EventBulkRead, EventSearch
 from logging import getLogger

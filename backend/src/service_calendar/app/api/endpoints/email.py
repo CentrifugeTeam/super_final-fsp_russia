@@ -4,11 +4,11 @@ from ...schemas.email import UserSettings, Email
 from crud.openapi_responses import bad_request_response
 from ...managers import BaseManager
 from ...dependencies.session import get_session
-from storage.db.models import Users
+from shared.storage.db.models import User
 from ...conf import smtp_message
 from logging import getLogger
 
-users_manager = BaseManager(Users)
+users_manager = BaseManager(User)
 logger = getLogger(__name__)
 r = APIRouter()
 

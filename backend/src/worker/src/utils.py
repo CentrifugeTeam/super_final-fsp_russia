@@ -13,7 +13,7 @@ from .settings import settings as conf_settings
 from shared.storage.db.models import EventType, SportEvent, AgeGroup, Location, Competition, User
 from logging import getLogger
 from web.app.schemas.users import BaseUser, CreateUser
-from ...web.app.utils.users import user_manager
+from web.app.utils.users import user_manager
 import random
 
 smtp_message = SMTPMessage(sender=conf_settings.SMTP_SENDER, host=conf_settings.SMTP_HOST,
