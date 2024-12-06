@@ -79,7 +79,7 @@ export const LoginForm = () => {
       <h1 className={styles.title}>Вход</h1>
       <form onSubmit={handleSubmit}>
         <div className="items-center">
-          <Label size="text-lg" htmlFor="login">
+          <Label className="text-[#333333]" size="text-lg" htmlFor="login">
             Логин (английский)
           </Label>
           <Input
@@ -94,7 +94,7 @@ export const LoginForm = () => {
           {errors.login && <p className={styles.errorText}>{errors.login}</p>}
         </div>
         <div className="items-center">
-          <Label size="text-lg" htmlFor="password">
+          <Label className="text-[#333333]" size="text-lg" htmlFor="password">
             Пароль
           </Label>
           <Input

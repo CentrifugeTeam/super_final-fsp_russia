@@ -50,7 +50,7 @@ export const RegistrationStep1: React.FC<RegistrationStep1Props> = ({
   return (
     <div className="flex flex-col gap-3">
       <div className="items-center gap-1.5">
-        <Label size="text-lg" htmlFor="name" className="mb-4">
+        <Label size="text-lg" htmlFor="name" className="mb-4 text-[#333333]">
           Имя
         </Label>
         <Input
@@ -67,7 +67,7 @@ export const RegistrationStep1: React.FC<RegistrationStep1Props> = ({
       </div>
 
       <div className="items-center gap-1.5">
-        <Label size="text-lg" htmlFor="surname">
+        <Label size="text-lg" htmlFor="surname" className="text-[#333333]">
           Фамилия
         </Label>
         <Input
@@ -84,7 +84,7 @@ export const RegistrationStep1: React.FC<RegistrationStep1Props> = ({
       </div>
 
       <div className="items-center gap-1.5">
-        <Label size="text-lg" htmlFor="patronymic">
+        <Label size="text-lg" htmlFor="patronymic" className="text-[#333333]">
           Отчество
         </Label>
         <Input
@@ -101,7 +101,7 @@ export const RegistrationStep1: React.FC<RegistrationStep1Props> = ({
       </div>
 
       <div className="grid w-full max-w-sm items-center gap-1.5">
-        <Label size="text-lg" htmlFor="picture">
+        <Label className="text-[#333333]" size="text-lg" htmlFor="picture">
           Фото профиля
         </Label>
         <Input
