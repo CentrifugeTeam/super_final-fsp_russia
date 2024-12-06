@@ -22,6 +22,7 @@ export const AppRouter = () => {
       v7_partialHydration: true,
       v7_skipActionErrorRevalidation: true,
     },
+    basename: "/calendar", //базовый url
   });
 
   return (
