@@ -1,0 +1,45 @@
+.header {
+  width: 95vw;
+  height: 100px;
+  background-color: #1b1c21;
+  border-radius: 10px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  color: #ffffff;
+  padding-left: 35px;
+
+  .links {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    color: #ffffff;
+    width: 100%;
+  }
+
+  /* Добавим адаптив для телефонов */
+  @media (max-width: 768px) {
+    flex-direction: column;
+    height: auto;
+    padding: 30px;
+    align-items: flex-start;
+    font-size: 20px;
+    font-weight: bold;
+    // justify-content: flex-start;
+
+    .links {
+      display: flex;
+      align-items: flex-start;
+      color: #ffffff;
+      width: 100%;
+      flex-direction: column;
+      gap: 35px;
+      margin-top: 50px;
+    }
+
+    img {
+      height: auto;
+    }
+  }
+}
