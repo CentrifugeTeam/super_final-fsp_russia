@@ -6,6 +6,7 @@ from logging import getLogger, basicConfig, INFO, DEBUG
 from .settings import settings as conf_settings
 
 from .functions.cron_pdf import cron_update_calendar_table
+from .functions.cron_regions import fetch_regions_data
 
 logger = getLogger(__name__)
 
@@ -47,7 +48,8 @@ settings = {
     "queue": queue,
     "functions": [test],
     "concurrency": 10,
-    "cron_jobs": [CronJob(cron_update_calendar_table, cron="* * * * * */5")],
+    "cron_jobs": [CronJob(cron_update_calendar_table, cron="* * * * * */5"),
+                  CronJob(fetch_regions_data, cron="* * * * * */5")],
     "startup": startup,
     "shutdown": shutdown,
     "before_process": before_process,

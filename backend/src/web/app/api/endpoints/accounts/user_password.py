@@ -1,24 +1,23 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi_users.router import reset
 from pydantic import EmailStr
 from fastapi import status, Request, Body, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shared.storage.cache.redis_client import RedisClient
-from ...exceptions import InvalidResetPasswordToken
-from ...schemas import ReadUser
-from ...utils.users import user_manager
+from web.app.exceptions import InvalidResetPasswordToken
+from web.app.schemas import ReadUser
+from web.app.utils.users import user_manager
 
-from ...dependencies import get_session, get_redis
+from web.app.dependencies import get_session, get_redis
 from shared.crud import not_found_response
 from shared.crud.openapi_responses import bad_request_response
-from ...conf import smtp_message
+from web.app.conf import smtp_message
 
 r = APIRouter()
 
 
 @r.post(
-    "/forgot-password",
+    "/forgot",
     status_code=status.HTTP_204_NO_CONTENT,
     name="reset:forgot_password",
     responses={
@@ -40,7 +39,7 @@ async def forgot_password(
 
 
 @r.post(
-    "/reset-password",
+    "/reset",
     name="reset:reset_password",
     responses={
         **bad_request_response,

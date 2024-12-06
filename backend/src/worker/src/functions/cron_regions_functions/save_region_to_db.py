@@ -1,6 +1,6 @@
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
-from ...record_regional_data.schemas import RegionalRepresentationBase, FederalDistrictBase
+from worker.src.functions.cron_regions_functions.schemas import BlockRegionalRepresentation
 from sqlalchemy.exc import IntegrityError
 from shared.storage.db.models import RegionalRepresentation, RegionalUsers
 from .get_federal_district_id import get_federal_district_id
@@ -17,7 +17,7 @@ async def save_region_to_db(session: AsyncSession, region_data):
 	"""
 	try:
 		# Валидируем данные для региона
-		region_data_valid = RegionalRepresentationBase(
+		region_data_valid = BlockRegionalRepresentation(
 			region_name=region_data['region_name'],
 			contacts=region_data['contacts']
 		)

@@ -12,7 +12,7 @@ from shared.storage.cache.redis_client import RedisClient
 from shared.storage.db.models import User, Role, OAuthAccount
 from .base import BaseManager
 from ..schemas.users import UserCredentials
-from ..exceptions import InvalidResetPasswordToken
+from ..exceptions import InvalidResetPasswordToken, UserAlreadyVerifiedException
 from ..services.oauth import YandexUserInfo
 from ..services.oauth.base import OAuth2Response
 from ..services.oauth.vk_oauth import VKUserInfo
@@ -39,6 +39,17 @@ class UsersManager(BaseManager):
         token = token_urlsafe(32)
         await redis_client.forgot_password(token, user)
         return token
+
+    async def verify(self, session: AsyncSession, redis: RedisClient, token: str):
+        user_id = await redis.reset_password(token)
+        user: User = await self.get_or_404(session, id=user_id)
+        if user.is_verified:
+            raise UserAlreadyVerifiedException
+
+        user.is_verified = True
+        session.add(user)
+        await session.commit()
+        return user
 
     async def reset_password(self, session: AsyncSession, redis: RedisClient, token: str, new_password: str):
         user_id = await redis.reset_password(token)

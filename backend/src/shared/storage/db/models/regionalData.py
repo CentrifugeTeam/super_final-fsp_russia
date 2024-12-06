@@ -6,11 +6,11 @@ from .users import User
 class FederalDistrict(IDMixin, Base):
     __tablename__ = 'federal_districts'
 
-    district_name: str = Column(String, unique=True, nullable=False)
-    region_id: int = Column(Integer, ForeignKey('regional_representations.id'))
+    district_name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+
 
     # Связь с регионами
-    regions: Mapped[RegionalRepresentation] = relationship('RegionalRepresentation', back_populates='federal_district')
+    regions: Mapped[list['RegionalRepresentation']] = relationship(back_populates='federal_district')
 
     def __repr__(self):
         return f"<FederalDistrict(district_name={self.district_name})>"
@@ -25,7 +25,7 @@ class RegionalRepresentation(IDMixin, Base):
     federal_district_id: Mapped[int] = mapped_column(ForeignKey('federal_districts.id'), nullable=False)
 
     leader: Mapped['User'] = relationship(back_populates='leader')
-    federal_district: Mapped['FederalDistrict'] = relationship('FederalDistrict', back_populates='regions')
+    federal_district: Mapped['FederalDistrict'] = relationship(back_populates='regions')
 
     def __repr__(self):
         return f"<RegionalRepresentation(region_name={self.region_name}, leader={self.leader_id}, federal_district={self.federal_district.district_name})>"

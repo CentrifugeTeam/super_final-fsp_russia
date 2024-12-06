@@ -23,7 +23,9 @@ class BaseUser(BaseModel):
     first_name: str
     middle_name: str | None = None
     last_name: str
-    email: EmailStr | None = None
+    email: EmailStr
+    is_superuser: bool
+    is_verified: bool
 
     def __acl__(self):
         return [
