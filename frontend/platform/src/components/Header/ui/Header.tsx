@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RootState } from "@/app/redux/store"; // Ensure this path is correct
 import styles from "./header.module.scss";
 import Logo from "@/assets/logo_fsp.svg";
@@ -40,11 +40,10 @@ export const Header = () => {
       </div>
       <div className={`${styles.links} ${isMenuOpen ? styles.open : ""}`}>
         <a>О нас</a>
-        <a>Регионы</a>
+        <Link to="/regions">Регионы</Link>
         <a>Календарь</a>
         <a>Статистика</a>
         <a>Контакты</a>
-        {/* Conditionally render the "Личный кабинет" or "Войти" link */}
         <a onClick={handleAuthRedirect}>
           {isAuthenticated ? "Личный кабинет" : "Войти"}
         </a>

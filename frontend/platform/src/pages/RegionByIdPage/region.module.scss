@@ -1,0 +1,14 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #2701fd65;
+  height: 100vh;
+  justify-content: center;
+  backdrop-filter: blur(1px);
+
+  .content {
+    display: flex;
+    flex-direction: column;
+  }
+}

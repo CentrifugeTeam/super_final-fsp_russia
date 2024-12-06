@@ -1,49 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useBackgroundImage } from "@/hooks/useBackgroundImage";
-import styles from "./sendemail.module.scss";
+import styles from "./sendpassword.module.scss";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { Button } from "@/components/ui/button";
-import { validateEmail } from "@/features/Registration/utils/validators";
-import { sendForgotPasswordEmail } from "@/shared/api/password";
+import { validatePassword } from "@/features/Registration/utils/validators"; // Ваша валидация пароля
+import { resetPassword } from "@/shared/api/password"; // Обновленная функция для сброса пароля
 import { useMutation } from "@tanstack/react-query";
 import Success from "@/assets/success.svg";
-import { useNavigate } from "react-router-dom"; // Импортируем useNavigate
+import { useNavigate, useLocation } from "react-router-dom"; // Импортируем useLocation
 
-export const SendEmail = () => {
+export const SendPassword = () => {
   useBackgroundImage("./backgroundImg.svg");
 
   const navigate = useNavigate(); // Создаем объект navigate для перенаправления
-
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
+  const [password, setPassword] = useState(""); // Состояние для пароля
+  const [passwordError, setPasswordError] = useState(""); // Ошибка для пароля
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [successMessage, setSuccessMessage] = useState("");
 
+  const [token, setToken] = useState<string | null>(null); // Токен из URL
+
+  // Получаем токен из URL, используя useLocation
+  const location = useLocation();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const tokenFromUrl = urlParams.get("token"); // Получаем token из строки запроса
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl); // Сохраняем токен
+    }
+  }, [location]);
+
+  // Используем useMutation для сброса пароля
   const mutation = useMutation({
-    mutationFn: sendForgotPasswordEmail,
+    mutationFn: resetPassword,
     onSuccess: () => {
-      setSuccessMessage("Инструкция по сбросу пароля отправлена на ваш email.");
-      setEmail(""); // Очистка поля email
+      setSuccessMessage("Пароль успешно сброшен.");
+      setPassword(""); // Очистка поля пароля
     },
     onError: () => {
-      setError("Что-то пошло не так.");
+      setPasswordError("Что-то пошло не так.");
     },
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setEmail(value);
+    setPassword(value);
 
-    const validationError = validateEmail(value);
-    setError(validationError);
-    setIsButtonDisabled(!!validationError); // Кнопка отключена, если есть ошибка
+    const validationError = validatePassword(value); // Валидация пароля
+    setPasswordError(validationError);
+
+    // Отключаем кнопку, если есть ошибка валидации или запрос в процессе
+    setIsButtonDisabled(!!validationError || mutation.status === "pending");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!error) {
-      mutation.mutate(email);
+    if (!passwordError && token) {
+      mutation.mutate({ token, password }); // Отправляем токен и пароль
     }
   };
 
@@ -75,22 +90,22 @@ export const SendEmail = () => {
           <form onSubmit={handleSubmit}>
             <h1 className={styles.title}>Сброс пароля</h1>
             <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label className="text-[#333333]" htmlFor="email">
-                Email
+              <Label className="text-[#333333]" htmlFor="password">
+                Новый пароль
               </Label>
               <Input
-                type="email"
-                id="email"
-                placeholder="Email"
-                value={email}
+                type="password"
+                id="password"
+                placeholder="Новый пароль"
+                value={password}
                 onChange={handleInputChange}
               />
-              {error && <p className="text-red-500 text-sm">{error}</p>}
             </div>
+
             <Button
               type="submit"
-              className="h-[58px] bg-[#463ACB] text-[16px]"
-              disabled={isButtonDisabled || mutation.status === "pending"}
+              className="h-[58px] bg-[#463ACB] text-[16px] mt-5"
+              disabled={isButtonDisabled}
             >
               {mutation.status === "pending" ? "Отправка..." : "Сбросить"}
             </Button>
@@ -104,4 +119,4 @@ export const SendEmail = () => {
   );
 };
 
-export default SendEmail;
+export default SendPassword;

@@ -7,9 +7,9 @@ export const Layout = () => {
   const location = useLocation();
 
   // Список путей, где Header должен отображаться
-  const showHeaderOnRoutes = ["/about_us"];
+  const showHeaderOnRoutes = ["/regions"];
   // Список путей, где Footer должен отображаться
-  const showFooterOnRoutes = ["/about_us"];
+  const showFooterOnRoutes = ["/regions"];
 
   const shouldShowHeader = showHeaderOnRoutes.includes(location.pathname);
   const shouldShowFooter = showFooterOnRoutes.includes(location.pathname);

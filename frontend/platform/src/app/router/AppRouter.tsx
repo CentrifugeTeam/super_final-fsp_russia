@@ -13,19 +13,23 @@ import { ProtectedRoute } from "@/features/ProtectedRoute";
 import { ProfilePage } from "@/pages/ProfilePage";
 import SendCodeVk from "@/pages/SendCodeVk/SendCodeVk";
 import { FeedPage } from "@/pages/FeedPage";
+import { SendEmail } from "@/pages/SendEmail";
+import { SendPassword } from "@/pages/SendPassword";
 
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
     <Route path="/" element={<Layout />}>
       {/* Redirect to /about_us by default */}
-      <Route index element={<Navigate to="/about_us" replace />} />
+      <Route index element={<Navigate to="/regions" replace />} />
 
       {/* Открытые страницы */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/registration" element={<RegistrationPage />} />
       <Route path="/auth_loading" element={<SendCode />} />
       <Route path="/auth_loading_vk" element={<SendCodeVk />} />
-      <Route path="/about_us" element={<FeedPage />} />
+      <Route path="/regions" element={<FeedPage />} />
+      <Route path="/send_email" element={<SendEmail />} />
+      <Route path="/send_password" element={<SendPassword />} />
 
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
