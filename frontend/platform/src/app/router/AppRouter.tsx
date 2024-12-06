@@ -3,6 +3,7 @@ import {
   createRoutesFromElements,
   Route,
   RouterProvider,
+  Navigate,
 } from "react-router-dom";
 import { Layout } from "../layout";
 import { LoginPage } from "@/pages/LoginPage";
@@ -16,16 +17,18 @@ import { FeedPage } from "@/pages/FeedPage";
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
     <Route path="/" element={<Layout />}>
+      {/* Redirect to /about_us by default */}
+      <Route index element={<Navigate to="/about_us" replace />} />
+
       {/* Открытые страницы */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/registration" element={<RegistrationPage />} />
       <Route path="/auth_loading" element={<SendCode />} />
       <Route path="/auth_loading_vk" element={<SendCodeVk />} />
-      <Route path="/feed" element={<FeedPage />} />
+      <Route path="/about_us" element={<FeedPage />} />
 
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
-        {/* Эти маршруты будут доступны только для авторизованных пользователей */}
         <Route path="/profile" element={<ProfilePage />} />
       </Route>
     </Route>

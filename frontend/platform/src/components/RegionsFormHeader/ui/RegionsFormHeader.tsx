@@ -1,12 +1,11 @@
-import styles from "./regionsformheader.module.scss";
+import style from "./regionsformheader.module.scss";
 
 export const RegionsFormHeader = () => {
-
   return (
-    <div className={styles.header}>
-			<p className={styles.text}>Субъект РФ</p>
-			<p className={styles.text}>Руководитель</p>
-			<p className={styles.text}>Контакты</p>
+    <div className={style.header}>
+			<p className={`${style.text} ${style.regionName}`}>Субъект РФ</p>
+			<p className={`${style.text} ${style.regionText}`}>Руководитель</p>
+			<p className={`${style.text} ${style.contacts}`}>Контакты</p>
 		</div>
   );
 };
