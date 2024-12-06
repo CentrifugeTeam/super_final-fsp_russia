@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux";
 import { logout } from "@/app/redux/slices/authSlice"; // Убедитесь, что путь к вашему authSlice правильный
 import { useNavigate } from "react-router-dom";
+import style from './profilepage.module.scss'
 
 export const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -12,7 +13,7 @@ export const ProfilePage = () => {
   };
 
   return (
-    <div>
+    <div className={style.profileContent}>
       <h1>Профиль</h1>
       <button
         onClick={handleLogout}
