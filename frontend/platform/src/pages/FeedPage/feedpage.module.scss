@@ -4,3 +4,10 @@
   margin-right: 4%;
   margin-top: 192px;
 }
+
+@media (max-width: 768px) {
+	.wrapper {
+		margin-left: 2.7%;
+  	margin-right: 2.7%;
+	}
+}
