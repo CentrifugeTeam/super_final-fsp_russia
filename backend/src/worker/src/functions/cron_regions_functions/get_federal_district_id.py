@@ -1,11 +1,11 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.src.shared.storage.db.models.representations import Representation
+from backend.src.shared.storage.db.models.representations import Representation, FederalRepresentation
 from worker.src.functions.cron_regions_functions.schemas import FederalDistrictBase
 from ...utils import _create_if_dont_exist
 
 
-async def get_federal_district_id(session: AsyncSession, federal_district_name: str):
+async def get_or_create_federal(session: AsyncSession, federal_district_name: str):
     """
     Получаем ID федерального округа по его названию.
     """
@@ -14,9 +14,9 @@ async def get_federal_district_id(session: AsyncSession, federal_district_name: 
 
     if not federal_district:
         # Если федеральный округ не найден, создаем его
+        repr = Representation(name=federal_district_name, type='federation')
+        session.add(repr)
+        await session.flush()
+        return repr
 
-        federal_district = Representation(name=federal_district)
-        session.add(federal_district)
-        await session.commit()
-
-    return federal_district.id
+    return federal_district
