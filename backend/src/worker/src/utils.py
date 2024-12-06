@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+import string
+from pydantic import BaseModel, ValidationError
 from sqlalchemy import select, insert
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,6 +12,9 @@ from .settings import settings as conf_settings
 
 from shared.storage.db.models import EventType, SportEvent, AgeGroup, Location, Competition, User
 from logging import getLogger
+from web.app.schemas.users import BaseUser, CreateUser
+from ...web.app.utils.users import user_manager
+import random
 
 smtp_message = SMTPMessage(sender=conf_settings.SMTP_SENDER, host=conf_settings.SMTP_HOST,
                            port=conf_settings.SMTP_PORT,
@@ -100,3 +104,66 @@ async def save_event_and_related_data(session: AsyncSession, row: Row):
 
     except SQLAlchemyError as e:
         await session.rollback()  # Откатываем сессию в случае ошибки
+
+
+
+
+def generate_unique_username(email: str) -> str:
+    """
+    Генерируем уникальный username на основе email.
+    """
+    base_username = email.split('@')[0]  # Все до '@' в email
+    random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))  # Рандомный суффикс
+    return f"{base_username}_{random_suffix}"
+
+def generate_random_password(length: int = 12) -> str:
+    """
+    Генерируем случайный пароль.
+    """
+    characters = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(random.choices(characters, k=length))
+
+async def get_or_create_user(session: AsyncSession, full_name: str, email: str | None = None):
+	"""
+	Получаем пользователя по имени или создаем нового, если его нет в базе.
+	"""
+	# Разбиваем полное имя на компоненты
+	name_parts = full_name.split()
+	if len(name_parts) < 2:
+		logger.error(f"Некорректное имя: {full_name}")
+		return None
+
+	first_name = name_parts[1]
+	last_name = name_parts[0]
+	middle_name = name_parts[2] if len(name_parts) > 2 else None
+
+	# Генерируем username на основе email (если он есть)
+	username = generate_unique_username(email) if email else None
+
+	# Если пароль не передан, генерируем случайный
+	password = generate_random_password()
+
+	try:
+		# Валидируем данные пользователя через Pydantic
+		user_data = CreateUser(
+			username=username,
+			first_name=first_name,
+			middle_name=middle_name,
+			last_name=last_name,
+			email=email,
+			password=password
+		)
+	except ValidationError as e:
+		logger.error(f"Ошибка валидации данных пользователя: {e}")
+		return None  # Если данные невалидны, возвращаем None
+
+	# Проверяем, есть ли уже пользователь с таким именем
+	result = await session.execute(select(User).filter(User.username == user_data.username))
+	user = result.scalar_one_or_none()
+
+	if user is None:
+		# Если пользователя нет, создаем его через user_manager
+		user = await user_manager.create_user(session, in_obj=user_data)
+		logger.info(f"Создан новый пользователь: {user_data.username}")
+
+	return user
