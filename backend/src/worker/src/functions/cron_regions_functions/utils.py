@@ -9,14 +9,6 @@ from worker.src.functions.cron_regions_functions.schemas import BlockRegionalRep
 from web.app.utils.ai.upload_file import IAFile
 
 
-def generate_random_password():
-    length = 13
-    chars = string.ascii_letters + string.digits + '!@#$%^&*()'
-
-    rnd = random.SystemRandom()
-    return ''.join(rnd.choice(chars) for i in range(length))
-
-
 async def save_region(session: AsyncSession, block: BlockRegionalRepresentation):
     async def create_if_dont_exist(session, _dict, model):
         prompt = f'сгенерируй изображение без людей, где будет только по центру изображён герб области: {block.region_name}'

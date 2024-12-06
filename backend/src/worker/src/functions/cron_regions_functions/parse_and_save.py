@@ -5,8 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from . import (
     parse_federal_district, parse_region, parse_moscow)
 
-from .utils import generate_random_password, save_region
-from .schemas import BlockRegionalRepresentation
+from .save_region_to_db import save_region_to_db
 
 
 async def parse_and_save(ctx):
@@ -17,7 +16,7 @@ async def parse_and_save(ctx):
         # Получаем данные о Москве
         moscow_data = parse_moscow(soup)
         if moscow_data:
-            await save_region(session, moscow_data)
+            await save_region_to_db(session, moscow_data)
 
         # Получаем список федеральных округов
         federal_districts = parse_federal_district(soup)
@@ -30,4 +29,4 @@ async def parse_and_save(ctx):
             for block in region_blocks:
                 region_data = parse_region(block, federal_district_name)
                 if region_data:
-                    await save_region(session, region_data)
+                    await save_region_to_db(session, moscow_data)

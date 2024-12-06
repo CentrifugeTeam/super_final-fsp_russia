@@ -13,7 +13,7 @@ from .settings import settings as conf_settings
 from shared.storage.db.models import EventType, SportEvent, AgeGroup, Location, Competition, User
 from logging import getLogger
 from web.app.schemas.users import BaseUser, CreateUser
-from web.app.utils.users import user_manager
+from web.app.utils.users import user_manager, role_manager
 import random
 
 smtp_message = SMTPMessage(sender=conf_settings.SMTP_SENDER, host=conf_settings.SMTP_HOST,
@@ -107,13 +107,12 @@ async def save_event_and_related_data(session: AsyncSession, row: Row):
         await session.rollback()  # Откатываем сессию в случае ошибки
 
 
-def generate_unique_username(email: str) -> str:
+def generate_unique_username() -> str:
     """
     Генерируем уникальный username на основе email.
     """
-    base_username = email.split('@')[0]  # Все до '@' в email
-    random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))  # Рандомный суффикс
-    return f"{base_username}_{random_suffix}"
+
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))  # Рандомный суффикс
 
 
 def generate_random_password(length: int = 12) -> str:
@@ -139,7 +138,7 @@ async def get_or_create_user(session: AsyncSession, full_name: str, email: str |
     middle_name = name_parts[2] if len(name_parts) > 2 else None
 
     # Генерируем username на основе email (если он есть)
-    username = generate_unique_username(email) if email else None
+    username = email.split('@')[0] if email else generate_unique_username()
 
     # Если пароль не передан, генерируем случайный
     password = generate_random_password()
@@ -164,7 +163,11 @@ async def get_or_create_user(session: AsyncSession, full_name: str, email: str |
 
     if user is None:
         # Если пользователя нет, создаем его через user_manager
-        user = await user_manager.create_user(session, in_obj=user_data)
+        async with session.begin_nested():
+            user: User = await user_manager.create_user(session, in_obj=user_data, commit=False)
+            role = await role_manager.get_or_create(session, simple_filters={'name': 'federation'})
+
+
         logger.info(f"Создан новый пользователь: {user_data.username}")
 
     return user
