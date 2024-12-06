@@ -119,6 +119,9 @@ export const LoginForm = () => {
           {isLoading ? "Загрузка..." : "Войти"}
         </Button>
       </form>
+      <Button className=" h-1 p-0 justify-end text-[#919191]" variant="link">
+        Забыли пароль?
+      </Button>
       {/* Если есть ошибка, отображаем сообщение об ошибке */}
       {error && (
         <p className={styles.errorText}>
