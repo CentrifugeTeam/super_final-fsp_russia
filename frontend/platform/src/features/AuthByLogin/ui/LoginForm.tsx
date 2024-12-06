@@ -119,14 +119,16 @@ export const LoginForm = () => {
           {isLoading ? "Загрузка..." : "Войти"}
         </Button>
       </form>
-      <Button className=" h-1 p-0 justify-end text-[#919191]" variant="link">
+      <Button
+        className=" h-1 p-0 justify-end text-[#919191]"
+        variant="link"
+        onClick={() => nav("/send_email")}
+      >
         Забыли пароль?
       </Button>
       {/* Если есть ошибка, отображаем сообщение об ошибке */}
       {error && (
-        <p className={styles.errorText}>
-          Ошибка авторизации. Попробуйте снова.
-        </p>
+        <p className="text-[#333333]">Ошибка авторизации. Попробуйте снова.</p>
       )}
       <p className={styles.or}>или</p>
 

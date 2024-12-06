@@ -13,6 +13,8 @@ import { ProtectedRoute } from "@/features/ProtectedRoute";
 import { ProfilePage } from "@/pages/ProfilePage";
 import SendCodeVk from "@/pages/SendCodeVk/SendCodeVk";
 import { FeedPage } from "@/pages/FeedPage";
+import { SendEmail } from "@/pages/SendEmail";
+import { SendPassword } from "@/pages/SendPassword";
 
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
@@ -26,6 +28,8 @@ export const AppRouter = () => {
       <Route path="/auth_loading" element={<SendCode />} />
       <Route path="/auth_loading_vk" element={<SendCodeVk />} />
       <Route path="/about_us" element={<FeedPage />} />
+      <Route path="/send_email" element={<SendEmail />} />
+      <Route path="/send_password" element={<SendPassword />} />
 
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
