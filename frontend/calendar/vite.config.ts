@@ -4,6 +4,8 @@ import sass from "sass";
 
 // https://vite.dev/config/
 export default defineConfig({
+  
+  base: '/calendar/', // Добавьте базовый путь
   plugins: [react()],
   css: {
     preprocessorOptions: {

@@ -3,12 +3,12 @@ from fastapi_pagination import Page
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from crud import Context
-from storage.db.models import Location
-from web.app.dependencies.session import get_session
-from web.app.managers import BaseManager
-from web.app.schemas.event import EventBulkRead
-from web.app.schemas.location import LocationRead, LocationSearch
-from web.app.utils.crud import CrudAPIRouter
+from shared.storage.db.models import Location
+from ...dependencies.session import get_session
+from ...managers import BaseManager
+from ...schemas.event import EventBulkRead
+from ...schemas.location import LocationRead, LocationSearch
+from ...utils.crud import CrudAPIRouter
 
 
 class CrudEventAPIRouter(CrudAPIRouter):

@@ -9,8 +9,11 @@ from fastapi_pagination import add_pagination
 async def lifespan(app):
     yield
 
+
 logging.basicConfig(level=logging.INFO)
-app = FastAPI(root_path='/api', lifespan=lifespan)
+app = FastAPI(lifespan=lifespan,
+              root_path="/calendar/api",
+              )
 
 app.include_router(api)
 add_pagination(app)

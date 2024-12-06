@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from crud import Context
 from ...dependencies.session import get_session
 from ...utils.crud import CrudAPIRouter
-from storage.db.models import SportEvent, Location, AgeGroup, Competition, EventType
+from shared.storage.db.models import SportEvent, Location, AgeGroup, Competition, EventType
 from ...managers import BaseManager
 from ...schemas.event import EventBulkRead
 from ...schemas.event_type import EventTypeSearch, EventTypeSchemaRead

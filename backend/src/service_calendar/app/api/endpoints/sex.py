@@ -9,7 +9,7 @@ from sqlalchemy import func as sql_func, select
 from crud.openapi_responses import not_found_response
 from ...dependencies.session import get_session
 from ...utils.crud import CrudAPIRouter
-from storage.db.models import SportEvent, AgeGroup
+from shared.storage.db.models import SportEvent, AgeGroup
 from ...managers import BaseManager
 from ...schemas.event import EventBulkRead
 from ...schemas.age_group import AgeGroupRead, AgeGroupSearch

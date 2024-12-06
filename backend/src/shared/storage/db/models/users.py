@@ -20,6 +20,7 @@ class User(IDMixin, Base):
     files: Mapped[list['File']] = relationship(back_populates='user', secondary='user_files', cascade='all, delete')
     roles: Mapped[list['Role']] = relationship(secondary='user_roles', back_populates='users')
     type_events: Mapped[list['EventType']] = relationship(back_populates='users', secondary='user_settings')
+    leader: Mapped['RegionalRepresentation'] = relationship(back_populates='leader')
 
 
 class UserSettings(IDMixin, Base):
