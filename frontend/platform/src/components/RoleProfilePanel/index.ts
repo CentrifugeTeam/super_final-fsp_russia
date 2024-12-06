@@ -1,0 +1,1 @@
+export { RoleProfilePanel } from './RoleProfilePanel'

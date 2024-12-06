@@ -1,0 +1,1 @@
+export { PersonInfoProfilePanel } from './PersonInfoProfilePanel';
