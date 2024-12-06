@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styles from "./header.module.scss";
 import Logo from "@/assets/logo_fsp.svg";
-import MenuIcon from "@/assets/burger_button.svg"; // Импорт SVG для кнопки
+import MenuIcon from "@/assets/burger_button.svg";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

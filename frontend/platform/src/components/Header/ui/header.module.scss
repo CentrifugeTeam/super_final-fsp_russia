@@ -38,10 +38,9 @@
     justify-content: space-around;
     color: #ffffff;
     width: 100%;
-    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    transition: max-height 0.2s ease-in-out, opacity 0.2s ease-in-out,
+      padding 0.2s ease-in-out;
     overflow: hidden;
-    max-height: 0;
-    opacity: 0;
 
     a {
       margin: 0 10px;
@@ -49,11 +48,20 @@
   }
 
   .links.open {
-    max-height: 300px; // Adjust this value based on the height of your menu
-    opacity: 1;
+    padding-top: 20px;
+    padding-bottom: 20px;
   }
 
-  // Мобильная версия
+  // Desktop version - always show links
+  @media (min-width: 769px) {
+    .links {
+      max-height: none; // Make sure links are always visible on desktop
+      opacity: 1;
+      padding: 0;
+    }
+  }
+
+  // Mobile version
   @media (max-width: 768px) {
     flex-direction: column;
     height: auto;
@@ -69,6 +77,8 @@
     }
 
     .links {
+      max-height: 0;
+      opacity: 0;
       flex-direction: column;
       gap: 20px;
       width: 100%;
@@ -77,8 +87,10 @@
       font-weight: bold;
 
       &.open {
-        max-height: 300px; // Adjust this value based on the height of your menu
+        max-height: 340px;
         opacity: 1;
+        padding-top: 40px;
+        padding-bottom: 40px;
       }
     }
   }
