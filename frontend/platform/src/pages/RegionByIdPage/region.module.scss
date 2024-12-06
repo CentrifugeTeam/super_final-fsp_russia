@@ -1,14 +1,37 @@
 .wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  background-color: #2701fd65;
-  height: 100vh;
-  justify-content: center;
-  backdrop-filter: blur(1px);
+  margin-top: 192px;
+  margin-left: 4%;
+  margin-right: 4%;
+  .nameOfPage {
+    color: rgb(0, 0, 0);
+    font-size: 25px;
+    font-weight: 700;
+  }
 
-  .content {
+  .block {
     display: flex;
-    flex-direction: column;
+    width: 100%;
+    height: 419px;
+    padding: 30px;
+    background-color: #1b1c21;
+    border-radius: 10px;
+
+    .block2 {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      border: 1px solid #2d2e37;
+      border-radius: 8px;
+
+      .image {
+        width: 241px;
+        height: 241px;
+      }
+
+      .info {
+        .grid {
+        }
+      }
+    }
   }
 }

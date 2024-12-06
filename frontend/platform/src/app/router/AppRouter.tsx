@@ -15,6 +15,7 @@ import SendCodeVk from "@/pages/SendCodeVk/SendCodeVk";
 import { FeedPage } from "@/pages/FeedPage";
 import { SendEmail } from "@/pages/SendEmail";
 import { SendPassword } from "@/pages/SendPassword";
+import { RegionByIdPage } from "@/pages/RegionByIdPage";
 
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
@@ -30,6 +31,7 @@ export const AppRouter = () => {
       <Route path="/regions" element={<FeedPage />} />
       <Route path="/send_email" element={<SendEmail />} />
       <Route path="/send_password" element={<SendPassword />} />
+      <Route path="/regionss" element={<RegionByIdPage />} />
 
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
