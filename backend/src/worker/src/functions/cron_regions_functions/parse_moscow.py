@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from .schemas import BlockRegionalRepresentation
 
 
-async def parse_moscow(soup: BeautifulSoup):
+def parse_moscow(soup: BeautifulSoup):
     """
     Функция для парсинга данных о Москве.
     Возвращает данные о Москве в формате словаря.
@@ -17,10 +17,10 @@ async def parse_moscow(soup: BeautifulSoup):
     moscov_contact = moscov_contact.find('p', class_='white_region') if moscov_contact else None
 
     if moscov_name and moscov_lider and moscov_contact:
-        return BlockRegionalRepresentation(**{
+        return {
             'federal_district': None,
             'region_name': moscov_name.text.strip(),
             'leader': moscov_lider.text.strip(),
             'contacts': moscov_contact.text.strip()
-        })
+        }
     return None

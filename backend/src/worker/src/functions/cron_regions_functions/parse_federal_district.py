@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 
 
-async def parse_federal_district(soup: BeautifulSoup):
+def parse_federal_district(soup: BeautifulSoup):
 	"""
 	Парсит федеральные округа.
 	Возвращает список федеральных округов.

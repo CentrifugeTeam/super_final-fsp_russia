@@ -33,6 +33,7 @@ class UsersRouter(CrudAPIRouter):
                 password: Annotated[str, Form()],
                 email: Annotated[str, Form()],
                 middle_name: Annotated[str | None, Form()] = None,
+                about: Annotated[str | None, Form()] = None,
                 photo: UploadFile | None = None,
                 session: AsyncSession = Depends(self.get_session),
         ):
@@ -52,7 +53,7 @@ class UsersRouter(CrudAPIRouter):
             try:
                 user = create_schema(username=username, first_name=first_name, middle_name=middle_name,
                                      last_name=last_name,
-                                     email=email, password=password)
+                                     email=email, password=password, about=about)
             except ValidationError as e:
                 raise HTTPException(status_code=422, detail=e.errors())
             return await user_manager.create_user(session, user, file=photo)

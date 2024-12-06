@@ -9,14 +9,14 @@ from gigachat.models import ChatCompletion
 from ...conf import BASE_PATH
 from ...exceptions import FileDoesntSave
 from logging import getLogger
+from .conf import model
 
 logger = getLogger(__name__)
-default_prompt = 'сгенерируй изображение без людей, где будет только изображенно главный символ спорта: футбол'
 
 
 class IAFile:
 
-    def __init__(self, model: GigaChat):
+    def __init__(self):
         """
         Инициализация класса IAFile.
 

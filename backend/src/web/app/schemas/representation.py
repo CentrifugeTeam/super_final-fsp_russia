@@ -1,26 +1,28 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Literal
+
+from . import ReadUser
 
 
-class FederalDistrictBase(BaseModel):
-	district_name: str
+class RepresentationBase(BaseModel):
+    name: str
+    photo_url: str | None
+    contacts: str | None
+    type: Literal['region', 'federal']
 
-	class Config:
-		orm_mode = True
 
-class RegionalRepresentationBase(BaseModel):
-	region_name: str
-	leader_id: Optional[int] = None
-	contacts: Optional[str] = None
-	federal_district_id: int
+class ReadRepresentation(RepresentationBase):
+    id: int
 
-	class Config:
-		orm_mode = True
 
-class RegionalUsersBase(BaseModel):
-	representation_id: int
-	user_id: int
-	is_staff: bool
+class RegionRepresentationBase(BaseModel):
+    representation: ReadRepresentation
+    leader: ReadUser
 
-	class Config:
-		orm_mode = True
+
+class ReadRegionRepresentation(RegionRepresentationBase):
+    id: int
+
+
+class ReadFederalRepresentation(BaseModel):
+    representation: ReadRepresentation
