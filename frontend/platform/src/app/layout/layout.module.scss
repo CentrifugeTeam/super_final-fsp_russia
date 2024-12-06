@@ -8,6 +8,10 @@
 
   .main {
     flex: 1; /* Занимает оставшееся пространство */
+
+		.content{
+			margin-top: 192px;
+		}
   }
 
   @media (max-width: 768px) {
