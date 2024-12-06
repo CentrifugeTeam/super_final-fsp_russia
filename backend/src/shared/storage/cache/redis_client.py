@@ -13,4 +13,11 @@ class RedisClient(Redis):
             ids[key] = last_id
             yield key, payload
 
+    async def forgot_password(self, token: str, user):
+        await self.set(token, user.id)
 
+
+    async def reset_password(self, token: str):
+        user_id = int(await self.get(token))
+        await self.delete(token)
+        return user_id

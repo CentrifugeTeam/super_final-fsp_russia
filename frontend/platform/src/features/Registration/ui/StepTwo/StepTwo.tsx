@@ -37,7 +37,7 @@ export const RegistrationStep2: React.FC<RegistrationStep2Props> = ({
   return (
     <div className="flex flex-col gap-3">
       <div className="items-center gap-1.5">
-        <Label size="text-lg" htmlFor="login" className="mb-4">
+        <Label size="text-lg" htmlFor="login" className="mb-4 text-[#333333]">
           Логин
         </Label>
         <Input
@@ -54,7 +54,7 @@ export const RegistrationStep2: React.FC<RegistrationStep2Props> = ({
       </div>
 
       <div className="items-center gap-1.5">
-        <Label size="text-lg" htmlFor="email">
+        <Label size="text-lg" htmlFor="email" className="text-[#333333]">
           Email
         </Label>
         <Input
@@ -71,7 +71,7 @@ export const RegistrationStep2: React.FC<RegistrationStep2Props> = ({
       </div>
 
       <div className="items-center gap-1.5">
-        <Label size="text-lg" htmlFor="password">
+        <Label size="text-lg" htmlFor="password" className="text-[#333333]">
           Пароль
         </Label>
         <Input
@@ -88,7 +88,11 @@ export const RegistrationStep2: React.FC<RegistrationStep2Props> = ({
       </div>
 
       <div className="items-center gap-1.5">
-        <Label size="text-lg" htmlFor="confirmPassword">
+        <Label
+          size="text-lg"
+          htmlFor="confirmPassword"
+          className="text-[#333333]"
+        >
           Повторите пароль
         </Label>
         <Input
