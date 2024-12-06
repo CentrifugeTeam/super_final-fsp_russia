@@ -7,7 +7,10 @@
   align-items: center;
 
   .main {
-    flex: 1; /* Занимает оставшееся пространство */
+    // flex: 1; /* Занимает оставшееся пространство */
+    margin-top: 192px;
+    width: 100vw;
+		margin-bottom: 160px;
   }
 
   @media (max-width: 768px) {

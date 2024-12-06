@@ -7,15 +7,79 @@
   margin-bottom: 10px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  padding-left: 50px;
+  padding-right: 100px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  gap: 23px;
 
-  h1 {
-    font-size: 18px;
+  /* Установим фиксированную высоту для всех ячеек */
+  grid-auto-rows: 111px; /* или можно использовать minmax для вариативности */
+
+  .logo {
+    width: auto;
+    height: 100%;
+    object-fit: contain;
+    max-height: 50px;
   }
-  h2 {
-    font-size: 14px;
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column; /* Смена на вертикальную ориентацию */
+    padding-left: 20px;
+    padding-right: 20px;
+    gap: 10px; /* Меньше отступов для мобильных устройств */
+    height: auto; /* Высота адаптируется к содержимому */
+
+    /* Уменьшаем размеры шрифтов на мобильных устройствах */
+    h1 {
+      font-size: 16px;
+    }
+
+    h2 {
+      font-size: 12px;
+    }
+
+    .press {
+      display: none;
+    }
+    .qrs {
+      margin-left: 0;
+      //   justify-content: center; /* Центрируем QR-коды */
+      gap: 10px; /* Добавляем отступы между QR-кодами */
+      display: flex;
+      flex-direction: row;
+      width: auto;
+      img {
+        height: 100%;
+        object-fit: contain;
+        width: 100px;
+        display: none;
+      }
+    }
   }
-  h1,
-  h2 {
-    color: #fff;
-  }
+}
+
+.footer > div {
+  height: 100%; /* Сюда мы применяем 100% от высоты родительского контейнера */
+  display: flex;
+  flex-direction: column;
+}
+
+.qrs {
+  margin-left: auto;
+  justify-content: space-between;
+}
+
+h1 {
+  font-size: 18px;
+}
+
+h2 {
+  font-size: 14px;
+}
+
+h1,
+h2 {
+  color: #fff;
 }

@@ -3,7 +3,7 @@ import LoginForm from "@/features/AuthByLogin/ui/LoginForm";
 import { useBackgroundImage } from "@/hooks/useBackgroundImage";
 
 export const LoginPage = () => {
-	useBackgroundImage("./backgroundImg.svg");
+  useBackgroundImage("./backgroundImg.svg");
 
   return (
     <div className={styles.wrapper}>
