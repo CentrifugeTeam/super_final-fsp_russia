@@ -24,8 +24,7 @@ class BaseUser(BaseModel):
     middle_name: str | None = None
     last_name: str
     email: EmailStr
-    is_superuser: bool
-    is_verified: bool
+    about: str | None = None
 
     def __acl__(self):
         return [
@@ -57,7 +56,8 @@ class ReadUser(BaseUser):
     """
     id: int
     photo_url: str
-    # is_superuser: bool
+    is_superuser: bool
+    is_verified: bool
 
 
 _UpdateUser = make_partial_model(BaseUser)
