@@ -11,12 +11,27 @@
 		width: 200px;
 	}
 
-	.regionText{
+	.leader{
 		margin-left: 19.5%;
 		width: 260px;
 	}
 
 	.contacts{
 		margin-left: 9.4%;
+	}
+}
+
+@media (max-width: 768px) {
+	.header{
+		margin-left: 0px;
+	}
+
+	.regionName {
+		padding: 0px;
+		width: 10px;
+	}
+
+	.contacts{
+		margin-right: 10%;
 	}
 }
