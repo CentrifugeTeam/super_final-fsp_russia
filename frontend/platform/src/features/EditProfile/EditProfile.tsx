@@ -3,9 +3,7 @@ import styles from "./profilepanel.module.scss";
 export const ProfilePanel = () => {
 	return (
 		<div className={styles.profilePanel}>
-			<div>
-
-			</div>
+			<h1>Профиль</h1>
 		</div>
 	);
 };
