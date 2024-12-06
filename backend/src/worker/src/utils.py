@@ -9,8 +9,9 @@ from typing import Generic, TypeVar, Callable
 from service_calendar.app.utils.email_sender import SMTPMessage
 from .parser_pdf.parser import Row, AgeGroupSchema
 from .settings import settings as conf_settings
+from .exceptions import ResourceExistsException
 
-from shared.storage.db.models import EventType, SportEvent, AgeGroup, Location, Competition, User
+from shared.storage.db.models import EventType, SportEvent, AgeGroup, Location, Competition, User, Role
 from logging import getLogger
 from web.app.schemas.users import BaseUser, CreateUser
 from web.app.utils.users import user_manager, role_manager
@@ -123,7 +124,7 @@ def generate_random_password(length: int = 12) -> str:
     return ''.join(random.choices(characters, k=length))
 
 
-async def get_or_create_user(session: AsyncSession, full_name: str, email: str | None = None):
+async def create_user(session: AsyncSession, full_name: str, email: str | None = None):
     """
     Получаем пользователя по имени или создаем нового, если его нет в базе.
     """
@@ -160,14 +161,21 @@ async def get_or_create_user(session: AsyncSession, full_name: str, email: str |
     # Проверяем, есть ли уже пользователь с таким именем
     result = await session.execute(select(User).filter(User.username == user_data.username))
     user = result.scalar_one_or_none()
+    if user:
+        return user
+    # Если пользователя нет, создаем его через user_manager
+    async with session.begin_nested():
+        async def _if_dont_exist(session, _dict, model):
+            obj = model(**_dict)
+            await session.flush()
+            return obj
 
-    if user is None:
-        # Если пользователя нет, создаем его через user_manager
-        async with session.begin_nested():
-            user: User = await user_manager.create_user(session, in_obj=user_data, commit=False)
-            role = await role_manager.get_or_create(session, simple_filters={'name': 'federation'})
+        user: User = await user_manager.create_user(session, in_obj=user_data, commit=False,
+                                                    refresh_attribute_names=['roles'])
+        role1 = await _create_if_dont_exist(session, {'name': 'leader'}, Role, _if_dont_exist)
+        role2 = await _create_if_dont_exist(session, {'name': 'region_member'}, Role, _if_dont_exist)
+        user.roles = [role1, role2]
+        await session.flush()
+        return user
 
-
-        logger.info(f"Создан новый пользователь: {user_data.username}")
-
-    return user
+    logger.info(f"Создан новый пользователь: {user_data.username}")

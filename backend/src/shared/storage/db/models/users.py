@@ -22,6 +22,16 @@ class User(IDMixin, Base):
     files: Mapped[list['File']] = relationship(back_populates='user', secondary='user_files', cascade='all, delete')
     roles: Mapped[list['Role']] = relationship(secondary='user_roles', back_populates='users')
     type_events: Mapped[list['EventType']] = relationship(back_populates='users', secondary='user_settings')
+
+    async def get_principals(self):
+        roles = await self.awaitable_attrs.roles
+        roles = [role.name for role in roles]
+        if self.is_superuser:
+            roles.append('superuser')
+        if self.is_verified:
+            roles.append('verified')
+        return roles
+
     # leader: Mapped['RegionalRepresentation'] = relationship(back_populates='leader')
 
 

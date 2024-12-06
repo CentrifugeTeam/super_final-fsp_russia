@@ -1,0 +1,2 @@
+class ResourceExistsException(Exception):
+    pass

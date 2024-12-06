@@ -67,6 +67,7 @@ class UsersManager(BaseManager):
             file: UploadFile | None = None,
             *,
             commit: bool = True,
+            refresh_attribute_names: Iterable[str] | None = None,
             **attrs: Any,
     ) -> ModelT:
 
@@ -90,7 +91,7 @@ class UsersManager(BaseManager):
         db_obj = self.model(**create_data)
         session.add(db_obj)
         await self.save(session, commit=commit)
-        await session.refresh(db_obj)
+        await session.refresh(db_obj, attribute_names=refresh_attribute_names)
         return db_obj
 
     async def create_yandex_user(
