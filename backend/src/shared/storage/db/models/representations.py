@@ -13,6 +13,7 @@ class FederalRegionRepresentation(IDMixin, Base):
 class FederalRepresentation(IDMixin, Base):
     __tablename__ = 'federal_representations'
     representation_id: Mapped[int] = mapped_column(ForeignKey('representations.id', ondelete='CASCADE'))
+    # regions
 
 
 class RegionalRepresentation(IDMixin, Base):
@@ -35,7 +36,7 @@ class Representation(IDMixin, Base):
 
 class RepresentationStuff(IDMixin, Base):
     __tablename__ = 'representation_stuff'
-    representation_id: Mapped[int] = mapped_column(ForeignKey('regional_representations.id', ondelete='CASCADE'))
+    representation_id: Mapped[int] = mapped_column(ForeignKey('representations.id', ondelete='CASCADE'))
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     is_logged_in: Mapped[bool] = mapped_column(default=False)
 

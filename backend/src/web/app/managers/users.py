@@ -69,32 +69,29 @@ class UsersManager(BaseManager):
             commit: bool = True,
             **attrs: Any,
     ) -> ModelT:
-        async with session.begin():
-            in_obj.password = self.password_helper.hash(in_obj.password)
-            create_data = in_obj.model_dump()
-            create_data.update({'photo_url': default_user_photo_url})
 
-            # Добавляем дефолтные значения полей для валидации уникальности
-            for field, default in self.defaults.items():
-                if field not in create_data:
-                    create_data[field] = default
+        in_obj.password = self.password_helper.hash(in_obj.password)
+        create_data = in_obj.model_dump()
+        create_data.update({'photo_url': default_user_photo_url})
 
-            await self.run_db_validation(session, in_obj=create_data)
-            if file is not None:
-                try:
-                    photo_url = await _save_file_to_static(file)
-                    create_data['photo_url'] = photo_url
-                except Exception as e:
-                    pass
+        # Добавляем дефолтные значения полей для валидации уникальности
+        for field, default in self.defaults.items():
+            if field not in create_data:
+                create_data[field] = default
 
-            db_obj = self.model(**create_data)
-            session.add(db_obj)
-            await self.save(session, commit=commit)
-            await session.refresh(db_obj)
-            return db_obj
-            # stmt = select(Role).where(Role.name == 'role:costumer')
-            # costumer_role = await session.scalar(stmt)
-            # user.roles = [costumer_role]
+        await self.run_db_validation(session, in_obj=create_data)
+        if file is not None:
+            try:
+                photo_url = await _save_file_to_static(file)
+                create_data['photo_url'] = photo_url
+            except Exception as e:
+                pass
+
+        db_obj = self.model(**create_data)
+        session.add(db_obj)
+        await self.save(session, commit=commit)
+        await session.refresh(db_obj)
+        return db_obj
 
     async def create_yandex_user(
             self,

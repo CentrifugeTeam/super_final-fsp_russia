@@ -11,21 +11,20 @@ logger = getLogger(__name__)
 
 
 async def save_region_to_db(session: AsyncSession, region_data):
-	"""
-	Сохраняет данные о регионе в базу данных.
-	"""
-	try:
-		# Валидируем данные для региона
-		region_data = BlockRegionalRepresentation(
-			region_name=region_data['region_name'],
-			contacts=region_data['contacts'],
-        leader=region_data['leader'],
-        federal_district=region_data['federal_district'],
+    """
+    Сохраняет данные о регионе в базу данных.
+    """
+    try:
+        # Валидируем данные для региона
+        block = BlockRegionalRepresentation(
+            region_name=region_data['region_name'],
+            contacts=region_data['contacts'],
+            leader=region_data['leader'],
+            federal_district=region_data['federal_district'])
+    except ValidationError as e:
+        logger.error(f"Ошибка валидации данных для региона {region_data['region_name']}: {e}")
+        return
 
-		)
-	except ValidationError as e:
-		logger.error(f"Ошибка валидации данных для региона {region_data['region_name']}: {e}")
-		return
 
     # Ищем или создаем пользователя для лидера
     leader_user = await get_or_create_user(session, block.leader, block.contacts)
@@ -45,9 +44,9 @@ async def save_region_to_db(session: AsyncSession, region_data):
         await session.commit()
     except IntegrityError:
         await session.rollback()
-        logger.warning(f"Регион {block['region_name']} уже существует в базе данных.")
     else:
+        pass
         # Сохраняем пользователя, связанного с регионом
-        region_users = RegionalUsers(region_id=region.id, user_id=leader_user.id, is_staff=True)
-        session.add(region_users)
-        await session.commit()
+        # region_users = RegionalUsers(region_id=region.id, user_id=leader_user.id, is_staff=True)
+        # session.add(region_users)
+        # await session.commit()

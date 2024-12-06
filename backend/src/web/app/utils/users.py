@@ -6,6 +6,7 @@ from ..auth.transport import AppTransport
 from ..conf import settings
 from ..managers.users import UsersManager
 from ..dependencies.session import get_session
+from ..managers.role import RoleManager
 
 transport = AppTransport()
 
@@ -16,5 +17,6 @@ def get_strategy():
 
 backend = AuthenticationBackend(name='jwt', get_strategy=get_strategy, transport=transport)
 user_manager = UsersManager()
+role_manager = RoleManager()
 
 authenticator = Authenticator(backend, get_session)

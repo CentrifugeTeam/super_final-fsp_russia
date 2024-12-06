@@ -26,3 +26,31 @@ class ReadRegionRepresentation(RegionRepresentationBase):
 
 class ReadFederalRepresentation(BaseModel):
     representation: ReadRepresentation
+
+
+class UserRegion(BaseModel):
+    leader: str
+    region_name: str
+    contacts: str
+
+
+class LeaderBase(BaseModel):
+    fio: str
+    username: str
+
+
+class FederalRepresentationBase(BaseModel):
+    region_name: str
+    leader: LeaderBase
+    contacts: str
+
+class ReadFederalRepresentationBase(FederalRepresentationBase):
+    id: int
+
+class FederalRepresentation(BaseModel):
+    region: ReadFederalRepresentationBase
+    name: str
+
+
+
+

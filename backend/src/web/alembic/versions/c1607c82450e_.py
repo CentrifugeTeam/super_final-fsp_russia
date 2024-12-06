@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 8fb83305a32e
+Revision ID: c1607c82450e
 Revises: 
-Create Date: 2024-12-06 18:10:41.227868
+Create Date: 2024-12-06 21:57:32.338470
 
 """
 from typing import Sequence, Union
@@ -19,7 +19,7 @@ from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
 
 
 # revision identifiers, used by Alembic.
-revision: str = '8fb83305a32e'
+revision: str = 'c1607c82450e'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -51,6 +51,15 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('representations',
+    sa.Column('name', sa.String(), nullable=False),
+    sa.Column('photo_url', sa.String(), nullable=True),
+    sa.Column('contacts', sa.String(), nullable=True),
+    sa.Column('type', sa.String(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
+    )
     op.create_table('roles',
     sa.Column('name', sa.String(length=90), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
@@ -71,6 +80,7 @@ def upgrade() -> None:
     sa.Column('last_name', sa.String(), nullable=True),
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('photo_url', sa.String(), nullable=False),
+    sa.Column('about', sa.String(length=100), nullable=True),
     sa.Column('is_superuser', sa.Boolean(), nullable=False),
     sa.Column('is_verified', sa.Boolean(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
@@ -90,6 +100,12 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['type_event_id'], ['event_types.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('federal_representations',
+    sa.Column('representation_id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['representation_id'], ['representations.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('oauth_accounts',
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('provider', sa.String(length=255), nullable=False),
@@ -99,15 +115,22 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('regional_representations',
-    sa.Column('region_name', sa.String(), nullable=False),
-    sa.Column('region_url', sa.String(), nullable=True),
-    sa.Column('leader_id', sa.Integer(), nullable=True),
-    sa.Column('contacts', sa.String(), nullable=True),
+    op.create_table('region_representations',
+    sa.Column('representation_id', sa.Integer(), nullable=False),
+    sa.Column('leader_id', sa.Integer(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['leader_id'], ['users.id'], ondelete='SET NULL'),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('region_name')
+    sa.ForeignKeyConstraint(['leader_id'], ['users.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['representation_id'], ['representations.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('representation_stuff',
+    sa.Column('representation_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('is_logged_in', sa.Boolean(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['representation_id'], ['representations.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('user_files',
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -159,12 +182,12 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('type', 'name', name='unique_type_and_name')
     )
-    op.create_table('regional_users',
-    sa.Column('representation_id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
+    op.create_table('federation_region_representations',
+    sa.Column('federal_district_id', sa.Integer(), nullable=False),
+    sa.Column('region_representation_id', sa.Integer(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['representation_id'], ['regional_representations.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['federal_district_id'], ['federal_representations.id'], ),
+    sa.ForeignKeyConstraint(['region_representation_id'], ['region_representations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
@@ -179,20 +202,23 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_table('regional_users')
+    op.drop_table('federation_region_representations')
     op.drop_table('competitions')
     op.drop_table('age_groups')
     op.drop_table('user_teams')
     op.drop_table('user_settings')
     op.drop_table('user_roles')
     op.drop_table('user_files')
-    op.drop_table('regional_representations')
+    op.drop_table('representation_stuff')
+    op.drop_table('region_representations')
     op.drop_table('oauth_accounts')
+    op.drop_table('federal_representations')
     op.drop_table('events')
     op.drop_index(op.f('ix_users_username'), table_name='users')
     op.drop_table('users')
     op.drop_table('teams')
     op.drop_table('roles')
+    op.drop_table('representations')
     op.drop_table('notifications')
     op.drop_table('locations')
     op.drop_table('files')
