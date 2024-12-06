@@ -11,6 +11,7 @@ import {
   validateLogin,
   validatePassword,
 } from "@/features/Registration/utils/validators";
+import { useVkAuth } from "@/shared/api/vkAuth";
 
 export const LoginForm = () => {
   const [loginInput, setLogin] = useState("");
@@ -18,6 +19,7 @@ export const LoginForm = () => {
   const { mutate, status, error, data } = useLoginMutation();
   const nav = useNavigate();
   const dispatch = useDispatch();
+  const { startAuth } = useVkAuth(); // Импортируем функцию начала авторизации
 
   // Состояния для ошибок
   const [errors, setErrors] = useState({
@@ -132,7 +134,11 @@ export const LoginForm = () => {
       >
         Войти с Яндекс ID
       </Button>
-      <Button size="auth" className="bg-[#0277FF] hover:bg-[#0067dd]">
+      <Button
+        size="auth"
+        className="bg-[#0277FF] hover:bg-[#0067dd]"
+        onClick={startAuth}
+      >
         Войти через VK ID
       </Button>
       <p className={styles.registerText}>
