@@ -7,7 +7,7 @@ export const ProtectedRoute = () => {
     (state: RootState) => state.auth.isAuthenticated
   );
 
-  // Если не авторизован, перенаправляем на страницу логина
+  // Если не авторизован, перенаправляем на страницу логина только на защищенных маршрутах
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
