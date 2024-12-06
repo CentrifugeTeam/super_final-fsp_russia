@@ -10,9 +10,9 @@ class User(IDMixin, Base):
     __tablename__ = 'users'
     username: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
     password: Mapped[str] = mapped_column(String, nullable=True)  # if user registered with oauth2 provider
-    first_name: Mapped[str] = mapped_column(String, nullable=False)
+    first_name: Mapped[str] = mapped_column(String, nullable=True)
     middle_name: Mapped[str] = mapped_column(String, nullable=True)
-    last_name: Mapped[str] = mapped_column(String, nullable=False)
+    last_name: Mapped[str] = mapped_column(String, nullable=True)
     email: Mapped[str] = mapped_column(String, nullable=False)
     photo_url: Mapped[str] = mapped_column(String)
     is_superuser: Mapped[bool] = mapped_column(Integer, default=False)
