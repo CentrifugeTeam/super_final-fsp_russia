@@ -1,8 +1,7 @@
 from secrets import token_urlsafe
 from typing import Iterable, Any, Optional
-
+import jwt
 from fastapi import UploadFile
-from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_sqlalchemy_toolkit.model_manager import CreateSchemaT, ModelT
 from fastapi_users.password import PasswordHelperProtocol, PasswordHelper
 from sqlalchemy import UnaryExpression, select
@@ -13,10 +12,13 @@ from shared.storage.cache.redis_client import RedisClient
 from shared.storage.db.models import User, Role, OAuthAccount
 from .base import BaseManager
 from ..schemas.users import UserCredentials
+from ..exceptions import InvalidResetPasswordToken
 from ..services.oauth import YandexUserInfo
 from ..services.oauth.base import OAuth2Response
 from ..services.oauth.vk_oauth import VKUserInfo
 from ..managers.files import _save_file_to_static
+from ..conf import settings
+from secrets import token_urlsafe
 
 default_user_photo_url = '/staticfiles/img/user.png'
 
@@ -32,6 +34,20 @@ class UsersManager(BaseManager):
         else:
             self.password_helper = password_helper  # pragma: no cover
         super().__init__(User, default_ordering)
+
+    async def forgot_password(self, user: User, redis_client: RedisClient):
+        token = token_urlsafe(32)
+        await redis_client.forgot_password(token, user)
+        return token
+
+    async def reset_password(self, session: AsyncSession, redis: RedisClient, token: str, new_password: str):
+        user_id = await redis.reset_password(token)
+        user: User = await self.get_or_404(session, id=user_id)
+
+        user.password = self.password_helper.hash(new_password)
+        session.add(user)
+        await session.commit()
+        return user
 
     async def create_user(
             self,
