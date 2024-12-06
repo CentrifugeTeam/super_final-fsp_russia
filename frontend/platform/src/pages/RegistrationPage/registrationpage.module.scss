@@ -2,8 +2,10 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  // background-color: rgb(59, 58, 58);
+  background-color: #2701fd65;
+  height: 100vh;
   justify-content: center;
+  backdrop-filter: blur(1px);
 
   .content {
     display: flex;
