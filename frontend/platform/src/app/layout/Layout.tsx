@@ -18,9 +18,7 @@ export const Layout = () => {
     <div className={styles.layout}>
       {shouldShowHeader && <Header />}
       <main className={styles.main}>
-        <div className={styles.content}>
-          <Outlet />
-        </div>
+        <Outlet />
       </main>
       {shouldShowFooter && <Footer />}
     </div>

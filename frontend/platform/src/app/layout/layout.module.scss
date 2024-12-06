@@ -7,11 +7,9 @@
   align-items: center;
 
   .main {
-    flex: 1; /* Занимает оставшееся пространство */
-
-		.content{
-			margin-top: 192px;
-		}
+    // flex: 1; /* Занимает оставшееся пространство */
+    margin-top: 192px;
+    width: 100vw;
   }
 
   @media (max-width: 768px) {
