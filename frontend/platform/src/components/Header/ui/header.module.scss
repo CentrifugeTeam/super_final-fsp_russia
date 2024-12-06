@@ -6,9 +6,31 @@
   margin-top: 10px;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
   color: #ffffff;
-  padding-left: 35px;
+  padding: 20px;
+
+  .logoMenu {
+    display: flex;
+    align-items: center;
+
+    .logo {
+      max-height: 50px;
+      margin-right: 20px;
+    }
+
+    .menuIcon {
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      transition: transform 0.3s;
+      display: none; // Скрываем по умолчанию
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
 
   .links {
     display: flex;
@@ -16,30 +38,48 @@
     justify-content: space-around;
     color: #ffffff;
     width: 100%;
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+
+    a {
+      margin: 0 10px;
+    }
   }
 
-  /* Добавим адаптив для телефонов */
+  .links.open {
+    max-height: 300px; // Adjust this value based on the height of your menu
+    opacity: 1;
+  }
+
+  // Мобильная версия
   @media (max-width: 768px) {
     flex-direction: column;
     height: auto;
-    padding: 30px;
     align-items: flex-start;
-    font-size: 20px;
-    font-weight: bold;
-    // justify-content: flex-start;
 
-    .links {
-      display: flex;
-      align-items: flex-start;
-      color: #ffffff;
+    .logoMenu {
       width: 100%;
-      flex-direction: column;
-      gap: 35px;
-      margin-top: 50px;
+      justify-content: space-between;
+
+      .menuIcon {
+        display: block; // Показываем только в мобильной версии
+      }
     }
 
-    img {
-      height: auto;
+    .links {
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      align-items: flex-start;
+      font-size: 20px;
+      font-weight: bold;
+
+      &.open {
+        max-height: 300px; // Adjust this value based on the height of your menu
+        opacity: 1;
+      }
     }
   }
 }
