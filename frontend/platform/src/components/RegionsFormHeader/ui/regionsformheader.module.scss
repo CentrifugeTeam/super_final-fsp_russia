@@ -1,9 +1,22 @@
 .header{
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-}
+	margin-left: 3.7%;
 
-.text{
-	color: white;
+	.text{
+		color: white;
+	}
+
+	.regionName{
+		width: 200px;
+	}
+
+	.regionText{
+		margin-left: 19.5%;
+		width: 260px;
+	}
+
+	.contacts{
+		margin-left: 9.4%;
+	}
 }

@@ -1,0 +1,28 @@
+.region{
+	background-color: #3B3671;
+	height: 70px;
+	display: flex;
+	align-items: center;
+	padding-left: 4%;
+	padding-right: 4%;
+	margin-top: 15px;
+	margin-bottom: 15px;
+	border-radius: 5px;
+
+	.text{
+		color: white;
+	}
+
+	.regionName{
+		width: 200px;
+	}
+
+	.regionText{
+		margin-left: 20%;
+		width: 260px;
+	}
+
+	.contacts{
+		margin-left: 10%;
+	}
+}

@@ -1,0 +1,23 @@
+.header{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 25px;
+	margin-bottom: 34px;
+	margin-left: 4%;
+	margin-right: 4%;
+
+	.headerText{
+		font-size: 22px;
+	}
+
+	.arrow {
+		transition: transform 0.5s ease-in-out; /* Плавная анимация поворота */
+		cursor: pointer;
+	}
+
+	.arrow.open {
+		transform: rotate(180deg); /* Поворот на 180 градусов, если открыто */
+	}
+}
+
