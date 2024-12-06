@@ -31,7 +31,7 @@ class UsersRouter(CrudAPIRouter):
                 first_name: Annotated[str, Form()],
                 last_name: Annotated[str, Form()],
                 password: Annotated[str, Form()],
-                email: Annotated[str | None, Form()] = None,
+                email: Annotated[str, Form()],
                 middle_name: Annotated[str | None, Form()] = None,
                 photo: UploadFile | None = None,
                 session: AsyncSession = Depends(self.get_session),
