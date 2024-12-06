@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 
+
 class FederalDistrictBase(BaseModel):
 	district_name: str
 

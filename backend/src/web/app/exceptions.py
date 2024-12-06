@@ -7,3 +7,6 @@ class FileDoesntSave(Exception):
 class InvalidResetPasswordToken(Exception):
     pass
 
+
+class UserAlreadyVerifiedException(Exception):
+    pass

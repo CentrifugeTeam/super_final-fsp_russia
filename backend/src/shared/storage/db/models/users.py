@@ -1,5 +1,5 @@
 from .base import Base, IDMixin
-from sqlalchemy import Column, Integer, String, UniqueConstraint, ForeignKey
+from sqlalchemy import Column, Integer, String, UniqueConstraint, ForeignKey, Boolean
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 
@@ -15,7 +15,9 @@ class User(IDMixin, Base):
     last_name: Mapped[str] = mapped_column(String, nullable=True)
     email: Mapped[str] = mapped_column(String, nullable=False)
     photo_url: Mapped[str] = mapped_column(String)
-    is_superuser: Mapped[bool] = mapped_column(Integer, default=False)
+    about: Mapped[str] = mapped_column(String(length=100), nullable=True)
+    is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     oauth_accounts: Mapped[list['OAuthAccount']] = relationship(back_populates='user')
     files: Mapped[list['File']] = relationship(back_populates='user', secondary='user_files', cascade='all, delete')
     roles: Mapped[list['Role']] = relationship(secondary='user_roles', back_populates='users')
