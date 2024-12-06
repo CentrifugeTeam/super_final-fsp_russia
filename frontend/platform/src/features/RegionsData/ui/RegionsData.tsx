@@ -1,23 +1,24 @@
 import styles from "./regionsdata.module.scss";
-import RegionsFormHeader from "@/components/RegionsFormHeader/ui/RegionsFormHeader";
+import { RegionsFormHeader } from "@/components/RegionsFormHeader/ui";
 import { data } from "../api/regionsData";
 
 export const RegiosnData = () => {
 
   return (
 		<>
-			<h3>Регионы</h3>
+			<h1 className={styles.nameOfPage}>Регионы</h1>
 			<div className={styles.regionsForm}>
 					<div className={styles.headerForm}>
 						<RegionsFormHeader />
+						<hr />
 					</div>
 
-					<div>
+					<div className={styles.federalDistrict}>
 
-					</div>
 
-					<div>
+						<div className={styles.regions}>
 
+						</div>
 					</div>
 			</div>
 		</>

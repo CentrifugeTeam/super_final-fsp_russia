@@ -4,9 +4,9 @@ export const RegionsFormHeader = () => {
 
   return (
     <div className={styles.header}>
-			<p>Субъект РФ</p>
-			<p>Руководитель</p>
-			<p>Контакты</p>
+			<p className={styles.text}>Субъект РФ</p>
+			<p className={styles.text}>Руководитель</p>
+			<p className={styles.text}>Контакты</p>
 		</div>
   );
 };
