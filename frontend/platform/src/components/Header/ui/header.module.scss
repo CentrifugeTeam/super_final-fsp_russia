@@ -1,9 +1,12 @@
 .header {
+  position: fixed; /* Фиксируем заголовок */
+  top: 10px; /* Привязываем к верхней части окна */
+  left: 50%; /* Центрируем по горизонтали */
+  transform: translateX(-50%);
   width: 95vw;
   height: 100px;
   background-color: #1b1c21;
   border-radius: 10px;
-  margin-top: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -52,10 +55,9 @@
     padding-bottom: 20px;
   }
 
-  // Desktop version - always show links
   @media (min-width: 769px) {
     .links {
-      max-height: none; // Make sure links are always visible on desktop
+      max-height: none;
       opacity: 1;
       padding: 0;
     }

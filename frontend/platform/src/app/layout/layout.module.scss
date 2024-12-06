@@ -6,6 +6,10 @@
   // background: #000;
   align-items: center;
 
+  .main {
+    flex: 1; /* Занимает оставшееся пространство */
+  }
+
   @media (max-width: 768px) {
     max-width: 100%;
   }
