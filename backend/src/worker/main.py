@@ -1,54 +1,41 @@
 import asyncio
-from saq import CronJob, Queue
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from logging import getLogger, basicConfig, INFO, DEBUG
+import signal
+from src.worker import settings
+from saq.worker import start, Worker
 
-from .settings import settings as conf_settings
-from .functions.cron_pdf import cron_update_calendar_table
-
-logger = getLogger(__name__)
-
-
-# all functions take in context dict and kwargs
-async def test(ctx, *, a):
-    await asyncio.sleep(0.5)
-    # result should be json serializable
-    # custom serializers and deserializers can be used through Queue(dump=,load=)
-    return {"x": a}
+if __name__ == '__main__':
+    class GracefulExit(SystemExit):
+        code = 1
 
 
-async def startup(ctx):
-    logger.info('ctx %s', ctx)
-    logger.info('settings %s', conf_settings)
-    engine = create_async_engine(conf_settings.SQLALCHEMY_DATABASE_URL, echo=False)
-    async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
-    ctx["async_session_maker"] = async_session_maker
+    def raise_graceful_exit(*args):
+        tasks = asyncio.all_tasks(loop=loop)
+        for t in tasks:
+            t.cancel()
+
+        loop.stop()
+        print("Gracefully shutdown")
+        raise GracefulExit()
 
 
-
-async def shutdown(ctx):
-    pass
-    # await ctx["db"].disconnect()
-
-
-async def before_process(ctx):
-    ctx["job"].timeout = None
-    # logger.info("job %s and its timeout %d", ctx['job'], ctx["job"].timeout)
+    def do_something():
+        while True:
+            pass
 
 
-async def after_process(ctx):
-    pass
+    loop = asyncio.new_event_loop()
+    signal.signal(signal.SIGINT,  raise_graceful_exit)
+    signal.signal(signal.SIGTERM, raise_graceful_exit)
+    worker = Worker(**settings)
 
 
-queue = Queue.from_url(f'redis://{conf_settings.REDIS_HOST}')
+    async def worker_start() -> None:
+        try:
+            await worker.queue.connect()
+            await worker.start()
+        finally:
+            await worker.queue.disconnect()
 
-settings = {
-    "queue": queue,
-    "functions": [test],
-    "concurrency": 10,
-    "cron_jobs": [CronJob(cron_update_calendar_table, cron="* * * * * */5")],
-    "startup": startup,
-    "shutdown": shutdown,
-    "before_process": before_process,
-    "after_process": after_process,
-}
+
+    loop.run_until_complete(worker_start())
+

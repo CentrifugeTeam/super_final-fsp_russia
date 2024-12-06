@@ -1,0 +1,135 @@
+.block {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 532px;
+  background-color: #f2f2f2;
+  border-radius: 25px;
+  border: 2px solid #3169f2;
+  display: flex;
+  padding-left: 48px;
+  padding-right: 48px;
+  flex-direction: column;
+  box-sizing: border-box;
+  font-family: "Evolventa", Arial, sans-serif;
+  align-items: center;
+
+  .close {
+    margin-left: auto;
+    margin-top: 25px;
+    margin-right: 25px;
+    cursor: pointer;
+  }
+
+  .title {
+    text-align: left;
+    font-size: 24px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+  }
+
+  .input_block {
+    display: flex;
+    flex-direction: column;
+    width: 505px;
+
+    label {
+      font-size: 16px;
+    }
+
+    input {
+      margin-top: 18px;
+      height: 65px;
+      all: none;
+      border: 1px solid rgba(128, 128, 128, 0.589);
+      border-radius: 15px;
+      padding-left: 32px;
+      padding-right: 32px;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+  }
+
+  .show {
+    width: 218px;
+    height: 60px;
+    color: #3169f2;
+    border: 1px solid #3169f2;
+    background-color: #f2f2f2;
+    border-radius: 20px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    cursor: pointer;
+    font-family: "Evolventa", Arial, sans-serif;
+    font-size: 16px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+
+  .show:hover {
+    background: #3169f2;
+    color: white;
+  }
+
+  .errorText {
+    color: red;
+  }
+
+  @media (max-width: 768px) {
+    width: 90%;
+    height: 452px;
+    padding-left: 24px;
+    padding-right: 24px;
+
+    .title {
+      font-size: 20px;
+      margin-top: 15px;
+      margin-bottom: 30px;
+    }
+
+    .input_block {
+      width: 100%;
+
+      label {
+        font-size: 14px;
+      }
+
+      input {
+        height: 50px;
+        font-size: 14px;
+      }
+    }
+
+    .show {
+      width: 100%;
+      font-size: 14px;
+      height: 50px;
+    }
+
+    .close {
+      margin-top: 15px;
+      margin-right: 15px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    width: 85%;
+    height: 450px;
+
+    .input_block {
+      width: 100%;
+    }
+
+    .show {
+      width: 100%;
+    }
+
+    .title {
+      font-size: 18px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+  }
+}

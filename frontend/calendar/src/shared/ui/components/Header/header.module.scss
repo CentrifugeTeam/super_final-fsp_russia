@@ -1,0 +1,72 @@
+.header {
+  height: 100px;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+
+  .content {
+    width: 1440px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .logo {
+      margin-left: 30px;
+    }
+
+    .elements {
+      display: flex;
+      gap: 60px;
+			margin-left: 16px;
+			margin-right: 16px;
+
+      .elem {
+        font-family: "Evolventa", Arial, sans-serif;
+        font-size: 16px;
+        transition: 0.2s;
+
+        &:hover {
+          color: #3169f2;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .mobileMenuAndBell {
+			cursor: pointer;
+      display: flex;
+      align-items: center;
+			z-index: 999999;
+
+			img {
+				width: 24px;
+				height: 24px;
+			}
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .elem {
+    display: none;
+  }
+
+  .mobileMenu {
+    display: block;
+  }
+
+	.hr {
+		display: block;
+		color: #3169F2;
+	}
+}
+
+@media (min-width: 768px) {
+  .mobileMenu {
+    display: none;
+  }
+
+	.hr {
+		display: none;
+	}
+}
