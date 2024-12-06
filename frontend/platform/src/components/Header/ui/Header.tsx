@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { RootState } from "@/app/redux/store";
+import { RootState } from "@/app/redux/store"; // Ensure this path is correct
 import styles from "./header.module.scss";
 import Logo from "@/assets/logo_fsp.svg";
 import MenuIcon from "@/assets/burger_button.svg";
@@ -10,17 +10,21 @@ export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
-  );
-  const navigate = useNavigate();
+  ); // Check if the user is authenticated
+  const navigate = useNavigate(); // Use navigate to redirect to login or profile page
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/login"); // Перенаправление на страницу логина
-    }
-  }, [isAuthenticated, navigate]);
-
+  // Toggle the menu visibility
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  // Handle redirect to the appropriate page based on authentication
+  const handleAuthRedirect = () => {
+    if (isAuthenticated) {
+      navigate("/profile"); // Navigate to profile if authenticated
+    } else {
+      navigate("/login"); // Navigate to login if not authenticated
+    }
   };
 
   return (
@@ -40,7 +44,10 @@ export const Header = () => {
         <a>Календарь</a>
         <a>Статистика</a>
         <a>Контакты</a>
-        <a>{isAuthenticated ? "Личный кабинет" : "Войти"}</a>
+        {/* Conditionally render the "Личный кабинет" or "Войти" link */}
+        <a onClick={handleAuthRedirect}>
+          {isAuthenticated ? "Личный кабинет" : "Войти"}
+        </a>
       </div>
     </div>
   );

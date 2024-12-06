@@ -21,7 +21,8 @@ export const AppRouter = () => {
       <Route path="/registration" element={<RegistrationPage />} />
       <Route path="/auth_loading" element={<SendCode />} />
       <Route path="/auth_loading_vk" element={<SendCodeVk />} />
-      <Route path="/feed" element={<FeedPage />} /> {/* Открытый маршрут */}
+      <Route path="/about_us" element={<FeedPage />} />
+      {/* Открытый маршрут */}
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
         {/* Эти маршруты доступны только для авторизованных пользователей */}
