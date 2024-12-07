@@ -21,10 +21,6 @@ class ReadRegionRepresentationBase(BaseModel):
     leader: ReadUser
 
 
-class ReadFederalRepresentation(BaseModel):
-    representation: ReadRepresentation
-
-
 class UserRegion(BaseModel):
     leader: str
     region_name: str
@@ -32,20 +28,17 @@ class UserRegion(BaseModel):
 
 
 class LeaderBase(BaseModel):
-    fio: str
+    first_name: str
+    middle_name: str
+    last_name: str
     username: str
 
 
-class FederalRepresentationBase(BaseModel):
-    region_name: str
+class ReadRegionsCard(BaseModel):
+    name: str
     leader: LeaderBase
-    contacts: str
-
-
-class ReadFederalRepresentationBase(FederalRepresentationBase):
-    id: int
 
 
 class FederalRepresentation(BaseModel):
-    region: ReadFederalRepresentationBase
+    regions: list[ReadRegionsCard]
     name: str

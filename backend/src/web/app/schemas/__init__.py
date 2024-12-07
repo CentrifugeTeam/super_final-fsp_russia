@@ -1,2 +1,2 @@
 from .users import ReadUser
-from .representation import ReadRegionRepresentationBase, ReadFederalRepresentation
+from .representation import ReadRegionRepresentationBase

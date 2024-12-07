@@ -18,10 +18,12 @@ class User(IDMixin, Base):
     about: Mapped[str] = mapped_column(String(length=100), nullable=True)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+
     oauth_accounts: Mapped[list['OAuthAccount']] = relationship(back_populates='user')
     files: Mapped[list['File']] = relationship(back_populates='user', secondary='user_files', cascade='all, delete')
     roles: Mapped[list['Role']] = relationship(secondary='user_roles', back_populates='users')
     type_events: Mapped[list['EventType']] = relationship(back_populates='users', secondary='user_settings')
+    region_representation: Mapped['RegionRepresentation'] = relationship(back_populates='leader')
 
     async def get_principals(self):
         roles = await self.awaitable_attrs.roles
@@ -32,7 +34,6 @@ class User(IDMixin, Base):
             roles.append('verified')
         return roles
 
-    # leader: Mapped['RegionalRepresentation'] = relationship(back_populates='leader')
 
 
 class UserSettings(IDMixin, Base):
