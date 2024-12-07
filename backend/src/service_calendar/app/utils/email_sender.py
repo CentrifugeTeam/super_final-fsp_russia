@@ -8,7 +8,9 @@ from dataclasses import dataclass
 @dataclass
 class Message:
     title: str
+    url_for_button: str
     text: str
+
     text_on_button: str
 
 

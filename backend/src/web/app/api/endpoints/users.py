@@ -73,29 +73,37 @@ class UsersRouter(CrudAPIRouter):
         @self.patch('/me', response_model=ReadUser,
                     responses={**missing_token_or_inactive_user_response, **bad_request_response})
         async def func(
-                username: Annotated[str, Form()],
-                first_name: Annotated[str, Form()],
-                last_name: Annotated[str, Form()],
-                email: Annotated[str, Form()],
-                middle_name: Annotated[str | None, Form()] = None,
-                about: Annotated[str | None, Form()] = None,
+                username: str = Form(None),
+                first_name: str = Form(None),
+                last_name: str = Form(None),
+                email: str = Form(None),
+                middle_name: str = Form(None),
+                about: str = Form(None),
                 file: UploadFile | None = None,
                 session: AsyncSession = Depends(self.get_session),
                 user_in_db: User = Depends(authenticator.get_user()),
 
         ):
+            """
+            This function is used to update the current user. It takes in the following parameters:
+            - username: The username of the user.
+            - first_name: The first name of the user.
+            - last_name: The last name of the user.
+            - email: The email of the user.
+            - middle_name: The middle name of the user.
+            - about: The about of the user.
+            - file: The file of the user.
+            - session: The database session.
+            """
+
             try:
                 if file:
-                    photo_url = await _save_file_to_static(file)
+                    file = await _save_file_to_static(file)
 
-                    user = self.update_schema(username=username, first_name=first_name, middle_name=middle_name,
-                                              last_name=last_name,
-                                              photo_url=photo_url,
-                                              email=email, about=about)
-                else:
-                    user = self.update_schema(username=username, first_name=first_name, middle_name=middle_name,
-                                              last_name=last_name,
-                                              email=email, about=about)
+                user = self.update_schema(username=username, first_name=first_name, middle_name=middle_name,
+                                          last_name=last_name,
+                                          photo_url=file,
+                                          email=email, about=about)
             except ValidationError as e:
                 raise HTTPException(status_code=422, detail=e.errors())
             except FileDoesntSave as e:
