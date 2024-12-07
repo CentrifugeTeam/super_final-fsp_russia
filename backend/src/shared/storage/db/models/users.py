@@ -33,8 +33,8 @@ class User(IDMixin, Base):
     async def get_principals(self):
         rep = await self.awaitable_attrs.representation
         principals = {Authenticated, Everyone}
-
-        principals.add(f'representation:{rep.name}')
+        if rep is not None:
+            principals.add(f'representation:{rep.name}')
         for role in await self.awaitable_attrs.roles:
             principals.add(f"role:{role.name}")
         if self.is_superuser:

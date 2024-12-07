@@ -4,7 +4,7 @@ from fastapi import Depends, Body
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from crud.openapi_responses import missing_token_or_inactive_user_response, forbidden_response
-from ...utils.crud import PermissionCrudAPIRouter
+from ...utils.crud import PermissionCrudAPIRouter, CrudAPIRouter
 from shared.storage.db.models import Suggestion
 from fastapi_sqlalchemy_toolkit import ordering_depends
 from ...schemas.suggestions import UpdateSuggestion, ReadSuggestion, BaseSuggestion
@@ -17,7 +17,7 @@ manager = BaseManager(Suggestion)
 order_by = (Suggestion.status,)
 
 
-class Router(PermissionCrudAPIRouter):
+class Router(CrudAPIRouter):
 
     def __init__(self):
         super().__init__(ReadSuggestion,
