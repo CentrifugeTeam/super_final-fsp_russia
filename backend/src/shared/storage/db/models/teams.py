@@ -8,6 +8,8 @@ class Team(IDMixin, Base):
     __tablename__ = 'teams'
     name: Mapped[str] = mapped_column(String, unique=True)
     max_members: Mapped[int] = mapped_column(Integer)
+    region_representation_id: Mapped[int] = mapped_column(Integer, ForeignKey('region_representations.id'))
+
 
 
 class UserTeam(IDMixin, Base):
