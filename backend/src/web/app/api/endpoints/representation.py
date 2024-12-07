@@ -9,6 +9,7 @@ from ...dependencies import get_session
 from ...utils.crud import CrudAPIRouter
 from ...schemas import ReadRegionRepresentationBase
 from ...schemas.representation import FederalRepresentation
+from ...schemas import ReadCardRepresentation
 from ...managers.representation import RepresentationManager
 
 reps_manager = RepresentationManager()
@@ -30,7 +31,7 @@ class RepresentationAPIRouter(CrudAPIRouter):
     def _get_one(self):
         @self.get(
             '/{%s}' % self.resource_identifier,
-            response_model=self.schema,
+            response_model=ReadCardRepresentation,
             responses={**not_found_response}
 
         )
