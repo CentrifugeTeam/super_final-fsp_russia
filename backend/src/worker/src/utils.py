@@ -141,8 +141,7 @@ async def create_user(session: AsyncSession, full_name: str, email: str):
 
     # Генерируем username на основе email (если он есть)
     username = email.split('@')[0]
-    result = await session.execute(select(User).filter(User.username == username))
-    user = result.scalar_one_or_none()
+    user = await session.scalar(select(User).filter(User.username == username))
 
     if user:
         return user

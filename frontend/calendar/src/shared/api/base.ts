@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost/calendar/api";
+const API_URL = "https://centrifugo.tech/calendar/api";
 
 const api = axios.create({
   baseURL: API_URL,
