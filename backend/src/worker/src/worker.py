@@ -49,7 +49,7 @@ settings = {
     "functions": [test],
     "concurrency": 10,
     "cron_jobs": [CronJob(cron_update_calendar_table, cron="* * * * * */5"),
-                  CronJob(parse_and_save, cron="* * * * * */5")],
+                  CronJob(parse_and_save, cron="* * * * * */50")],
     "startup": startup,
     "shutdown": shutdown,
     "before_process": before_process,

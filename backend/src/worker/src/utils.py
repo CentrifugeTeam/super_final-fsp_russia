@@ -124,7 +124,7 @@ def generate_random_password(length: int = 12) -> str:
     return ''.join(random.choices(characters, k=length))
 
 
-async def create_user(session: AsyncSession, full_name: str, email: str | None = None):
+async def create_user(session: AsyncSession, full_name: str, email: str):
     """
     Получаем пользователя по имени или создаем нового, если его нет в базе.
     """
@@ -140,7 +140,11 @@ async def create_user(session: AsyncSession, full_name: str, email: str | None =
         middle_name = name_parts[2] if len(name_parts) > 2 else None
 
     # Генерируем username на основе email (если он есть)
-    username = email.split('@')[0] if email else generate_unique_username()
+    username = email.split('@')[0]
+    user = await session.scalar(select(User).filter(User.username == username))
+
+    if user:
+        return user
 
     # Если пароль не передан, генерируем случайный
     password = generate_random_password()
@@ -160,10 +164,7 @@ async def create_user(session: AsyncSession, full_name: str, email: str | None =
         return None  # Если данные невалидны, возвращаем None
 
     # Проверяем, есть ли уже пользователь с таким именем
-    result = await session.execute(select(User).filter(User.username == user_data.username))
-    user = result.scalar_one_or_none()
-    if user:
-        return user
+
     # Если пользователя нет, создаем его через user_manager
     async with session.begin_nested():
         async def _if_dont_exist(session, _dict, model):

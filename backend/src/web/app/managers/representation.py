@@ -2,12 +2,12 @@ from typing import Callable, Any, List
 
 from fastapi_pagination.bases import BasePage
 from fastapi_sqlalchemy_toolkit.model_manager import ModelT
-from sqlalchemy import UnaryExpression, Select, Row
+from sqlalchemy import UnaryExpression, Select, Row, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute, joinedload
 
 from .base import BaseManager
-from shared.storage.db.models import Representation, RegionRepresentation
+from shared.storage.db.models import Representation, RegionRepresentation, Team
 
 
 class RepresentationManager(BaseManager):
@@ -16,18 +16,18 @@ class RepresentationManager(BaseManager):
         super().__init__(Representation)
 
     async def paginated_list(
-        self,
-        session: AsyncSession,
-        order_by: InstrumentedAttribute | UnaryExpression | None = None,
-        filter_expressions: dict[InstrumentedAttribute | Callable, Any] | None = None,
-        nullable_filter_expressions: (
-            dict[InstrumentedAttribute | Callable, Any] | None
-        ) = None,
-        options: List[Any] | Any | None = None,
-        where: Any | None = None,
-        base_stmt: Select | None = None,
-        transformer: Callable | None = None,
-        **simple_filters: Any,
+            self,
+            session: AsyncSession,
+            order_by: InstrumentedAttribute | UnaryExpression | None = None,
+            filter_expressions: dict[InstrumentedAttribute | Callable, Any] | None = None,
+            nullable_filter_expressions: (
+                    dict[InstrumentedAttribute | Callable, Any] | None
+            ) = None,
+            options: List[Any] | Any | None = None,
+            where: Any | None = None,
+            base_stmt: Select | None = None,
+            transformer: Callable | None = None,
+            **simple_filters: Any,
     ) -> BasePage[ModelT | Row]:
         """
         Paginated list all representations.
@@ -75,3 +75,26 @@ class RepresentationManager(BaseManager):
             unique=True,
             **simple_filters,
         )
+
+    async def get_region_card(self, session: AsyncSession, id: int):
+        team_stmt = (
+            select(func.count(Team.id))
+            .filter(Team.region_representation_id == id)
+            .scalar_subquery()
+        )
+
+        stmt = (
+            select(RegionRepresentation, team_stmt.label("team_count"))
+        )
+
+        # Вызываем метод для получения фильтров SQLAlchemy из аргументов методов
+        # list и paginated_list
+        stmt = self.assemble_stmt(stmt, options=[joinedload(RegionRepresentation.leader),
+                                                 joinedload(RegionRepresentation.representation),
+                                                 joinedload(RegionRepresentation.federation_representation)])
+        result = await session.execute(stmt)
+        result = result.unique().all()
+        for i, row in enumerate(result):
+            row.Parent.children_count = row.children_count
+            result[i] = row.Parent
+        return result

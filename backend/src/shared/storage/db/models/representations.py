@@ -4,7 +4,6 @@ from .base import Base, IDMixin
 
 
 class RegionRepresentation(IDMixin, Base):
-    # TODO!
     __tablename__ = 'region_representations'
     representation_id: Mapped[int] = mapped_column(ForeignKey('representations.id', ondelete='CASCADE'))
     leader_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
