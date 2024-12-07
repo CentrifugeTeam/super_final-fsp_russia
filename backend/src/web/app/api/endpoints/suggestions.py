@@ -10,11 +10,11 @@ from ...utils.crud import PermissionCrudAPIRouter, CrudAPIRouter
 from shared.storage.db.models import Suggestion
 from fastapi_sqlalchemy_toolkit import ordering_depends
 from ...schemas.suggestions import UpdateSuggestion, ReadSuggestion, BaseSuggestion
-from ...managers import BaseManager
+from ...managers.suggestion import SuggestionManager
 from ...dependencies import get_session
 from ...utils.users import authenticator
 
-manager = BaseManager(Suggestion)
+manager = SuggestionManager(Suggestion)
 
 order_by = {'status': Suggestion.status}
 
@@ -76,6 +76,7 @@ class Router(CrudAPIRouter):
                                                        title='Вашу заявку одобрили! Смотрите подробнее:',
                                                        text_on_button='Заявка', text=text)
                                                )
+
             return model
 
     def _register_routes(self) -> list[Callable[..., Any]]:
