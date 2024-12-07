@@ -3,8 +3,12 @@ from typing import Callable, Any, cast, Annotated
 from fastapi import Depends, UploadFile, Form, File, HTTPException
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
+
+from crud.openapi_responses import bad_request_response
 from shared.crud import missing_token_or_inactive_user_response, forbidden_response
 from shared.storage.db.models import User
+from ...managers.files import _save_file_to_static
 
 from ...utils.crud import CrudAPIRouter
 from ...schemas.users import ReadUser, CreateUser, UpdateUser, ReadUserMe
@@ -66,16 +70,34 @@ class UsersRouter(CrudAPIRouter):
             return user
 
         @self.patch('/me', response_model=ReadUser,
-                    responses={**missing_token_or_inactive_user_response})
-        async def func(user: UpdateUser,
-                       session: AsyncSession = Depends(self.get_session),
-                       user_in_db: User=Depends(authenticator.get_user()),
+                    responses={**missing_token_or_inactive_user_response, **bad_request_response})
+        async def func(
+                username: Annotated[str, Form()],
+                first_name: Annotated[str, Form()],
+                last_name: Annotated[str, Form()],
+                email: Annotated[str, Form()],
+                middle_name: Annotated[str | None, Form()] = None,
+                about: Annotated[str | None, Form()] = None,
+                file: UploadFile | None = None,
+                session: AsyncSession = Depends(self.get_session),
+                user_in_db: User = Depends(authenticator.get_user()),
 
-                       ):
+        ):
+            try:
+                try:
+                    photo_url = await _save_file_to_static(file)
+                except Exception as e:
+                    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Could not upload file')
+                user = self.update_schema(username=username, first_name=first_name, middle_name=middle_name,
+                                          last_name=last_name,
+                                          photo_url=photo_url,
+                                          email=email, about=about)
+            except ValidationError as e:
+                raise HTTPException(status_code=422, detail=e.errors())
             return await user_manager.update(session, user_in_db, user)
 
     def _register_routes(self) -> list[Callable[..., Any]]:
-        return [self._me, self._create, self._get_one, self._get_all, self._update]
+        return [self._me, self._create, self._get_one, self._get_all]
 
     def get_or_404(self):
         async def wrapper(username: str, session: AsyncSession = Depends(self.get_session)):

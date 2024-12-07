@@ -66,7 +66,7 @@ _UpdateUser = make_partial_model(BaseUser)
 
 
 class UpdateUser(_UpdateUser):
-    photo_url: str | None = None
+    photo_url: str
 
 
 class UserCredentials(BaseModel):
