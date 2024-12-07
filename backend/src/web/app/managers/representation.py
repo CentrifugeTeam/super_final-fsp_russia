@@ -1,5 +1,6 @@
 from typing import Callable, Any, List
 
+from fastapi import HTTPException
 from fastapi_pagination.bases import BasePage
 from fastapi_sqlalchemy_toolkit.model_manager import ModelT
 from sqlalchemy import UnaryExpression, Select, Row, select, func
@@ -8,6 +9,7 @@ from sqlalchemy.orm import InstrumentedAttribute, joinedload, aliased
 
 from .base import BaseManager
 from shared.storage.db.models import Representation, RegionRepresentation, Team, User
+from ..schemas import ReadCardRepresentation
 
 
 class RepresentationManager(BaseManager):
@@ -97,5 +99,10 @@ class RepresentationManager(BaseManager):
                                                  joinedload(RegionRepresentation.representation),
                                                  joinedload(RegionRepresentation.federation_representation)],
                                   where=RegionRepresentation.id == id)
-        result = await session.execute(stmt)
-        return next(result.mappings().unique())
+        result = (await session.execute(stmt)).mappings().unique()
+        if not result:
+            raise HTTPException(status_code=404, detail="Representation not found")
+        result = next(result)
+        federal_name = result['RegionRepresentation'].federation_representation.name
+
+        return ReadCardRepresentation.model_validate({'federal_name': federal_name, **result}, from_attributes=True)

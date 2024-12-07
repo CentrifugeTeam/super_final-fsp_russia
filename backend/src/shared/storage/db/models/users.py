@@ -1,3 +1,5 @@
+from fastapi_permissions import Authenticated, Everyone
+
 from web.app.schemas.representation import RepresentationBase
 from .base import Base, IDMixin
 from sqlalchemy import Column, Integer, String, UniqueConstraint, ForeignKey, Boolean
@@ -28,15 +30,19 @@ class User(IDMixin, Base):
     region_representation: Mapped['RegionRepresentation'] = relationship(back_populates='leader')
     representation: Mapped[list['Representation']] = relationship(back_populates='users')
 
-
     async def get_principals(self):
-        roles = await self.awaitable_attrs.roles
-        roles = [role.name for role in roles]
+        rep = await self.awaitable_attrs.representation
+        principals = {Authenticated, Everyone}
+
+        principals.add(f'representation:{rep.name}')
+        for role in await self.awaitable_attrs.roles:
+            principals.add(f"role:{role.name}")
         if self.is_superuser:
-            roles.append('superuser')
+            principals.add(f'user:superuser')
         if self.is_verified:
-            roles.append('verified')
-        return roles
+            principals.add(f'user:verified')
+
+        return principals
 
     @property
     def fio(self):

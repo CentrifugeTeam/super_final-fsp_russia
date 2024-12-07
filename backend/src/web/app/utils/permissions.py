@@ -3,12 +3,11 @@ from fastapi_permissions import Authenticated, Everyone, Allow, configure_permis
 from .users import authenticator
 
 
-async def get_user_principals(user=Depends(authenticator.get_user(active=True))):
-    principals = await user.principals()
-    principals = principals + [Authenticated, Everyone]
+async def get_user_principals(user=Depends(authenticator.get_user())):
+    principals = await user.get_principals()
     return principals
 
 
-AclBatchPermission = [(Allow, 'role:admin', 'view')]
+AclBatchPermission = [(Allow, 'role:superuser', 'view')]
 
 Permission = configure_permissions(get_user_principals)
