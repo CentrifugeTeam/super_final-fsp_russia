@@ -5,6 +5,7 @@ import style from "./profilepage.module.scss";
 import { RequestEdit } from "@/features/RequestEdit";
 import { SolutionEdit } from "@/features/SolutionEdit"; // Импортируем компонент SolutionEdit
 import { RatingEdit } from "@/features/RatingEdit";
+import { NewRequest } from "../NewRequest";
 
 export const ProfilePage = () => {
   const location = useLocation();
@@ -27,6 +28,8 @@ export const ProfilePage = () => {
           <SolutionEdit />
         ) : activeComponent === "rating" ? ( // Добавляем условие для solutions
           <RatingEdit />
+        ) : activeComponent === "new_req" ? ( // Добавляем условие для solutions
+          <NewRequest />
         ) : (
           <p>Добро пожаловать в ваш профиль!</p>
         )}
