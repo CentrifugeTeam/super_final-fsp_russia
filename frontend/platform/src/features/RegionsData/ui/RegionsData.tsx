@@ -1,13 +1,13 @@
 import styles from "./regionsdata.module.scss";
 import { RegionsFormHeader } from "@/components/RegionsFormHeader/ui";
 import { useReps } from "@/shared/api/reps"; // Хук для получения данных
-// import FederalDistrict from "@/components/FederalDistrictData/FederalDistrictData";
+import FederalDistrict from "@/components/FederalDistrictData/FederalDistrictData";
 
 export const RegiosnData = () => {
   // Используем хук useReps для получения данных
   const { data: repsData, isLoading, isError, error } = useReps();
 
-	console.log(repsData)
+	console.log(repsData, 'a')
 
   // Обработка состояния загрузки и ошибки
   if (isLoading) {
@@ -35,7 +35,6 @@ export const RegiosnData = () => {
         </div>
 
         <div className={styles.federalDistrict}>
-<<<<<<< HEAD
           {/* Проверяем, что данные существуют и в каждом округе есть регионы */}
           {repsData?.length ? (
             repsData?.map((district) => {
@@ -53,15 +52,6 @@ export const RegiosnData = () => {
           ) : (
             <div>Нет данных для отображения</div> // Показываем, если данных нет
           )}
-=======
-          {/* Проверяем, что данные существуют и правильно их отображаем */}
-          {/* {repsData?.fetched_reps_data.map((district) => (
-            <FederalDistrict
-              key={district.name} // Используем имя округа как ключ
-              district={district} // Передаем данные о федеральном округе
-            /> */}
-          {/* ))} */}
->>>>>>> 6792b05c6fa6fe48ec24ba10df2c69c33461c863
         </div>
       </div>
     </>
