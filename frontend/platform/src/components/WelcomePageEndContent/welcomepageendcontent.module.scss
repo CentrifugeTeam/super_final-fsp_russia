@@ -85,3 +85,53 @@
 		background-color: #463ACB;
 	}
 }
+
+@media(max-width: 768px){
+	.endContent{
+		padding: 10px !important;
+	}
+
+	.disciplines{
+		display: block !important;
+		margin-bottom: 0px !important;
+	}
+
+	.productProgramming,
+  .algorithmicProgramming,
+  .basProgramming,
+  .roboticsProgramming,
+  .POISS {
+		margin: 0px;
+    max-width: 100% !important;
+    text-align: left !important;
+		height: max-content;
+		padding: 10px !important;
+		margin-bottom: 15px;
+		margin-left: 0px !important;
+		margin-right: 0px !important;
+  }
+
+	.POISS{
+		height: 90px !important;
+	}
+
+	.text{
+		font-size: 25px !important;
+	}
+
+	.title{
+		display: none;
+	}
+}
+
+@media(max-width: 555px){
+	.POISS{
+		height: 120px !important;
+	}
+}
+
+@media(max-width: 445px){
+	.POISS{
+		height: 250px !important;
+	}
+}

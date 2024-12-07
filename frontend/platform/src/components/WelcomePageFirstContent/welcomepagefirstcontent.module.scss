@@ -18,7 +18,7 @@
 		align-items: center;
 
 		.firstText{
-			max-height: 439px;
+			height: 439px;
 			max-width: 735px;
 			background-color: #463ACB;
 			border-radius: 12px;
@@ -41,5 +41,35 @@
 			font-weight: 700;
 			margin-bottom: 26px;
 		}
+	}
+}
+
+
+@media (max-width: 768px){
+	.firstContent{
+		padding-top: 10px;
+		padding-left: 10px;
+		padding-right: 10px;
+		padding-bottom: 10px;
+	}
+
+	.firstContentDiv{
+		display: block !important;
+		padding-left: 0px;
+
+		.firstText{
+			width: 100%;
+			margin-bottom: -15px;
+			height: 100%;
+		}
+
+		.secontText{
+			width: 100%;
+			margin-bottom: 10px;
+		}
+	}
+
+	.hr{
+		display: none;
 	}
 }
