@@ -1,6 +1,7 @@
 import styles from "./profileeditchange.module.scss";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import baseAvatar from "../../assets/base_profile_avatar.png";
 
 export const ProfileEditChange = () => {
@@ -21,15 +22,26 @@ export const ProfileEditChange = () => {
       </div>
 
       <div className={styles.inputAndCheckEmail}>
-        <Input />
-        <Input />
+				<div className="grid w-full max-w-sm items-center gap-1.5">
+					<Label htmlFor="picture">Picture</Label>
+					<Input id="picture" type="file" />
+				</div>
+
+				<div className="grid w-full max-w-sm items-center gap-1.5">
+					<Label htmlFor="picture">Picture</Label>
+					<Input id="picture" type="file" />
+				</div>
+
         <Button className="h-[57px] bg-[#958BFF] text-[25px]">
           Подтвердить почту
         </Button>
       </div>
 
       <div className={styles.inputAboutUser}>
-        <Input />
+				<div className="grid w-full max-w-sm items-center gap-1.5">
+					<Label htmlFor="picture">Picture</Label>
+					<Input id="picture" type="file" />
+				</div>
       </div>
 
       <div className={styles.saveButton}>
