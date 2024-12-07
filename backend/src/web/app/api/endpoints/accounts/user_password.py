@@ -3,6 +3,7 @@ from pydantic import EmailStr
 from fastapi import status, Request, Body, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from service_calendar.app.utils.email_sender import Message
 from shared.storage.cache.redis_client import RedisClient
 from web.app.exceptions import InvalidResetPasswordToken
 from web.app.schemas import ReadUser
@@ -33,7 +34,7 @@ async def forgot_password(
     token = await user_manager.forgot_password(user, redis)
     await smtp_message.asend_email(
         email,
-        token,
+        Message(text=f'https://centrifugo.tech/reset?token={token}', title='Заменить пароль', text_on_button='reset_password')
     )
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 

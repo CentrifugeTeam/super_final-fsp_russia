@@ -8,6 +8,7 @@ from starlette import status
 from crud.openapi_responses import bad_request_response
 from shared.crud import missing_token_or_inactive_user_response, forbidden_response
 from shared.storage.db.models import User
+from ...exceptions import FileDoesntSave
 from ...managers.files import _save_file_to_static
 
 from ...utils.crud import CrudAPIRouter
@@ -84,16 +85,22 @@ class UsersRouter(CrudAPIRouter):
 
         ):
             try:
-                try:
+                if file:
                     photo_url = await _save_file_to_static(file)
-                except Exception as e:
-                    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Could not upload file')
-                user = self.update_schema(username=username, first_name=first_name, middle_name=middle_name,
-                                          last_name=last_name,
-                                          photo_url=photo_url,
-                                          email=email, about=about)
+
+                    user = self.update_schema(username=username, first_name=first_name, middle_name=middle_name,
+                                              last_name=last_name,
+                                              photo_url=photo_url,
+                                              email=email, about=about)
+                else:
+                    user = self.update_schema(username=username, first_name=first_name, middle_name=middle_name,
+                                              last_name=last_name,
+                                              email=email, about=about)
             except ValidationError as e:
                 raise HTTPException(status_code=422, detail=e.errors())
+            except FileDoesntSave as e:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Could not upload file')
+
             return await user_manager.update(session, user_in_db, user)
 
     def _register_routes(self) -> list[Callable[..., Any]]:

@@ -4,6 +4,7 @@ from fastapi import Depends, Body
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from crud.openapi_responses import missing_token_or_inactive_user_response, forbidden_response
+from ...conf import smtp_message
 from ...utils.crud import PermissionCrudAPIRouter, CrudAPIRouter
 from shared.storage.db.models import Suggestion
 from fastapi_sqlalchemy_toolkit import ordering_depends
@@ -64,11 +65,11 @@ class Router(CrudAPIRouter):
         async def func(id: int, status: Literal['accepted', 'rejected'] = Body(embed=True),
                        text: str = Body(embed=True),
                        session: AsyncSession = Depends(self.get_session)):
-            model = await self.manager.get_or_404(session, id=id, options=[Suggestion.user])
+            model: Suggestion = await self.manager.get_or_404(session, id=id, options=[Suggestion.user])
             model.status = status
             session.add(model)
             await session.commit()
-
+            await smtp_message.asend_email(model.user.email, text)
             return model
 
     def _register_routes(self) -> list[Callable[..., Any]]:
