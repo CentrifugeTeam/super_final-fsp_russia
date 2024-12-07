@@ -23,29 +23,38 @@ export const ProfileEditChange = () => {
 
       <div className={styles.inputAndCheckEmail}>
 				<div className="grid w-full max-w-sm items-center gap-1.5">
-					<Label htmlFor="picture">Picture</Label>
-					<Input id="picture" type="file" />
+					<Label htmlFor="full_name" className="text-black font-bold text-lg">
+						ФИО
+					</Label>
+
+					<Input className="w-[300px] h-[60px]" id="full_name" type="text" />
 				</div>
 
 				<div className="grid w-full max-w-sm items-center gap-1.5">
-					<Label htmlFor="picture">Picture</Label>
-					<Input id="picture" type="file" />
+					<Label  className="text-black font-bold text-lg">
+						Email
+					</Label>
+
+					<Input className="w-[300px] h-[50px]" id="picture" type="email" />
 				</div>
 
-        <Button className="h-[57px] bg-[#958BFF] text-[25px]">
+        <Button className="h-[57px] bg-[#958BFF] text-[20px] mt-8">
           Подтвердить почту
         </Button>
       </div>
 
       <div className={styles.inputAboutUser}>
 				<div className="grid w-full max-w-sm items-center gap-1.5">
-					<Label htmlFor="picture">Picture</Label>
-					<Input id="picture" type="file" />
+					<Label htmlFor="text" className="text-black font-bold text-lg">
+						О Региональном ФСП
+					</Label>
+
+					<Input className="w-[360px] h-[50px]"  id="picture" type="text" />
 				</div>
       </div>
 
       <div className={styles.saveButton}>
-        <Button className="h-[50px] bg-[#958BFF] text-[25px] mt-7">
+        <Button className="h-[50px] bg-[#958BFF] text-[20px] mt-7">
           Сохранить изменения
         </Button>
       </div>
