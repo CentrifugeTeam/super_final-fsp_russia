@@ -1,13 +1,15 @@
 from typing import Callable, Any, List
 
+from fastapi import HTTPException
 from fastapi_pagination.bases import BasePage
 from fastapi_sqlalchemy_toolkit.model_manager import ModelT
 from sqlalchemy import UnaryExpression, Select, Row, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import InstrumentedAttribute, joinedload
+from sqlalchemy.orm import InstrumentedAttribute, joinedload, aliased
 
 from .base import BaseManager
-from shared.storage.db.models import Representation, RegionRepresentation, Team
+from shared.storage.db.models import Representation, RegionRepresentation, Team, User
+from ..schemas import ReadCardRepresentation
 
 
 class RepresentationManager(BaseManager):
@@ -83,18 +85,24 @@ class RepresentationManager(BaseManager):
             .scalar_subquery()
         )
 
-        stmt = (
-            select(RegionRepresentation, team_stmt.label("team_count"))
+        user_stmt = (
+            select(func.count(User.id)).
+            where(User.representation_id == id)
+            .scalar_subquery()
         )
 
-        # Вызываем метод для получения фильтров SQLAlchemy из аргументов методов
-        # list и paginated_list
+        stmt = (
+            select(RegionRepresentation, team_stmt.label("team_count"), user_stmt.label("users_count"))
+        )
+
         stmt = self.assemble_stmt(stmt, options=[joinedload(RegionRepresentation.leader),
                                                  joinedload(RegionRepresentation.representation),
-                                                 joinedload(RegionRepresentation.federation_representation)])
-        result = await session.execute(stmt)
-        result = result.unique().all()
-        for i, row in enumerate(result):
-            row.Parent.children_count = row.children_count
-            result[i] = row.Parent
-        return result
+                                                 joinedload(RegionRepresentation.federation_representation)],
+                                  where=RegionRepresentation.id == id)
+        result = (await session.execute(stmt)).mappings().unique()
+        if not result:
+            raise HTTPException(status_code=404, detail="Representation not found")
+        result = next(result)
+        federal_name = result['RegionRepresentation'].federation_representation.name
+
+        return ReadCardRepresentation.model_validate({'federal_name': federal_name, **result}, from_attributes=True)

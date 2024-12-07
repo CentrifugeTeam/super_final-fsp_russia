@@ -70,10 +70,10 @@ export const RegistrationForm: React.FC = () => {
         <p className="text-green-500">
           Пользователь успешно зарегистрирован! <br />
           <span
-            className="text-black self-center"
+            className="text-black self-center cursor-pointer"
             onClick={() => nav("/login")}
           >
-            Перейти к логину
+            Перейти ко входу
           </span>
         </p>
       ) : (

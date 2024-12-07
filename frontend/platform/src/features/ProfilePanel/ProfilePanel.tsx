@@ -19,6 +19,7 @@ export const ProfilePanel = () => {
       <hr className={styles.hr} />
 
       <div className={styles.actives}>
+        {/* Мой профиль */}
         <h3
           className={`${styles.active} ${
             location.pathname === "/profile/edit" ? styles.activeSelected : ""
@@ -27,6 +28,7 @@ export const ProfilePanel = () => {
         >
           Мой профиль
         </h3>
+        {/* Заявки */}
         <h3
           className={`${styles.active} ${
             location.pathname === "/profile/requests"
@@ -36,6 +38,37 @@ export const ProfilePanel = () => {
           onClick={() => navigate("/profile/requests")}
         >
           Заявки
+        </h3>
+        {/* Решение */}
+        <h3
+          className={`${styles.active} ${
+            location.pathname === "/profile/solutions"
+              ? styles.activeSelected
+              : ""
+          }`}
+          onClick={() => navigate("/profile/solutions")}
+        >
+          Решение
+        </h3>
+        {/* Протоколы
+        <h3
+          className={`${styles.active} ${
+            location.pathname === "/profile/protocols"
+              ? styles.activeSelected
+              : ""
+          }`}
+          onClick={() => navigate("/profile/protocols")}
+        >
+          Протоколы
+        </h3> */}
+        {/* Рейтинг */}
+        <h3
+          className={`${styles.active} ${
+            location.pathname === "/profile/rating" ? styles.activeSelected : ""
+          }`}
+          onClick={() => navigate("/profile/rating")}
+        >
+          Рейтинг
         </h3>
       </div>
     </div>

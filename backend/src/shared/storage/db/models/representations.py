@@ -30,14 +30,7 @@ class Representation(IDMixin, Base):
                                                                  foreign_keys='RegionRepresentation.federal_district_id')
     region: Mapped['RegionRepresentation'] = relationship(back_populates='representation',
                                                           foreign_keys='RegionRepresentation.representation_id')
+    users: Mapped[list['User']] = relationship(back_populates='representation')
 
     def __repr__(self):
         return f"<Representation(region_name={self.name}"
-
-
-class RepresentationStuff(IDMixin, Base):
-    __tablename__ = 'representation_stuff'
-    representation_id: Mapped[int] = mapped_column(ForeignKey('representations.id', ondelete='CASCADE'))
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
-    is_leader: Mapped[bool] = mapped_column(Boolean, default=False)
-    user: Mapped['User'] = relationship(back_populates='representation')

@@ -1,3 +1,6 @@
+from fastapi_permissions import Authenticated, Everyone
+
+from web.app.schemas.representation import RepresentationBase
 from .base import Base, IDMixin
 from sqlalchemy import Column, Integer, String, UniqueConstraint, ForeignKey, Boolean
 from sqlalchemy.orm import relationship, mapped_column, Mapped
@@ -18,23 +21,28 @@ class User(IDMixin, Base):
     about: Mapped[str] = mapped_column(String(length=100), nullable=True)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    representation_id: Mapped[int] = mapped_column(ForeignKey('representations.id'), nullable=True)
 
     oauth_accounts: Mapped[list['OAuthAccount']] = relationship(back_populates='user')
     files: Mapped[list['File']] = relationship(back_populates='user', secondary='user_files', cascade='all, delete')
     roles: Mapped[list['Role']] = relationship(secondary='user_roles', back_populates='users')
     type_events: Mapped[list['EventType']] = relationship(back_populates='users', secondary='user_settings')
     region_representation: Mapped['RegionRepresentation'] = relationship(back_populates='leader')
-    representation: Mapped['RepresentationStuff'] = relationship(back_populates='user')
-
+    representation: Mapped[list['Representation']] = relationship(back_populates='users')
 
     async def get_principals(self):
-        roles = await self.awaitable_attrs.roles
-        roles = [role.name for role in roles]
+        rep = await self.awaitable_attrs.representation
+        principals = {Authenticated, Everyone}
+
+        principals.add(f'representation:{rep.name}')
+        for role in await self.awaitable_attrs.roles:
+            principals.add(f"role:{role.name}")
         if self.is_superuser:
-            roles.append('superuser')
+            principals.add(f'user:superuser')
         if self.is_verified:
-            roles.append('verified')
-        return roles
+            principals.add(f'user:verified')
+
+        return principals
 
     @property
     def fio(self):

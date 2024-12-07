@@ -18,7 +18,8 @@ class BatchPermittedException(Exception):
     pass
 
 
-class PermissionCrudAPIRouter(CrudAPIRouter):
+class \
+        PermissionCrudAPIRouter(CrudAPIRouter):
 
     def __init__(self, schema: Type[BaseModel], manager: ModelManager, create_schema: Type[BaseModel],
                  update_schema: Type[BaseModel], **kwargs: Any):
