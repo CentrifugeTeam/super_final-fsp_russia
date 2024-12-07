@@ -1,7 +1,7 @@
 import styles from "./regionsdata.module.scss";
 import { RegionsFormHeader } from "@/components/RegionsFormHeader/ui";
 import { useReps } from "@/shared/api/reps"; // Хук для получения данных
-import FederalDistrict from "@/components/FederalDistrictData/FederalDistrictData";
+// import FederalDistrict from "@/components/FederalDistrictData/FederalDistrictData";
 
 export const RegiosnData = () => {
   // Используем дженерик только в случае с возвращаемым типом из useQuery
@@ -27,12 +27,12 @@ export const RegiosnData = () => {
 
         <div className={styles.federalDistrict}>
           {/* Проверяем, что данные существуют и правильно их отображаем */}
-          {repsData?.fetched_reps_data.map((district) => (
+          {/* {repsData?.fetched_reps_data.map((district) => (
             <FederalDistrict
               key={district.name} // Используем имя округа как ключ
               district={district} // Передаем данные о федеральном округе
-            />
-          ))}
+            /> */}
+          {/* ))} */}
         </div>
       </div>
     </>
