@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from shared.crud import missing_token_or_inactive_user_response, forbidden_response
 
 from ...utils.crud import CrudAPIRouter
-from ...schemas.users import ReadUser, CreateUser, UpdateUser
-from ...utils.users import user_manager, backend
+from ...schemas.users import ReadUser, CreateUser, UpdateUser, ReadUserMe
+from ...utils.users import user_manager, backend, authenticator
 
 
 class UsersRouter(CrudAPIRouter):
@@ -53,13 +53,20 @@ class UsersRouter(CrudAPIRouter):
             try:
                 user = create_schema(username=username, first_name=first_name, middle_name=middle_name,
                                      last_name=last_name,
-                                     email=email, password=password, about=about)
+                                      email=email, password=password, about=about)
             except ValidationError as e:
                 raise HTTPException(status_code=422, detail=e.errors())
             return await user_manager.create_user(session, user, file=photo)
 
+    def _me(self):
+        @self.get('/me', response_model=ReadUserMe,
+                  responses={**missing_token_or_inactive_user_response})
+        async def func(user=Depends(authenticator.get_user())):
+            await user.awaitable_attrs.representation
+            return user
+
     def _register_routes(self) -> list[Callable[..., Any]]:
-        return [self._create, self._get_one, self._get_all, self._update]
+        return [self._me, self._create, self._get_one, self._get_all, self._update]
 
     def get_or_404(self):
         async def wrapper(username: str, session: AsyncSession = Depends(self.get_session)):

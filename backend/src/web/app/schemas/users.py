@@ -7,6 +7,8 @@ from fastapi_sqlalchemy_toolkit import make_partial_model
 from fastapi_permissions import Authenticated, Deny, Allow, All
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 
+from web.app.schemas.representation import RepresentationBase, ReadRepresentation
+
 
 class BaseUser(BaseModel):
     """
@@ -78,3 +80,7 @@ class UserCredentials(BaseModel):
 
 
 
+
+
+class ReadUserMe(ReadUser):
+    representation: ReadRepresentation | None

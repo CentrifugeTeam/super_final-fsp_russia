@@ -33,8 +33,8 @@ class RepresentationAPIRouter(CrudAPIRouter):
             responses={**not_found_response}
 
         )
-        async def func(session = Depends(get_session)):
-            return await reps_manager.get
+        async def func(id: int, session = Depends(get_session)):
+            return await reps_manager.get_region_card(session, id)
 
     def _register_routes(self) -> list[Callable[..., Any]]:
         return [

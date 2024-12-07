@@ -24,6 +24,8 @@ class User(IDMixin, Base):
     roles: Mapped[list['Role']] = relationship(secondary='user_roles', back_populates='users')
     type_events: Mapped[list['EventType']] = relationship(back_populates='users', secondary='user_settings')
     region_representation: Mapped['RegionRepresentation'] = relationship(back_populates='leader')
+    representation: Mapped['RepresentationStuff'] = relationship(back_populates='user')
+
 
     async def get_principals(self):
         roles = await self.awaitable_attrs.roles

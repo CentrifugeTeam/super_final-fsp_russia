@@ -1,8 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, Literal
 
-from . import ReadUser
-
 
 class RepresentationBase(BaseModel):
     name: str
@@ -18,7 +16,7 @@ class ReadRepresentation(RepresentationBase):
 class ReadRegionRepresentationBase(BaseModel):
     id: int
     representation: ReadRepresentation
-    leader: ReadUser
+    leader: 'ReadUser'
 
 
 class UserRegion(BaseModel):

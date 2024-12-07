@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 from .base import Base, IDMixin
 
@@ -12,13 +12,12 @@ class RegionRepresentation(IDMixin, Base):
     representation: Mapped['Representation'] = relationship(
         back_populates='region',
         foreign_keys=[representation_id]
-        )
+    )
     federation_representation: Mapped['Representation'] = relationship(
         back_populates='regions',
         foreign_keys=[federal_district_id]
         # primaryjoin="and_(RegionRepresentation.federation_representation_id == Representation.id, Representation.type == 'federation')",
-        )
-
+    )
 
 
 class Representation(IDMixin, Base):
@@ -40,6 +39,8 @@ class RepresentationStuff(IDMixin, Base):
     __tablename__ = 'representation_stuff'
     representation_id: Mapped[int] = mapped_column(ForeignKey('representations.id', ondelete='CASCADE'))
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
+    is_leader: Mapped[bool] = mapped_column(Boolean, default=False)
+    user: Mapped['User'] = relationship(back_populates='representation')
 
     # region: Mapped['RegionalRepresentation'] = relationship('RegionalRepresentation', back_populates='users')
     # user: Mapped['User'] = relationship('User', back_populates='regions')
