@@ -1,0 +1,19 @@
+.middleContent{
+
+	.mapHeader{
+		margin-top: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		.headerText{
+			margin-left: 5%;
+			margin-right: 5%;
+			margin-bottom: 45px;
+			max-width: 700px;
+			color: black;
+			font-size: 25px;
+			font-weight: 700;
+		}
+	}
+}

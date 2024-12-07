@@ -21,6 +21,8 @@ import { SolutionEdit } from "@/features/SolutionEdit";
 import { RatingEdit } from "@/features/RatingEdit";
 import { NewRequest } from "@/pages/NewRequest";
 import { FeedPage } from "@/pages/FeedPage";
+import { ContactsPage } from "@/pages/ContactsPage";
+import { WelcomePage } from "@/pages/WelcomePage";
 
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
@@ -35,8 +37,11 @@ export const AppRouter = () => {
       <Route path="/auth_loading_vk" element={<SendCodeVk />} />
       <Route path="/send_email" element={<SendEmail />} />
       <Route path="/send_password" element={<SendPassword />} />
+			<Route path="/about_us" element={<WelcomePage />} />
+			<Route path="/contacts" element={<ContactsPage />} />
       <Route path="/regions" element={<FeedPage />} />
       <Route path="/regions/region/:id" element={<RegionByIdPage />} />
+
 
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
