@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSendReq } from "@/shared/api/requests"; // Хук для отправки данных
-import { useSuggestionById } from "@/shared/api/editSuggestion"; // Хук для получения заявки по ID
+import {
+  ISuggestion,
+  useUpdateSuggestionById,
+} from "@/shared/api/editSuggestion";
+import { useSuggestionById } from "@/shared/api/editSuggestion";
 import { Input } from "@/components/ui/input";
 import styles from "./editrequest.module.scss";
 import { Button } from "@/components/ui/button";
 
-// Компонент для редактирования заявки
 export const EditRequest = () => {
-  const { id } = useParams(); // Получаем ID из URL
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { data: suggestion, isLoading, isError } = useSuggestionById(id!); // Используем хук для получения данных по ID
-  const { mutate, status } = useSendReq();
+  const { data: suggestion, isLoading, isError } = useSuggestionById(id!);
+  const { mutate, status } = useUpdateSuggestionById();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -24,7 +26,23 @@ export const EditRequest = () => {
     count_participants: 0,
   });
 
-  // Заполняем форму данными после загрузки
+  const [isEditable, setIsEditable] = useState(false);
+
+  // Проверка роли из токена
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1])); // Декодируем payload токена
+        if (payload.roles && payload.roles.includes("federal")) {
+          setIsEditable(true); // Разрешаем редактирование только для federal
+        }
+      } catch (error) {
+        console.error("Ошибка при парсинге токена:", error);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (suggestion) {
       setFormData({
@@ -51,20 +69,24 @@ export const EditRequest = () => {
   };
 
   const handleSubmit = () => {
-    const formattedData = {
+    const formattedData: Partial<ISuggestion> = {
       ...formData,
       start_date: new Date(formData.start_date).toISOString().split("T")[0],
       end_date: new Date(formData.end_date).toISOString().split("T")[0],
+      format: formData.format as "online" | "offline" | "both",
     };
 
-    mutate(formattedData, {
-      onSuccess: () => {
-        navigate("/profile/requests"); // Перенаправляем на страницу заявок
-      },
-      onError: () => {
-        alert("Ошибка при отправке заявки.");
-      },
-    });
+    mutate(
+      { id: id!, data: formattedData },
+      {
+        onSuccess: () => {
+          navigate("/profile/requests");
+        },
+        onError: () => {
+          alert("Ошибка при отправке заявки.");
+        },
+      }
+    );
   };
 
   if (isLoading) return <p>Загрузка...</p>;
@@ -73,7 +95,9 @@ export const EditRequest = () => {
   return (
     <div className={styles.contet}>
       <div className={styles.header}>
-        <h1 className={styles.headerText}>Редактировать заявку</h1>
+        <h1 className={styles.headerText}>
+          {isEditable ? "Редактировать заявку" : "Просмотр заявки"}
+        </h1>
       </div>
 
       <div className={styles.profileEditComponenst}>
@@ -83,6 +107,7 @@ export const EditRequest = () => {
           placeholder="Имя"
           value={formData.name}
           onChange={handleChange}
+          disabled={!isEditable}
         />
         <Input
           type="text"
@@ -90,6 +115,7 @@ export const EditRequest = () => {
           placeholder="Название"
           value={formData.competition}
           onChange={handleChange}
+          disabled={!isEditable}
         />
         <Input
           type="text"
@@ -97,6 +123,7 @@ export const EditRequest = () => {
           placeholder="Место проведения"
           value={formData.location}
           onChange={handleChange}
+          disabled={!isEditable}
         />
         <Input
           type="date"
@@ -104,6 +131,7 @@ export const EditRequest = () => {
           placeholder="Дата (начало)"
           value={formData.start_date}
           onChange={handleChange}
+          disabled={!isEditable}
         />
         <Input
           type="date"
@@ -111,23 +139,27 @@ export const EditRequest = () => {
           placeholder="Дата (конец)"
           value={formData.end_date}
           onChange={handleChange}
+          disabled={!isEditable}
         />
         <select
           name="format"
           value={formData.format}
           onChange={handleChange}
           className={styles.select}
+          disabled={!isEditable}
         >
           <option value="online">Онлайн</option>
           <option value="offline">Офлайн</option>
           <option value="both">Оба</option>
         </select>
+
         <Input
           type="text"
           name="age"
           placeholder="Возраст"
           value={formData.age}
           onChange={handleChange}
+          disabled={!isEditable}
         />
         <Input
           type="number"
@@ -135,19 +167,22 @@ export const EditRequest = () => {
           placeholder="Количество участников"
           value={formData.count_participants}
           onChange={handleChange}
+          disabled={!isEditable}
         />
-        {status === "error" && (
-          <p className="text-red-500 mt-2 self-center">
-            Ошибка при отправке заявки.
-          </p>
+        {isEditable && (
+          <Button
+            className="bg-[#463ACB]"
+            onClick={handleSubmit}
+            disabled={status === "pending"}
+          >
+            {status === "pending" ? "Отправка..." : "Отправить"}
+          </Button>
         )}
-        <Button
-          className="bg-[#463ACB]"
-          onClick={handleSubmit}
-          disabled={status === "pending"}
-        >
-          {status === "pending" ? "Отправка..." : "Отправить"}
-        </Button>
+        {/* {!isEditable && (
+          <p className="text-gray-500 mt-2 self-center">
+            Вы не можете редактировать эту заявку.
+          </p>
+        )} */}
       </div>
     </div>
   );

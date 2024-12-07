@@ -11,10 +11,12 @@ interface RequestEditCardProps {
     age: string;
     name: string;
     status: string;
+    id: number; // id field is now of type number
   };
+  onClick: () => void; // Add onClick function as a prop
 }
 
-const RequestEditCard = ({ suggestion }: RequestEditCardProps) => {
+const RequestEditCard = ({ suggestion, onClick }: RequestEditCardProps) => {
   const {
     competition,
     location,
@@ -28,13 +30,17 @@ const RequestEditCard = ({ suggestion }: RequestEditCardProps) => {
   } = suggestion;
 
   return (
-    <div className={styles.content}>
+    <div
+      className={styles.content}
+      onClick={onClick}
+      style={{ cursor: "pointer" }}
+    >
       <div className={styles.card}>
         <div className={styles.left}>
           <h1>{competition}</h1>
           <h2>{name}</h2>
           <h2 className="mt-12">
-            {age} , {count_participants} участников
+            {age}, {count_participants} участников
           </h2>
           <h3>{location}</h3>
         </div>

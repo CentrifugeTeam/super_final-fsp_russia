@@ -3,6 +3,7 @@ import {
   createRoutesFromElements,
   Route,
   RouterProvider,
+  Navigate,
 } from "react-router-dom";
 import { Layout } from "../layout";
 import { LoginPage } from "@/pages/LoginPage";
@@ -17,12 +18,16 @@ import { NewRequest } from "@/pages/NewRequest";
 import { FeedPage } from "@/pages/FeedPage";
 import { ContactsPage } from "@/pages/ContactsPage";
 import { WelcomePage } from "@/pages/WelcomePage";
-import { EditRequest } from "@/pages/EditRequest"; // Импортируем новый компонент для редактирования заявки
 import { ProfileEdit } from "@/features/EditProfile";
+import { EditRequest } from "@/pages/EditRequest";
+import { SendEmail } from "@/pages/SendEmail";
 
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
     <Route path="/" element={<Layout />}>
+      {/* Перенаправление на /about_us по умолчанию */}
+      <Route index element={<Navigate to="/about_us" />} />
+
       {/* Открытые страницы */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/registration" element={<RegistrationPage />} />
@@ -30,6 +35,8 @@ export const AppRouter = () => {
       <Route path="/about_us" element={<WelcomePage />} />
       <Route path="/contacts" element={<ContactsPage />} />
       <Route path="/regions" element={<FeedPage />} />
+      <Route path="requests/:id/edit" element={<EditRequest />} />
+      <Route path="/send_email" element={<SendEmail />} />
 
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
@@ -38,7 +45,8 @@ export const AppRouter = () => {
           <Route path="edit" element={<ProfileEdit />} />
           <Route path="requests" element={<RequestEdit />} />
           <Route path="requests/new" element={<NewRequest />} />
-          <Route path="requests/:id/edit" element={<EditRequest />} />{" "}
+          <Route path="requests/:id/edit" element={<EditRequest />} />
+
           {/* Маршрут для редактирования заявки */}
           <Route path="solutions" element={<SolutionEdit />} />
           <Route path="rating" element={<RatingEdit />} />

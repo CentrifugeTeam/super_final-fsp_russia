@@ -12,6 +12,10 @@ export const RequestEdit = () => {
     navigate("/profile/requests/new");
   };
 
+  const handleCardClick = (id: number) => {
+    navigate(`/profile/requests/${id}/edit`); // Navigate to EditRequest
+  };
+
   return (
     <div className={styles.contet}>
       <div className={styles.header}>
@@ -28,7 +32,11 @@ export const RequestEdit = () => {
         {isLoading && <p className="text-black">Загрузка заявок...</p>}
         {isError && <p className="text-red-500">Ошибка при загрузке заявок.</p>}
         {suggestions?.map((suggestion) => (
-          <RequestEditCard key={suggestion.id} suggestion={suggestion} />
+          <RequestEditCard
+            key={suggestion.id}
+            suggestion={suggestion}
+            onClick={() => handleCardClick(suggestion.id)} // Pass navigation handler
+          />
         ))}
       </div>
     </div>

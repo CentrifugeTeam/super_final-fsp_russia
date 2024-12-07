@@ -11,17 +11,24 @@ export const ProfileEditCard = () => {
   if (isError)
     return <p className="text-red-500">Ошибка при загрузке данных профиля</p>;
 
+  // Проверка на наличие profile
+  if (!profile)
+    return <p className="text-red-500">Данные профиля не найдены</p>;
+
   return (
     <div className={styles.card}>
       <div className={styles.imgContainer}>
-        <img className={styles.img} src={profile.photo_url} alt="" />
+        <img
+          className={styles.img}
+          src={profile.photo_url || "/default-photo.jpg"}
+          alt="Profile"
+        />
       </div>
       <div className={styles.personData}>
         <div className={styles.header}>
           <h1 className={styles.fio}>
             {profile.middle_name} {profile.first_name} {profile.last_name}
           </h1>
-          {/* Условный рендеринг для отображения роли */}
           {profile.is_superuser && (
             <p className={styles.personIfo}>Суперадминистратор</p>
           )}
