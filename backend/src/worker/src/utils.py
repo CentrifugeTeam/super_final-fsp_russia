@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase
 from typing import Generic, TypeVar, Callable
 
-from service_calendar.app.utils.email_sender import SMTPMessage
+from service_calendar.app.utils.email_sender import SMTPMessage, Message
 from .parser_pdf.parser import Row, AgeGroupSchema
 from .settings import settings as conf_settings
 from .exceptions import ResourceExistsException
@@ -59,6 +59,7 @@ async def _create_if_dont_exist[DBModel](session: AsyncSession, _dict: dict, mod
 
 
 async def save_event_and_related_data(session: AsyncSession, row: Row):
+    user_events = {}
     try:
         # Сначала сохраняем или получаем существующее место
         stmt = select(Location).where(Location.city == row.location.city).where(
@@ -81,9 +82,13 @@ async def save_event_and_related_data(session: AsyncSession, row: Row):
             event = await _create_model(session, {**row.event.model_dump(by_alias=True), 'location_id': location.id,
                                                   'type_event_id': event_type.id}, SportEvent)
             users: list[User] = await event_type.awaitable_attrs.users
+            user_events[event.name] = users
             for user in users:
-                await smtp_message.asend_email(user.email,
-                                               f"Новое мероприятие по вашему любимому типу спорта!")
+
+                if not getattr(user_events, user.email):
+                    user_events[user.email] = [event.name]
+                else:
+                    user_events[user.email].append(event.name)
 
         # Сохраняем возрастные группы (AgeGroup)
         for sex in row.sexes:
@@ -106,6 +111,14 @@ async def save_event_and_related_data(session: AsyncSession, row: Row):
 
     except SQLAlchemyError as e:
         await session.rollback()  # Откатываем сессию в случае ошибки
+    else:
+        for user_email, event_names in user_events.items():
+            await smtp_message.asend_email(user_email,
+                                           Message(title=f"Новое мероприятие по вашему любимому типу спорта!",
+                                                   url_for_button='https://centrifugo.tech/calendar/',
+                                                   text=f"Новые события по данным спорту: {" ".join(event_names)}\n",
+                                                   text_on_button='Подробнее')
+                                           )
 
 
 def generate_unique_username() -> str:

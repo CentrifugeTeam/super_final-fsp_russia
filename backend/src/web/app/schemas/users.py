@@ -1,11 +1,12 @@
 import json
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Literal, Any
 
 from fastapi import UploadFile, File
 from fastapi_sqlalchemy_toolkit import make_partial_model
 from fastapi_permissions import Authenticated, Deny, Allow, All
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
+from pydantic.main import IncEx
 
 from .representation import RepresentationBase, ReadRepresentation
 
@@ -66,7 +67,36 @@ _UpdateUser = make_partial_model(BaseUser)
 
 
 class UpdateUser(_UpdateUser):
-    photo_url: str
+    photo_url: str | None = None
+
+    def model_dump(
+        self,
+        *,
+        mode: Literal['json', 'python'] | str = 'python',
+        include: IncEx | None = None,
+        exclude: IncEx | None = None,
+        context: Any | None = None,
+        by_alias: bool = False,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        round_trip: bool = False,
+        warnings: bool | Literal['none', 'warn', 'error'] = True,
+        serialize_as_any: bool = False,
+    ) -> dict[str, Any]:
+        return super().model_dump(
+            mode=mode,
+            include=include,
+            exclude=exclude,
+            context=context,
+            by_alias=by_alias,
+            exclude_unset=exclude_unset,
+            exclude_defaults=exclude_defaults,
+            exclude_none=True,
+            round_trip=round_trip,
+            warnings=warnings,
+            serialize_as_any=serialize_as_any,
+        )
 
 
 class UserCredentials(BaseModel):

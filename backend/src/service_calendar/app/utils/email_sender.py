@@ -3,6 +3,15 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import ssl
+from dataclasses import dataclass
+
+@dataclass
+class Message:
+    title: str
+    url_for_button: str
+    text: str
+
+    text_on_button: str
 
 
 class SMTPMessage:
@@ -13,10 +22,10 @@ class SMTPMessage:
         self.host = host
         self.sender = sender
 
-    def render_message(self, receiver: str, text: str) -> MIMEMultipart:
+    def render_message(self, receiver: str, message: Message) -> MIMEMultipart:
         plain_text = \
-            f"""Новое обновление по вашему любимому спорту! 
-            # {text}
+            f"""{message.title} 
+            # {message.text}
         """
 
         html_text = \
@@ -32,7 +41,7 @@ class SMTPMessage:
               <table role="presentation" cellspacing="0" cellpadding="0" width="100%" align="center" id="m_-7984133988146846855emailBodyContainer" style="border:0px;border-bottom:1px solid #d6d6d6;max-width:600px">
                   <tbody><tr>
                     <td style="background-color:#fff;color:#444;font-family:'Amazon Ember','Helvetica Neue',Roboto,Arial,sans-serif;font-size:14px;line-height:140%;padding:25px 35px">
-                    {text}
+                    {message.text}
                     </td>
                   </tr>
               <tr>
@@ -59,12 +68,12 @@ class SMTPMessage:
 
         return message
 
-    def send_email(self, receiver: str, text: str):
+    def send_email(self, receiver: str, message: Message):
         ctx = ssl.create_default_context()
-        msg = self.render_message(receiver, text)
+        msg = self.render_message(receiver, message)
         with smtplib.SMTP_SSL(self.host, self.port, context=ctx) as server:
             server.login(self.sender, self.password)
             return server.sendmail(self.sender, receiver, msg.as_string())
 
-    async def asend_email(self, receiver: str, text: str):
-        return await asyncio.to_thread(self.send_email, receiver, text)
+    async def asend_email(self, receiver: str,  message: Message):
+        return await asyncio.to_thread(self.send_email, receiver, message)
