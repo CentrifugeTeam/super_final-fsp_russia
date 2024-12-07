@@ -20,8 +20,6 @@ from ..managers.files import _save_file_to_static
 from ..conf import settings
 from secrets import token_urlsafe
 
-default_user_photo_url = '/staticfiles/img/user.png'
-
 
 class UsersManager(BaseManager):
 
@@ -73,7 +71,6 @@ class UsersManager(BaseManager):
 
         in_obj.password = self.password_helper.hash(in_obj.password)
         create_data = in_obj.model_dump()
-        create_data.update({'photo_url': default_user_photo_url})
 
         # Добавляем дефолтные значения полей для валидации уникальности
         for field, default in self.defaults.items():

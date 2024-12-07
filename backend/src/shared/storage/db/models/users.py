@@ -17,7 +17,7 @@ class User(IDMixin, Base):
     middle_name: Mapped[str] = mapped_column(String, nullable=True)
     last_name: Mapped[str] = mapped_column(String, nullable=True)
     email: Mapped[str] = mapped_column(String, nullable=False)
-    photo_url: Mapped[str] = mapped_column(String)
+    photo_url: Mapped[str] = mapped_column(String, nullable=True)
     about: Mapped[str] = mapped_column(String(length=100), nullable=True)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -29,6 +29,7 @@ class User(IDMixin, Base):
     type_events: Mapped[list['EventType']] = relationship(back_populates='users', secondary='user_settings')
     region_representation: Mapped['RegionRepresentation'] = relationship(back_populates='leader')
     representation: Mapped[list['Representation']] = relationship(back_populates='users')
+    suggestions: Mapped[list['Suggestion']] = relationship(back_populates='user')
 
     async def get_principals(self):
         rep = await self.awaitable_attrs.representation

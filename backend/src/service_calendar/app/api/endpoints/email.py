@@ -8,6 +8,8 @@ from shared.storage.db.models import User
 from ...conf import smtp_message
 from logging import getLogger
 
+from ...utils.email_sender import Message
+
 users_manager = BaseManager(User)
 logger = getLogger(__name__)
 r = APIRouter()
@@ -21,7 +23,7 @@ async def email(settings: UserSettings,
         email = Email(email=settings.email)
         await users_manager.create(session, email, type_events=[settings.event_types_id], commit=False)
         try:
-            await smtp_message.asend_email(email.email, "Вы подписались!")
+            await smtp_message.asend_email(email.email, Message(text=f'Вы подписались на уведомления', title='', text_on_button='кнопка', url_for_button='https://centrifugo.tech/calendar/'))
         except Exception as e:
             await session.rollback()
             logger.exception('exc in emailer ', exc_info=e)

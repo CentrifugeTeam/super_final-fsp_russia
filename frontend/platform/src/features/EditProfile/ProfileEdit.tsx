@@ -16,8 +16,12 @@ export const ProfileEdit = () => {
       <div className={styles.header}>
         <h1 className={styles.headerText}>Мой профиль</h1>
 
-        <Button className="h-[50px] bg-[#463ACB] hover:bg-[#3d33b0] text-[20px] mt-4" onClick={toggleEdit}>
-          {isEdit ? "Вернуться назад" : "Редактировать профиль"}</Button>
+        <Button
+          className="h-[50px] bg-[#463ACB] hover:bg-[#3d33b0] text-[20px] mt-4"
+          onClick={toggleEdit}
+        >
+          {isEdit ? "Вернуться назад" : "Редактировать профиль"}
+        </Button>
       </div>
 
       <div className={styles.profileEditComponenst}>

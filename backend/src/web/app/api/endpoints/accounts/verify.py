@@ -3,6 +3,7 @@ from pydantic import EmailStr
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from service_calendar.app.utils.email_sender import Message
 from shared.storage.cache.redis_client import RedisClient
 from web.app.exceptions import InvalidResetPasswordToken, UserAlreadyVerifiedException
 from web.app.schemas import ReadUser
@@ -44,7 +45,9 @@ async def request_verify_token(
     token = await user_manager.forgot_password(user, redis)
     await smtp_message.asend_email(
         email,
-        token,
+        Message(url_for_button=f'https://centrifugo.tech/verify?token={token}', title='Форма для подтверждения почты',
+                text_on_button='Подтвердить почту', text='Подтвердить почту')
+
     )
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 

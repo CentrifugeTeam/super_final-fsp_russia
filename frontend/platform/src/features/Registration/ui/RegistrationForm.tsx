@@ -128,9 +128,6 @@ export const RegistrationForm: React.FC = () => {
           >
             Войти с Яндекс ID
           </Button>
-          <Button size="auth" className="bg-[#0077FF] hover:bg-[#0067dd]">
-            Войти через VK ID
-          </Button>
 
           <p className={styles.loginText}>
             Уже есть аккаунта?
