@@ -21,6 +21,7 @@ import { WelcomePage } from "@/pages/WelcomePage";
 import { ProfileEdit } from "@/features/EditProfile";
 import { EditRequest } from "@/pages/EditRequest";
 import { SendEmail } from "@/pages/SendEmail";
+import { EmailVerified } from "@/pages/EmailVerified";
 
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
@@ -37,6 +38,7 @@ export const AppRouter = () => {
       <Route path="/regions" element={<FeedPage />} />
       <Route path="requests/:id/edit" element={<EditRequest />} />
       <Route path="/send_email" element={<SendEmail />} />
+      <Route path="/email_verified" element={<EmailVerified />} />
 
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
