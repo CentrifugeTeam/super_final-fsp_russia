@@ -50,7 +50,7 @@ export const RegistrationStep2: React.FC<RegistrationStep2Props> = ({
             setLoginError(validateLogin(e.target.value));
           }}
         />
-        {loginError && <div>{loginError}</div>}
+        {loginError && <div className="text-red-500">{loginError}</div>}
       </div>
 
       <div className="items-center gap-1.5">
@@ -67,7 +67,7 @@ export const RegistrationStep2: React.FC<RegistrationStep2Props> = ({
             setEmailError(validateEmail(e.target.value));
           }}
         />
-        {emailError && <div>{emailError}</div>}
+        {emailError && <div className="text-red-500">{emailError}</div>}
       </div>
 
       <div className="items-center gap-1.5">
@@ -84,7 +84,7 @@ export const RegistrationStep2: React.FC<RegistrationStep2Props> = ({
             setPasswordError(validatePassword(e.target.value));
           }}
         />
-        {passwordError && <div>{passwordError}</div>}
+        {passwordError && <div className="text-red-500">{passwordError}</div>}
       </div>
 
       <div className="items-center gap-1.5">
@@ -107,7 +107,9 @@ export const RegistrationStep2: React.FC<RegistrationStep2Props> = ({
             );
           }}
         />
-        {confirmPasswordError && <div>{confirmPasswordError}</div>}
+        {confirmPasswordError && (
+          <div className="text-red-500">{confirmPasswordError}</div>
+        )}
       </div>
     </div>
   );
