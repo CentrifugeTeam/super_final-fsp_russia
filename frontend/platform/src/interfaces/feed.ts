@@ -23,8 +23,3 @@ export interface IFederalDistrictData {
   name: string;
   regions: IRegion[];
 }
-
-// Интерфейс для данных, получаемых из API (с полем fetched_reps_data)
-export interface IData {
-  fetched_reps_data: IFederalDistrictData[];
-}
