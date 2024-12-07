@@ -128,7 +128,7 @@ export const LoginForm = () => {
       </Button>
       {/* Если есть ошибка, отображаем сообщение об ошибке */}
       {error && (
-        <p className="text-[#333333]">Ошибка авторизации. Попробуйте снова.</p>
+        <p className="text-red-500">Ошибка авторизации. Попробуйте снова.</p>
       )}
       <p className={styles.or}>или</p>
 
