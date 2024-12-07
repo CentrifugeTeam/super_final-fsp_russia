@@ -1,8 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from shared.storage.db.models.representations import Representation, FederalRepresentation
-from worker.src.functions.cron_regions_functions.schemas import FederalDistrictBase
-from ...utils import _create_if_dont_exist
+from shared.storage.db.models.representations import Representation
 
 
 async def get_or_create_federal(session: AsyncSession, federal_district_name: str):

@@ -7,6 +7,7 @@ from fastapi_permissions import Allow, All
 class Team(IDMixin, Base):
     __tablename__ = 'teams'
     name: Mapped[str] = mapped_column(String, unique=True)
+    max_members: Mapped[int] = mapped_column(Integer)
 
 
 class UserTeam(IDMixin, Base):

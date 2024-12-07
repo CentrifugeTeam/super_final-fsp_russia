@@ -1,23 +1,28 @@
 from typing import Callable, Any
 
-from ...utils.crud import MockCrudAPIRouter
-from ...schemas import RegionRepresentationBase, ReadFederalRepresentation
+from fastapi import Depends
+from sqlalchemy.orm import joinedload
+
+from ...dependencies import get_session
+
+from ...utils.crud import CrudAPIRouter
+from ...schemas import ReadRegionRepresentationBase
 from ...schemas.representation import FederalRepresentation
-from polyfactory.factories.pydantic_factory import ModelFactory
+from ...managers.representation import RepresentationManager
 
-F2 = ModelFactory().create_factory(ReadFederalRepresentation)
-F3 = ModelFactory().create_factory(FederalRepresentation)
+reps_manager = RepresentationManager()
 
-
-class Representation(MockCrudAPIRouter):
+class RepresentationAPIRouter(CrudAPIRouter):
 
     def __init__(self):
-        super().__init__(RegionRepresentationBase, RegionRepresentationBase, RegionRepresentationBase)
+        super().__init__(ReadRegionRepresentationBase, reps_manager , ReadRegionRepresentationBase, ReadRegionRepresentationBase)
 
     def _get_all(self) -> Callable[..., Any]:
-        @self.get('/', response_model=list[F3.__model__])
-        async def func():
-            return F3.batch(10)
+        @self.get('/', response_model=list[FederalRepresentation])
+        async def func(
+                session = Depends(get_session)
+        ):
+            return await reps_manager.list(session)
 
 
     def _register_routes(self) -> list[Callable[..., Any]]:

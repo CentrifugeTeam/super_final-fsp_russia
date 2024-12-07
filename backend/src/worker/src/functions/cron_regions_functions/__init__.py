@@ -1,7 +1,4 @@
-from .parse_federal_district import parse_federal_district
 from .get_federal_district_id import get_or_create_federal
-from .parse_federal_district import parse_federal_district
 from .parse_moscow import parse_moscow
 from .save_region_to_db import save_region_to_db
-from .parse_region import parse_region
 from .fetch import fetch_regions_data

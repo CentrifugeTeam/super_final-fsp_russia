@@ -4,8 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from web.app.utils.ai.upload_file import IAFile
 from worker.src.functions.cron_regions_functions.schemas import BlockRegionalRepresentation
 from sqlalchemy.exc import IntegrityError
-from shared.storage.db.models import Representation, RegionalRepresentation, FederalRegionRepresentation, \
-    RepresentationStuff
+from shared.storage.db.models import Representation, RegionRepresentation, RepresentationStuff
 from .get_federal_district_id import get_or_create_federal
 from logging import getLogger
 from ...utils import create_user, _create_if_dont_exist
@@ -31,34 +30,37 @@ async def save_region_to_db(session: AsyncSession, region_data):
 
     # Ищем или создаем пользователя для лидера
     leader_user = await create_user(session, block.leader, block.contacts)
+    if leader_user is None:
+        return
 
-        # Создаем регион
+    # Создаем регион
+
+    if block.federal_district:
+        federal_district_id = (await get_or_create_federal(session, block.federal_district)).id
+    else:
+        federal_district_id = None
 
     async def _if_dont_exist(session, _dict, model):
-        obj = model(**_dict)
+        prompt = f'сгенерируй изображение без людей, где будет только по центру изображён герб области: {block.region_name}'
+        iafile = IAFile()
+        region_url = await iafile.prompt_for_file(prompt)
+        obj = model(**_dict,
+                    photo_url=region_url,
+                    )
         session.add(obj)
         await session.flush()
         return obj
 
-    prompt = f'сгенерируй изображение без людей, где будет только по центру изображён герб области: {block.region_name}'
-    iafile = IAFile()
-    region_url = await iafile.prompt_for_file(prompt)
     repr = await _create_if_dont_exist(session,
-                                       {'name': block.region_name, 'photo_url': region_url, 'contacts': block.contacts,
+                                       {'name': block.region_name, 'contacts': block.contacts,
                                         'type': 'region'}, Representation, _if_dont_exist)
-    region = RegionalRepresentation(representation_id=repr.id, leader_id=leader_user.id)
+    region = RegionRepresentation(representation_id=repr.id, leader_id=leader_user.id,
+                                  federal_district_id=federal_district_id)
     session.add(region)
     await session.flush()
 
-    if block.federal_district:
-        federal = await get_or_create_federal(session, block.federal_district)
-        frp = FederalRegionRepresentation(
-            federal_district_id=federal.id,
-            regional_representation_id=region.id
-        )
-        session.add(frp)
-
     try:
         await session.commit()
-    except IntegrityError:
+    except IntegrityError as e:
+        logger.error(f"Ошибка сохранения региона {region_data['region_name']}: {e}")
         await session.rollback()

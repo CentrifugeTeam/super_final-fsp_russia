@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: c1607c82450e
+Revision ID: d884b6d68cdc
 Revises: 
-Create Date: 2024-12-06 21:57:32.338470
+Create Date: 2024-12-07 00:56:32.288868
 
 """
 from typing import Sequence, Union
@@ -19,7 +19,7 @@ from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'c1607c82450e'
+revision: str = 'd884b6d68cdc'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -47,10 +47,6 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('city', 'region', 'country', name='unique_city_region_country')
     )
-    op.create_table('notifications',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('representations',
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('photo_url', sa.String(), nullable=True),
@@ -68,6 +64,7 @@ def upgrade() -> None:
     )
     op.create_table('teams',
     sa.Column('name', sa.String(), nullable=False),
+    sa.Column('max_members', sa.Integer(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
@@ -98,12 +95,6 @@ def upgrade() -> None:
     sa.Column('location_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['location_id'], ['locations.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['type_event_id'], ['event_types.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('federal_representations',
-    sa.Column('representation_id', sa.Integer(), nullable=False),
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['representation_id'], ['representations.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('oauth_accounts',
@@ -186,7 +177,7 @@ def upgrade() -> None:
     sa.Column('federal_district_id', sa.Integer(), nullable=False),
     sa.Column('region_representation_id', sa.Integer(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['federal_district_id'], ['federal_representations.id'], ),
+    sa.ForeignKeyConstraint(['federal_district_id'], ['representations.id'], ),
     sa.ForeignKeyConstraint(['region_representation_id'], ['region_representations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -212,14 +203,12 @@ def downgrade() -> None:
     op.drop_table('representation_stuff')
     op.drop_table('region_representations')
     op.drop_table('oauth_accounts')
-    op.drop_table('federal_representations')
     op.drop_table('events')
     op.drop_index(op.f('ix_users_username'), table_name='users')
     op.drop_table('users')
     op.drop_table('teams')
     op.drop_table('roles')
     op.drop_table('representations')
-    op.drop_table('notifications')
     op.drop_table('locations')
     op.drop_table('files')
     op.drop_table('event_types')
