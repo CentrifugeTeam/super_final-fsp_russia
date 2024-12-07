@@ -1,6 +1,7 @@
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from web.app.exceptions import GenerationFileException
 from web.app.utils.ai.upload_file import IAFile
 from worker.src.functions.cron_regions_functions.schemas import BlockRegionalRepresentation
 from sqlalchemy.exc import IntegrityError
@@ -40,10 +41,13 @@ async def save_region_to_db(session: AsyncSession, region_data):
     else:
         federal_district_id = None
 
-    async def _if_dont_exist(session, _dict, model):
+    async def _if_dont_exist_repr(session, _dict, model):
         prompt = f'сгенерируй изображение без людей, где будет только по центру изображён герб области: {block.region_name}'
         iafile = IAFile()
-        region_url = await iafile.prompt_for_file(prompt)
+        try:
+            region_url = await iafile.prompt_for_file(prompt)
+        except GenerationFileException:
+            region_url = None
         obj = model(**_dict,
                     photo_url=region_url,
                     )
@@ -53,14 +57,12 @@ async def save_region_to_db(session: AsyncSession, region_data):
 
     repr = await _create_if_dont_exist(session,
                                        {'name': block.region_name, 'contacts': block.contacts,
-                                        'type': 'region'}, Representation, _if_dont_exist)
-    region = RegionRepresentation(representation_id=repr.id, leader_id=leader_user.id,
-                                  federal_district_id=federal_district_id)
-    session.add(region)
-    await session.flush()
+                                        'type': 'region'}, Representation, _if_dont_exist_repr)
 
     try:
-        await session.commit()
+        region = await _create_if_dont_exist(session, dict(representation_id=repr.id, leader_id=leader_user.id,
+                                                           federal_district_id=federal_district_id),
+                                             RegionRepresentation)
     except IntegrityError as e:
         logger.error(f"Ошибка сохранения региона {region_data['region_name']}: {e}")
         await session.rollback()

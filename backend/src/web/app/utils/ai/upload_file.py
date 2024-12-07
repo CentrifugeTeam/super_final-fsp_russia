@@ -7,7 +7,7 @@ from gigachat import GigaChat
 from gigachat.models import Image
 from gigachat.models import ChatCompletion
 from ...conf import BASE_PATH
-from ...exceptions import FileDoesntSave
+from ...exceptions import FileDoesntSave, GenerationFileException
 from logging import getLogger
 from .conf import model
 
@@ -47,6 +47,8 @@ class IAFile:
         """
         content = response.choices[0].message.content
         found = re.findall(r'(\w+)="(\S+)"', content)
+        if len(found) != 2:
+            raise GenerationFileException(f'File id not found in response: {content}')
         return found[0][1]
 
     async def save_to_file(self, url: str, file: Image):

@@ -10,3 +10,7 @@ class InvalidResetPasswordToken(Exception):
 
 class UserAlreadyVerifiedException(Exception):
     pass
+
+
+class GenerationFileException(Exception):
+    pass

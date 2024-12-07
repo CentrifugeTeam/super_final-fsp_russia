@@ -130,13 +130,14 @@ async def create_user(session: AsyncSession, full_name: str, email: str | None =
     """
     # Разбиваем полное имя на компоненты
     name_parts = full_name.split()
-    if len(name_parts) < 2:
-        logger.error(f"Некорректное имя: {full_name}")
-        return None
-
-    first_name = name_parts[1]
-    last_name = name_parts[0]
-    middle_name = name_parts[2] if len(name_parts) > 2 else None
+    if not name_parts:
+        first_name = '<Неизвестно>'
+        middle_name = '<Неизвестно>'
+        last_name = '<Неизвестно>'
+    else:
+        first_name = name_parts[1]
+        last_name = name_parts[0]
+        middle_name = name_parts[2] if len(name_parts) > 2 else None
 
     # Генерируем username на основе email (если он есть)
     username = email.split('@')[0] if email else generate_unique_username()
