@@ -14,3 +14,12 @@ class TeamsRouter(CrudAPIRouter):
 
     def __init__(self):
         super().__init__(TeamRead, TeamManager(), TeamCreate, TeamUpdate)
+
+    def _attach_to_team(self):
+        pass
+
+
+    def _register_routes(self) -> list[Callable[..., Any]]:
+        return [
+            self._get_all, self._get_one, self._create
+        ]
