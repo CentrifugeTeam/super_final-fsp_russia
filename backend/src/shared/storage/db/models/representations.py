@@ -41,6 +41,3 @@ class RepresentationStuff(IDMixin, Base):
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     is_leader: Mapped[bool] = mapped_column(Boolean, default=False)
     user: Mapped['User'] = relationship(back_populates='representation')
-
-    # region: Mapped['RegionalRepresentation'] = relationship('RegionalRepresentation', back_populates='users')
-    # user: Mapped['User'] = relationship('User', back_populates='regions')

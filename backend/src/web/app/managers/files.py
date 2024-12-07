@@ -11,6 +11,8 @@ from uuid import uuid4
 from ..exceptions import FileDoesntSave
 from fastapi import UploadFile
 
+from ..utils.staticfiles import create_staticfiles_url
+
 
 async def _save_file_to_static(file: UploadFile):
     url = f'{uuid4()}{file.filename}'
@@ -25,7 +27,7 @@ async def _save_file_to_static(file: UploadFile):
     finally:
         await file.close()
 
-    return f'/staticfiles/{url}'
+    return create_staticfiles_url(url)
 
 
 class FilesManager(BaseManager):

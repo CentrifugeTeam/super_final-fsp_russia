@@ -8,6 +8,8 @@ from ..conf import BASE_PATH
 from ..exceptions import FileDoesntSave
 from logging import getLogger
 
+from ..utils.staticfiles import create_staticfiles_url
+
 logger = getLogger(__name__)
 
 
@@ -73,4 +75,4 @@ class YandexCalendar:
             logger.exception('Icalendar failed to save to staticfiles', exc_info=e)
             raise FileDoesntSave from e
 
-        return f'/staticfiles/{url}'
+        return create_staticfiles_url(url)

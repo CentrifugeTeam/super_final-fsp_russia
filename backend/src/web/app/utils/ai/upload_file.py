@@ -6,6 +6,8 @@ import aiofiles
 from gigachat import GigaChat
 from gigachat.models import Image
 from gigachat.models import ChatCompletion
+
+from ..staticfiles import create_staticfiles_url
 from ...conf import BASE_PATH
 from ...exceptions import FileDoesntSave, GenerationFileException
 from logging import getLogger
@@ -65,7 +67,7 @@ class IAFile:
             async with aiofiles.open(filename, 'wb') as f:
                 await f.write(base64.b64decode(file.content))
 
-            return f'/staticfiles/{url}'
+            return create_staticfiles_url(url)
 
         except Exception as e:
             logger.exception('Downloaded file with url %s from gigachat', url, exc_info=e)

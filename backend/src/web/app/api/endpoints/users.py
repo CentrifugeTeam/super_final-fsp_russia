@@ -3,8 +3,8 @@ from typing import Callable, Any, cast, Annotated
 from fastapi import Depends, UploadFile, Form, File, HTTPException
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from shared.crud import missing_token_or_inactive_user_response, forbidden_response
+from shared.storage.db.models import User
 
 from ...utils.crud import CrudAPIRouter
 from ...schemas.users import ReadUser, CreateUser, UpdateUser, ReadUserMe
@@ -53,7 +53,7 @@ class UsersRouter(CrudAPIRouter):
             try:
                 user = create_schema(username=username, first_name=first_name, middle_name=middle_name,
                                      last_name=last_name,
-                                      email=email, password=password, about=about)
+                                     email=email, password=password, about=about)
             except ValidationError as e:
                 raise HTTPException(status_code=422, detail=e.errors())
             return await user_manager.create_user(session, user, file=photo)
@@ -64,6 +64,15 @@ class UsersRouter(CrudAPIRouter):
         async def func(user=Depends(authenticator.get_user())):
             await user.awaitable_attrs.representation
             return user
+
+        @self.patch('/me', response_model=ReadUser,
+                    responses={**missing_token_or_inactive_user_response})
+        async def func(user: UpdateUser,
+                       session: AsyncSession = Depends(self.get_session),
+                       user_in_db: User=Depends(authenticator.get_user()),
+
+                       ):
+            return await user_manager.update(session, user_in_db, user)
 
     def _register_routes(self) -> list[Callable[..., Any]]:
         return [self._me, self._create, self._get_one, self._get_all, self._update]

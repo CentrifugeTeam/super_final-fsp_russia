@@ -10,10 +10,9 @@ from shared.crud import (
 from typing import Any, TypeVar, Type, Callable
 from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from polyfactory.factories.pydantic_factory import ModelFactory
 from shared.crud.openapi_responses import auth_responses
-from web.app.dependencies.session import get_session
-from web.app.utils.users import authenticator
+from ...utils.users import authenticator
+from ...dependencies import get_session
 from typing import TypeVar
 
 Resource = TypeVar('Resource')

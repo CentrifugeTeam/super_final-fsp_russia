@@ -5,7 +5,7 @@ from .strategy import JWTStrategy
 from .transport import AppTransport
 from logging import getLogger
 from fastapi.security import OAuth2PasswordBearer, HTTPAuthorizationCredentials
-
+from ..dependencies.session import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shared.storage.db.models import User
@@ -21,9 +21,7 @@ class Authenticator:
     def __init__(
             self,
             backend: AuthenticationBackend,
-            get_session
     ):
-        self.get_session = get_session
         self.backend = backend
 
     def get_user_token(self, optional: bool = False,
@@ -39,7 +37,7 @@ class Authenticator:
 
         async def wrapped(
                 cred: Annotated[HTTPAuthorizationCredentials, Depends(scheme)],
-                session: AsyncSession = Depends(self.get_session),
+                session: AsyncSession = Depends(get_session),
                 strategy: JWTStrategy = Depends(self.backend.get_strategy),
         ):
             user = await strategy.read_token(cred.credentials, session)
@@ -74,7 +72,7 @@ class Authenticator:
 
         async def wrapped(
                 cred: Annotated[HTTPAuthorizationCredentials, Depends(scheme)],
-                session: AsyncSession = Depends(self.get_session),
+                session: AsyncSession = Depends(get_session),
                 strategy: JWTStrategy = Depends(self.backend.get_strategy),
         ):
             user = await strategy.read_token(cred.credentials, session)
