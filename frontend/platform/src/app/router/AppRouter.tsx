@@ -36,6 +36,7 @@ export const AppRouter = () => {
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
         <Route path="/profile" element={<ProfilePage />} />
+				<Route path="/profile/*" element={<ProfilePage />} />
       </Route>
     </Route>
   );

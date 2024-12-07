@@ -12,7 +12,7 @@ export const ProtectedRoute = () => {
   const location = useLocation();
 
   // Список путей, где Header должен отображаться
-  const showHeaderOnRoutes = ["/about_us", "/profile"]; // Example routes where Header should show
+  const showHeaderOnRoutes = ["/about_us", "/profile", "/profile/edit"]; // Example routes where Header should show
   // Список путей, где Footer должен отображаться
   const showFooterOnRoutes = ["/about_us"]; // Example routes where Footer should show
 
