@@ -2,7 +2,7 @@
 // import { logout } from "@/app/redux/slices/authSlice"; // Убедитесь, что путь к вашему authSlice правильный
 // import { useNavigate } from "react-router-dom";
 import { ProfilePanel } from "@/features/ProfilePanel";
-import style from './profilepage.module.scss'
+import style from "./profilepage.module.scss";
 
 export const ProfilePage = () => {
   // const dispatch = useDispatch();
@@ -15,13 +15,11 @@ export const ProfilePage = () => {
 
   return (
     <div className={style.profileContent}>
-			<div>
-				<ProfilePanel />
-			</div>
+      <div>
+        <ProfilePanel />
+      </div>
 
-			<div>
-
-			</div>
+      <div></div>
     </div>
   );
 };
