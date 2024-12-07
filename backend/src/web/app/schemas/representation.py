@@ -29,13 +29,13 @@ class UserRegion(BaseModel):
 
 class LeaderBase(BaseModel):
     first_name: str
-    middle_name: str
+    middle_name: str | None
     last_name: str
     username: str
 
 
 class ReadRegionsCard(BaseModel):
-    name: str
+    representation: ReadRepresentation
     leader: LeaderBase
 
 

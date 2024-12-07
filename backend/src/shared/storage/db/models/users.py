@@ -34,6 +34,9 @@ class User(IDMixin, Base):
             roles.append('verified')
         return roles
 
+    @property
+    def fio(self):
+        return f'{self.last_name} {self.first_name}' + f' {self.middle_name}' if self.middle_name else ''
 
 
 class UserSettings(IDMixin, Base):
