@@ -1,20 +1,19 @@
 import string
-from pydantic import BaseModel, ValidationError
-from sqlalchemy import select, insert
+from pydantic import ValidationError
+from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase
-from typing import Generic, TypeVar, Callable
+from typing import TypeVar, Callable
 
 from service_calendar.app.utils.email_sender import SMTPMessage, Message
-from .parser_pdf.parser import Row, AgeGroupSchema
+from worker.src.parser.parser_pdf.parser import Row
 from .settings import settings as conf_settings
-from .exceptions import ResourceExistsException
 
 from shared.storage.db.models import EventType, SportEvent, AgeGroup, Location, Competition, User, Role
 from logging import getLogger
-from web.app.schemas.users import BaseUser, CreateUser
-from web.app.utils.users import user_manager, role_manager
+from web.app.schemas.users import CreateUser
+from web.app.utils.users import user_manager
 import random
 
 smtp_message = SMTPMessage(sender=conf_settings.SMTP_SENDER, host=conf_settings.SMTP_HOST,

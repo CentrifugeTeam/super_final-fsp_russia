@@ -1,37 +1,35 @@
-import asyncio
 import os
 from uuid import uuid4
 
 import aiofiles
-import aiohttp
 from bs4 import BeautifulSoup
 import json
 import datetime
 from logging import getLogger
 import aiohttp
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from ..parser_pdf.parser import ParserPDF
+from sqlalchemy.ext.asyncio import async_sessionmaker
+from worker.src.parser.parser_pdf.parser import ParserPDF
 from ..utils import update_db
 
 logger = getLogger(__name__)
 
 
 async def cron_update_calendar_table(ctx):
+    logger.info('start fetching pdf')
     try:
-        logger.info('start fetching pdf')
         file_name = await fetch_pdf(ctx)
         logger.info('fetched pdf_file')
         maker = ctx['async_session_maker']
         maker: async_sessionmaker
         parser = ParserPDF()
-        try:
-            rows = parser.grap_rows(file_name)
-            logger.info('fetched rows %d', len(rows))
-            await update_db(maker, rows)
-        finally:
-            os.remove(file_name)
+        rows = parser.grap_rows(file_name)
+        logger.info('fetched rows %d', len(rows))
+        await update_db(maker, rows)
+
     except Exception as e:
         logger.error('error in cron_update_calendar_table', exc_info=True)
+    finally:
+        os.remove(file_name)
 
 
 async def _fetch_pdf(ctx, url_to_pdf: str):
