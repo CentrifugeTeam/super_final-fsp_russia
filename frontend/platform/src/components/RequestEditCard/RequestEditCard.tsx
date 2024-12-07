@@ -34,7 +34,7 @@ const RequestEditCard = ({ suggestion }: RequestEditCardProps) => {
           <h1>{competition}</h1>
           <h2>{name}</h2>
           <h2 className="mt-12">
-            {age}, {count_participants} участников
+            {age} , {count_participants} участников
           </h2>
           <h3>{location}</h3>
         </div>

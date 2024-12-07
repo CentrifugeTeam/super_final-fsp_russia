@@ -7,10 +7,10 @@ import { getEventStatus } from "../../shared/utils/getEventStatus";
 import { News } from "../../shared/ui/components/News";
 
 // Функция для получения текущей даты в формате YYYY-MM-DD
-const getCurrentDate = () => {
-  const today = new Date();
-  return today.toISOString().split("T")[0]; // Берём только дату без времени
-};
+// const getCurrentDate = () => {
+//   const today = new Date();
+//   return today.toISOString().split("T")[0]; // Берём только дату без времени
+// };
 
 export const MainPage = () => {
   const size = 9; // Количество элементов на странице
@@ -27,7 +27,7 @@ export const MainPage = () => {
     participant_from: undefined,
     participant_to: undefined,
     participants_count: undefined,
-    start_date: getCurrentDate(),
+    // start_date: getCurrentDate(),
     end_date: undefined,
   });
 

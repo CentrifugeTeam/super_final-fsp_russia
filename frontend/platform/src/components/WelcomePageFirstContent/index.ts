@@ -1,0 +1,1 @@
+export {WelcomePageFirstContent} from './WelcomePageFirstContent';

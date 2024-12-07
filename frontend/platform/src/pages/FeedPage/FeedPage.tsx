@@ -3,9 +3,9 @@ import { RegiosnData } from "@/features/RegionsData/ui";
 
 export const FeedPage = () => {
   return (
-    <div className={styles.wrapper}>
-      <RegiosnData />
-    </div>
+		<div className={styles.wrapper}>
+			<RegiosnData />
+		</div>
   );
 };
 

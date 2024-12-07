@@ -1,0 +1,137 @@
+.endContent{
+	margin-left: 0.6%;
+	margin-right: 0.6%;
+	background-color: #11192C;
+	border-radius: 10px;
+	padding-top: 40px;
+	padding-left: 90px;
+	padding-right: 90px;
+	padding-bottom: 50px;
+
+	.title{
+		font-size: 25px;
+		font-weight: 700;
+		margin-bottom: 20px;
+	}
+
+	.text{
+		font-size: 20px;
+		font-weight: 600;
+	}
+
+	.disciplines{
+		display: flex;
+		text-align: center;
+		margin-bottom: 40px;
+	}
+
+	.productProgramming{
+		max-width: 451px;
+		max-height: 140px;
+		padding: 40px;
+		padding-top: 33px;
+		padding-bottom: 23px;
+		text-align: left;
+		background-color: #463ACB;
+		border-radius: 12px;
+	}
+
+	.algorithmicProgramming{
+		max-width: 660px;
+		max-height: 140px;
+		text-align: center;
+		padding: 105px;
+		padding-top: 33px;
+		padding-bottom: 40px;
+		padding-bottom: 23px;
+		margin-left: 40px;
+		margin-right: 40px;
+		background-color: #402FFF;
+		border-radius: 12px;
+	}
+
+	.basProgramming{
+		max-width: 453px;
+		max-height: 140px;
+		text-align: right;
+		padding: 40px;
+		padding-bottom: 23px;
+		padding-top: 33px;
+		background-color: #D82C20;
+		border-radius: 12px;
+	}
+
+	.roboticsProgramming{
+		text-align: left;
+		max-width: 636px;
+		max-height: 140px;
+		background-color: #D82C20;
+		border-radius: 12px;
+		padding: 40px;
+		padding-bottom: 23px;
+		padding-top: 33px;
+		margin-right: 40px;
+	}
+
+	.POISS{
+		max-width: 968px;
+		max-height: 140px;
+		text-align: right;
+		padding-left: 55px;
+		padding-right: 55px;
+		padding-top: 33px;
+		padding-bottom: 23px;
+		border-radius: 12px;
+		background-color: #463ACB;
+	}
+}
+
+@media(max-width: 768px){
+	.endContent{
+		padding: 10px !important;
+	}
+
+	.disciplines{
+		display: block !important;
+		margin-bottom: 0px !important;
+	}
+
+	.productProgramming,
+  .algorithmicProgramming,
+  .basProgramming,
+  .roboticsProgramming,
+  .POISS {
+		margin: 0px;
+    max-width: 100% !important;
+    text-align: left !important;
+		height: max-content;
+		padding: 10px !important;
+		margin-bottom: 15px;
+		margin-left: 0px !important;
+		margin-right: 0px !important;
+  }
+
+	.POISS{
+		height: 90px !important;
+	}
+
+	.text{
+		font-size: 25px !important;
+	}
+
+	.title{
+		display: none;
+	}
+}
+
+@media(max-width: 555px){
+	.POISS{
+		height: 120px !important;
+	}
+}
+
+@media(max-width: 445px){
+	.POISS{
+		height: 250px !important;
+	}
+}
