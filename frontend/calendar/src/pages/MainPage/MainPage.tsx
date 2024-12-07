@@ -5,6 +5,7 @@ import { useSportEvents } from "../../shared/api/events";
 import styles from "./mainpage.module.scss";
 import { getEventStatus } from "../../shared/utils/getEventStatus";
 import { News } from "../../shared/ui/components/News";
+import { useLocation } from "react-router-dom";
 
 // Функция для получения текущей даты в формате YYYY-MM-DD
 // const getCurrentDate = () => {
@@ -13,6 +14,9 @@ import { News } from "../../shared/ui/components/News";
 // };
 
 export const MainPage = () => {
+	const location = useLocation();
+	const { isFromPlatform } = location.state || { isFromPlatform: false };
+
   const size = 9; // Количество элементов на странице
   const [isMobile, setIsMobile] = useState(false);
 
@@ -83,7 +87,7 @@ export const MainPage = () => {
         <br /> И СПОРТИВНЫХ МЕРОПРИЯТИЙ
       </h1>
       <News />
-      <FilterForm onFilterChange={handleFilterChange} />
+      <FilterForm onFilterChange={handleFilterChange} isSomethingTrue={isFromPlatform} />
       <div className={styles.miniCards}>
         {data?.items.map((event) => {
           const { status, statusColor } = getEventStatus(

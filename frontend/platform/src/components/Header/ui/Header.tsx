@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { RootState } from "@/app/redux/store"; // Ensure this path is correct
+import { RootState } from "@/app/redux/store"; // Убедитесь, что этот путь верный
 import styles from "./header.module.scss";
 import Logo from "@/assets/logo_fsp.svg";
 import MenuIcon from "@/assets/burger_button.svg";
@@ -25,6 +25,10 @@ export const Header = () => {
     }
   };
 
+  const handleCalendarRedirect = () => {
+    navigate("/calendar/", { state: { isFromPlatform: true } });
+  };
+
   return (
     <div className={styles.header}>
       <div className={styles.logoMenu}>
@@ -37,9 +41,9 @@ export const Header = () => {
         />
       </div>
       <div className={`${styles.links} ${isMenuOpen ? styles.open : ""}`}>
-				<Link to="/about_us">О нас</Link>
+        <Link to="/about_us">О нас</Link>
         <Link to="/regions">Регионы</Link>
-				<Link to="/calendar/">Календарь</Link>
+        <a onClick={handleCalendarRedirect}>Календарь</a>
         <a>Статистика</a>
         <Link to="/contacts">Контакты</Link>
         <a onClick={handleAuthRedirect}>

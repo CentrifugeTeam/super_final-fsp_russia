@@ -30,8 +30,10 @@ const calculateEndDate = (sortPeriod: string): string => {
 
 export const FilterForm = ({
   onFilterChange,
+	isFromPlatform
 }: {
   onFilterChange: (filters: Record<string, any>) => void;
+	isFromPlatform: boolean;
 }) => {
   const [isFilterVisible, setFilterVisible] = useState(false);
 
@@ -46,7 +48,7 @@ export const FilterForm = ({
   const [multiSelectValues4, setMultiSelectValues4] = useState<string[]>([]); // Место проведения
   const [multiSelectValues5, setMultiSelectValues5] = useState<string[]>([]); // Программа
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
+	const [searchQuery, setSearchQuery] = useState<string>(isFromPlatform ? "FSP" : "");
   const [sexQuery, setSexQuery] = useState<string>("");
   const [sex, setSex] = useState<string[]>([]);
   const [minAge, setMinAge] = useState<string>("");
