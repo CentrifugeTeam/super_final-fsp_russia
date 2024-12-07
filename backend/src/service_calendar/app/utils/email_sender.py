@@ -5,6 +5,7 @@ from email.mime.multipart import MIMEMultipart
 import ssl
 from dataclasses import dataclass
 
+
 @dataclass
 class Message:
     title: str
@@ -29,32 +30,119 @@ class SMTPMessage:
         """
 
         html_text = \
-            f"""<div width="100%" style="margin:0;background-color:#f0f2f3">
-            <div style="margin:auto;max-width:600px;padding-top:50px" class="m_-7984133988146846855email-container">
-              <table role="presentation" cellspacing="0" cellpadding="0" width="100%" align="center" id="m_-7984133988146846855logoContainer" style="background:#252f3d;border-radius:3px 3px 0 0;max-width:600px">
-                <tbody><tr>
-                  <td style="background:#252f3d;border-radius:3px 3px 0 0;padding:20px 0 10px 0;text-align:center">
-                  </td>
-                </tr>
-              </tbody>
-              </table>
-              <table role="presentation" cellspacing="0" cellpadding="0" width="100%" align="center" id="m_-7984133988146846855emailBodyContainer" style="border:0px;border-bottom:1px solid #d6d6d6;max-width:600px">
-                  <tbody><tr>
-                    <td style="background-color:#fff;color:#444;font-family:'Amazon Ember','Helvetica Neue',Roboto,Arial,sans-serif;font-size:14px;line-height:140%;padding:25px 35px">
-                    {message.text}
-                    </td>
-                  </tr>
+            f"""
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html style="width: 100%; height:100%">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Template</title>
+</head>
+
+
+
+
+<body bgcolor="#f4f4f4" style="
+    margin: auto;
+
+  max-width:720px;">
+  <div>
+    <table width="100%" bgcolor="#00000" cellpadding="0" cellspacing="0" border="0" style="position:relative">
+      <tr>
+        <td>
+          <div class="box" style="background-color:#061ab1; overflow: hidden;height: 50px;position: relative;">
+          </div>
+          
+          
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div>
+    <!-- Main Content -->
+    <table bgcolor="#FFFFFF" style="margin:auto; width: 100%; margin-top:0%; padding-bottom:20px;" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td>
+          <div>
+            <table style="text-align: left; padding: 10px;" cellpadding="0" cellspacing="0" border="0" align="center">
+              <!-- Main Text -->
               <tr>
-                <td style="background-color:#fff;color:#444;font-family:'Amazon Ember','Helvetica Neue',Roboto,Arial,sans-serif;font-size:14px;line-height:140%;padding:25px 35px;padding-top:0;text-align:center">
-                  <div style="font-weight:bold;padding-bottom:15px"></div>
-                  <div style="color:#000;font-size:36px;font-weight:bold;padding-bottom:15px"></div>
-                  <div style="color:#444;font-size:10px"></div>
+                <td style="text-align: center;">
+                  <h2 style="font-size: 20px; font-weight: bold; margin: 0;">{message.title}</h2>
                 </td>
               </tr>
-              </tbody>
-              </table>
-                </div>
-        </div>
+          </table></div>
+          <div>
+            <table style="padding: 10px;" cellpadding="0" cellspacing="0" border="0" align="center">
+
+              <tr>
+                <td>
+                  <a style="text-decoration: none;color: white;" target="_blank" href="{message.url_for_button}" >
+                    <div style=" cursor: pointer;  border-radius:30px; border:none ; background-color: #FFD700; color: black; padding: 25px 80px; ">
+                      {message.text_on_button}
+                    </div>
+                  </a>
+
+                </td>
+              </tr>
+            </table>
+
+
+          </div>
+        </td>
+      </tr>
+    </table>
+
+  </div>
+
+  <div>
+    <!-- Footer -->
+    <table bgcolor="#061AB1" cellpadding="0" cellspacing="0" border="0" width="100%">
+      <tr>
+        <td>
+
+        <div>
+
+            <table cellpadding="0" cellspacing="0" border="0" align="right" width="100%">
+              <tr>
+                <td>
+                  <div style="padding-top: 20px; padding-right:30px; text-align: right;">
+                    <a target="_blank" href="https://centrifugo.tech/profile/edit" style="text-decoration:none; color:white;">
+                      Личный кабинет 
+                    </a>
+                    <a target="_blank" href="https://centrifugo.tech/calendar/" style="text-decoration:none; color:white;">
+                      Календарь мероприятий
+                    </a>
+                
+                  </div>
+                </td>
+              </tr>
+
+            </table>
+
+          </div>
+
+
+          
+        </td>
+      </tr>
+
+        </table>
+      </div>
+
+
+      
+    </td>
+  </tr>
+  </table>
+
+  </div>
+
+</body>
+
+</html>
+
             """
 
         message = MIMEMultipart('alternative')
@@ -75,5 +163,5 @@ class SMTPMessage:
             server.login(self.sender, self.password)
             return server.sendmail(self.sender, receiver, msg.as_string())
 
-    async def asend_email(self, receiver: str,  message: Message):
+    async def asend_email(self, receiver: str, message: Message):
         return await asyncio.to_thread(self.send_email, receiver, message)

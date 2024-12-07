@@ -7,3 +7,4 @@ from .oauth_accounts import OAuthAccount
 from .sport_event import SportEvent, Competition, EventType, AgeGroup, Location
 from .representations import Representation, RegionRepresentation
 from .suggestion import Suggestion
+from .teams import Team, TeamSolution

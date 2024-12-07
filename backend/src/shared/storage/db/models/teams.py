@@ -7,12 +7,14 @@ from fastapi_permissions import Allow, All
 class Team(IDMixin, Base):
     __tablename__ = 'teams'
     name: Mapped[str] = mapped_column(String, unique=True)
-    max_members: Mapped[int] = mapped_column(Integer)
     region_representation_id: Mapped[int] = mapped_column(Integer, ForeignKey('region_representations.id'))
+    event_id: Mapped[int] = mapped_column(Integer, ForeignKey('events.id'))
+    users: Mapped[list['User']] = relationship(back_populates='team')
+    created_at: Mapped[str] = mapped_column(String)
+    about: Mapped[str] = mapped_column(String)
 
 
-
-class UserTeam(IDMixin, Base):
-    __tablename__ = 'user_teams'
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
+class TeamSolution(IDMixin, Base):
+    __tablename__ = 'team_solutions'
     team_id: Mapped[int] = mapped_column(Integer, ForeignKey('teams.id'))
+    score: Mapped[int] = mapped_column(Integer)
