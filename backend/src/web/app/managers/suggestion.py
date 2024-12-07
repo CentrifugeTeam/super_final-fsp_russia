@@ -3,7 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from .base import BaseManager
 
 from shared.storage.db.models import Suggestion, SportEvent, EventType, Competition, AgeGroup, Location
-from worker.src.utils import _create_if_dont_exist, ResourceExistsException
+from worker.src.utils import _create_if_dont_exist
+from worker.src.exceptions import ResourceExistsException
 from sqlalchemy.exc import IntegrityError
 
 
