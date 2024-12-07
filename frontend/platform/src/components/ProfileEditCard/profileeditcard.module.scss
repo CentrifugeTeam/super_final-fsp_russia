@@ -3,18 +3,44 @@
 	padding: 30px;
 	background-color: #FFFFFF;
 	border-radius: 10px;
+	display: flex;
 
 	.imgContainer{
 		margin-right: 30px;
 	}
 
 	.img{
-		width: 214px;
-		height: 214px;
+		width: 214px !important;
+		height: 214px !important;
 		border-radius: 10px;
 	}
 
-	.header{
+	.personData{
+		width: 100%;
 
+		.header{
+			display: flex;
+			justify-content: space-between;
+
+			.fio{
+				color: black;
+				font-size: 20px;
+				font-weight: 600;
+				letter-spacing: 0.5px;
+			}
+		}
+
+		.personIfo{
+			color: #7b7b7b;
+			letter-spacing: 0.5px;
+		}
+
+		.info{
+			margin-top: 30px;
+			color: black;
+			font-size: 19px;
+			font-weight: 600;
+			letter-spacing: 0.5px;
+		}
 	}
 }
