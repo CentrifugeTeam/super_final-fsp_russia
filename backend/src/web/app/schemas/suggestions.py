@@ -13,11 +13,8 @@ class BaseSuggestion(BaseModel):
     end_date: date
     format: Literal['online', 'offline', 'both']
     count_participants: int
-
-    def __acl__(self):
-        return [
-            (Allow, Authenticated, {'view', 'create'})
-        ]
+    age: str
+    name: str
 
 
 class ReadSuggestion(BaseSuggestion):
