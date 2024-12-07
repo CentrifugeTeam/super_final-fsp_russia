@@ -5,7 +5,7 @@ from web.app.exceptions import GenerationFileException
 from web.app.utils.ai.upload_file import IAFile
 from worker.src.functions.cron_regions_functions.schemas import BlockRegionalRepresentation
 from sqlalchemy.exc import IntegrityError
-from shared.storage.db.models import Representation, RegionRepresentation, RepresentationStuff
+from shared.storage.db.models import Representation, RegionRepresentation
 from .get_federal_district_id import get_or_create_federal
 from logging import getLogger
 from ...utils import create_user, _create_if_dont_exist

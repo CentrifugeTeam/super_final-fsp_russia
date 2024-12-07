@@ -5,4 +5,4 @@ from .roles import Role, UserRole
 from .teams import Team
 from .oauth_accounts import OAuthAccount
 from .sport_event import SportEvent, Competition, EventType, AgeGroup, Location
-from .representations import Representation, RepresentationStuff, RegionRepresentation
+from .representations import Representation, RegionRepresentation
