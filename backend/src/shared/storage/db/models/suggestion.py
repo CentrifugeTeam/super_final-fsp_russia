@@ -13,3 +13,5 @@ class Suggestion(IDMixin, Base):
     format: Mapped[str] = mapped_column(String(length=20), nullable=False)
     count_participants: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[str] = mapped_column(String(length=20), default='pending')
+
+
