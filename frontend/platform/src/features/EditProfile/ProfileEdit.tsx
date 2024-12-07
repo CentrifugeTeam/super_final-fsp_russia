@@ -9,7 +9,7 @@ export const ProfileEdit = () => {
 				<h1 className={styles.headerText}>Мой профиль</h1>
 
 				<Button
-					className="h-[58px] bg-[#463ACB] text-[20px] mt-5"
+					className="h-[50px] bg-[#463ACB] text-[20px] mt-5"
 				>
 					Редактировать профиль
 				</Button>
