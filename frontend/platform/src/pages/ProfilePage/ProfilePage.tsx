@@ -1,10 +1,16 @@
 // import { useDispatch } from "react-redux";
 // import { logout } from "@/app/redux/slices/authSlice"; // Убедитесь, что путь к вашему authSlice правильный
 // import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom"
+import { ProfileEdit } from "@/features/EditProfile";
 import { ProfilePanel } from "@/features/ProfilePanel";
 import style from "./profilepage.module.scss";
 
 export const ProfilePage = () => {
+	const location = useLocation();
+	const activeComponent = location.pathname.split('/').pop();
+	console.log(activeComponent)
+
   // const dispatch = useDispatch();
   // const navigate = useNavigate();
 
@@ -15,11 +21,18 @@ export const ProfilePage = () => {
 
   return (
     <div className={style.profileContent}>
-      <div>
+      <div className={style.panel}>
         <ProfilePanel />
       </div>
 
-      <div></div>
+			<div className={style.content}>
+        {/* Условный рендеринг на основе последнего сегмента пути */}
+        {activeComponent === 'edit' ? (
+          <ProfileEdit />
+        ) : (
+          <p>Добро пожаловать в ваш профиль!</p>
+        )}
+      </div>
     </div>
   );
 };
