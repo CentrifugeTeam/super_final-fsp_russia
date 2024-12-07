@@ -36,7 +36,7 @@ export const AppRouter = () => {
       <Route path="/send_email" element={<SendEmail />} />
       <Route path="/send_password" element={<SendPassword />} />
       <Route path="/regions" element={<FeedPage />} />
-			<Route path="/regions/region/:id" element={<RegionByIdPage />} />
+      <Route path="/regions/region/:id" element={<RegionByIdPage />} />
 
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
