@@ -4,10 +4,10 @@ ENV PYTHONDONTWRITEBYTECODE 1  # Отключаем создание .pyc фай
 ENV PYTHONUNBUFFERED 1  # Убеждаемся, что вывод логов сразу идет в консоль (без буферизации)
 
 RUN pip install --upgrade pip
-COPY web.requirements.txt .
+COPY requirements.txt .
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
-RUN pip install -r web.requirements.txt
+RUN pip install -r requirements.txt
 
 FROM python:3.12-slim
 COPY --from=builder /opt/venv /opt/venv

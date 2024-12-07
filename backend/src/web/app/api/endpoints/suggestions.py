@@ -70,10 +70,12 @@ class Router(CrudAPIRouter):
             model.status = status
             session.add(model)
             await session.commit()
-            await smtp_message.asend_email(model.user.email,
-                                           Message(url_for_button=f'https://centrifugo.tech/',
-                                                   title='Заменить пароль', text_on_button='кнопка', text=text)
-                                           )
+            if status == 'accepted':
+                await smtp_message.asend_email(model.user.email,
+                                               Message(url_for_button=f'https://centrifugo.tech/suggestions/{id}',
+                                                       title='Вашу заявку одобрили! Смотрите подробнее:',
+                                                       text_on_button='Заявка', text=text)
+                                               )
             return model
 
     def _register_routes(self) -> list[Callable[..., Any]]:
