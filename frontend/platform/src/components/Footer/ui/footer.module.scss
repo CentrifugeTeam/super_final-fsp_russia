@@ -16,7 +16,7 @@
   /* Установим фиксированную высоту для всех ячеек */
   grid-auto-rows: 111px; /* или можно использовать minmax для вариативности */
 
-  .logo {
+  .logoDesctop {
     width: auto;
     height: 100%;
     object-fit: contain;
@@ -78,3 +78,20 @@
 // h2 {
 //   font-size: 14px;
 // }
+
+
+@media (max-width: 768px) {
+	.logoDesctop{
+		display: none;
+	}
+
+	.logoMobile{
+		display: relative;
+	}
+}
+
+@media (min-width: 768px){
+	.logoMobile{
+		display: none;
+	}
+}

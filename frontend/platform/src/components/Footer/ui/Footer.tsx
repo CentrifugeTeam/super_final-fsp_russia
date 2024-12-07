@@ -6,7 +6,7 @@ import TgQr from "@/assets/tg_qr.svg";
 export const Footer = () => {
   return (
     <div className={styles.footer}>
-      <img className={styles.logo} src={Logo} alt="" />
+      <img className={styles.logoDesctop} src={Logo} alt="" />
       <div>
         <h1>Главное</h1>
         <h2>О нас</h2>
@@ -32,6 +32,8 @@ export const Footer = () => {
         <h2>+7 (499) 678 03 05</h2>
         <h2>125047, г. Москва, 2-я Брестская, д.8, этаж 9</h2>
       </div>
+
+			{/* <img className={styles.logoMobile} src={Logo} alt="" /> */}
     </div>
   );
 };
