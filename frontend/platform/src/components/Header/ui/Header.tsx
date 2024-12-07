@@ -21,7 +21,7 @@ export const Header = () => {
   // Handle redirect to the appropriate page based on authentication
   const handleAuthRedirect = () => {
     if (isAuthenticated) {
-      navigate("/profile"); // Navigate to profile if authenticated
+      navigate("/profile/edit"); // Navigate to profile if authenticated
     } else {
       navigate("/login"); // Navigate to login if not authenticated
     }

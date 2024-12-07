@@ -1,10 +1,10 @@
 import React, { useState } from "react";
+import { IFederalDistrictData } from "../../interfaces"; // Используем правильный тип
 import Region from "../Region/Region";
-import { IFederalDistrict } from "../../interfaces";
 import Open from "../../assets/open.svg";
 import style from "./FederalDistrictData.module.scss";
 
-const FederalDistrict: React.FC<IFederalDistrict> = ({ district }) => {
+const FederalDistrict: React.FC<{ district: IFederalDistrictData }> = ({ district }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const toggleOpen = () => {
@@ -21,7 +21,7 @@ const FederalDistrict: React.FC<IFederalDistrict> = ({ district }) => {
         }}
       />
       <div className={style.header}>
-        <h1 className={style.headerText}>{district.region_name}</h1>
+        <h1 className={style.headerText}>{district.name}</h1>
         <div className={style.imageContainer} onClick={toggleOpen}>
           <img
             className={`${style.arrow} ${isOpen ? style.open : style.closed}`}
@@ -39,8 +39,9 @@ const FederalDistrict: React.FC<IFederalDistrict> = ({ district }) => {
       />
       {isOpen && (
         <div className={style.regionsContainer}>
-          {district.regions.map((region) => (
-            <Region key={region.region_name} region={region} />
+          {/* Отображаем регионы этого округа */}
+          {district.regions.map((region, index) => (
+            <Region key={index} region={region} /> // Индекс как ключ, если нет уникальных идентификаторов
           ))}
         </div>
       )}

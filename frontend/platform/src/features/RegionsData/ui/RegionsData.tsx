@@ -1,16 +1,13 @@
 import styles from "./regionsdata.module.scss";
 import { RegionsFormHeader } from "@/components/RegionsFormHeader/ui";
-import { data } from "../api/regionsData";
+import { useReps } from "@/shared/api/reps"; // Хук для получения данных
 import FederalDistrict from "@/components/FederalDistrictData/FederalDistrictData";
-import Region from "@/components/Region/Region";
-import { IRegion } from "@/interfaces";
-import { useReps } from "@/shared/api/reps";
 
 export const RegiosnData = () => {
-  const { data: repsData } = useReps();
-  //TODO вставить полученные данные в верстку
+  // Используем дженерик только в случае с возвращаемым типом из useQuery
+  const { data: repsData } = useReps(); // Получаем данные через хук
 
-  console.log("Fetched reps data:", repsData);
+  console.log("Fetched reps data:", repsData); // Печатаем данные для отладки
 
   return (
     <>
@@ -29,28 +26,13 @@ export const RegiosnData = () => {
         </div>
 
         <div className={styles.federalDistrict}>
-          {Object.entries(data.regions).map(([districtName, regions]) => {
-            if (!Array.isArray(regions)) {
-              const region = regions as IRegion;
-              return (
-                <div key={districtName}>
-                  <h2>{districtName}</h2>
-                  <Region key={region.region_name} region={region} />
-                </div>
-              );
-            }
-
-            const regionsArray: IRegion[] = regions as IRegion[];
-            return (
-              <FederalDistrict
-                key={districtName}
-                district={{
-                  region_name: districtName,
-                  regions: regionsArray,
-                }}
-              />
-            );
-          })}
+          {/* Проверяем, что данные существуют и правильно их отображаем */}
+          {repsData?.fetched_reps_data.map((district) => (
+            <FederalDistrict
+              key={district.name} // Используем имя округа как ключ
+              district={district} // Передаем данные о федеральном округе
+            />
+          ))}
         </div>
       </div>
     </>

@@ -1,26 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "./base";
+import { IData } from "@/interfaces";
 
-export interface Leader {
-  fio: string;
-  username: string;
-}
 
-export interface Region {
-  region_name: string;
-  leader: Leader;
-  contacts: string;
-  id: number;
-}
-
-export interface Rep {
-  region: Region;
-  name: string;
-}
 
 // Функция для выполнения GET-запроса
-const fetchReps = async (): Promise<Rep[]> => {
-  const response = await api.get<Rep[]>("/reps/");
+const fetchReps = async (): Promise<IData> => {
+  const response = await api.get<IData>("/reps/");
   return response.data;
 };
 
