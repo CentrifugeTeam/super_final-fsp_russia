@@ -18,11 +18,23 @@
   .profileEditComponenst {
     display: flex;
     flex-direction: column;
-    width: 80%;
+    width: 100%;
     padding-left: 10px;
     padding: 20px;
     gap: 20px;
     background-color: #fff;
     border-radius: 20px;
+
+    .select {
+      height: 58px;
+      border: 1px solid rgb(206, 206, 206);
+      border-radius: 5px;
+      color: black;
+      padding-left: 13px;
+
+      option {
+        color: black;
+      }
+    }
   }
 }
