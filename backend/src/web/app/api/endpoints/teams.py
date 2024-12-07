@@ -2,36 +2,28 @@ from typing import Callable, Any
 
 from fastapi import Depends
 
-from ...utils.crud import MockCrudAPIRouter
+from ...utils.crud import MockCrudAPIRouter, CrudAPIRouter
 from ...schemas.teams import TeamCreate, TeamRead, TeamUpdate, RegisterTeamToYandexCalendar
 from shared.storage.db.models import Team
 from ...services.yandex_calendar import YandexCalendar
 from ...utils.users import authenticator
+from ...managers.team import TeamManager
 
 
-class TeamsRouter(MockCrudAPIRouter):
+class TeamsRouter(CrudAPIRouter):
 
-    def _register_team_to_yandex_calendar(self):
-        """
+    def __init__(self):
+        super().__init__(TeamRead, TeamManager(), TeamCreate, TeamUpdate, resource_identifier='team')
 
-        """
-        get_or_404 = self.get_or_404
+    def _attach_to_team(self):
+        @self.post('{%s}/attach' % self.resource_identifier, response_model=TeamRead)
+        async def attach_to_team(
+                user_id: int,
 
-        @self.post('/{id}/yandex/calendar',
-                   deprecated=True,
-                   description='Регистрация команды в Yandex Calendar для дальнейшей отправки событий в календарь команды',
-                   dependencies=[Depends(authenticator.get_user_token())])
-        async def register_team_to_yandex_calendar(credentials: RegisterTeamToYandexCalendar,
-                                                   team: Team = Depends(get_or_404())):
-            calendar = YandexCalendar(credentials.email, credentials.password)
-
-            if credentials.calendar_name is None:
-                calendar_name = team.name
-            else:
-                calendar_name = credentials.calendar_name
+        ):
+            pass
 
     def _register_routes(self) -> list[Callable[..., Any]]:
-        return [self._register_team_to_yandex_calendar]
-
-
-r = TeamsRouter(TeamRead, TeamCreate, TeamUpdate)
+        return [
+            self._get_all, self._get_one, self._create
+        ]

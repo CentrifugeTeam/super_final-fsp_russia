@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pydantic import BaseModel, field_validator, Field
 from logging import getLogger
 
-from worker.src.parser_pdf.exception import ParseRowException
+from worker.src.parser.parser_pdf.exception import ParseRowException
 
 logger = getLogger(__name__)
 
