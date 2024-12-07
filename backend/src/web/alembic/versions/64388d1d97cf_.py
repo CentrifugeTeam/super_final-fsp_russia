@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 7c64d125f0e5
+Revision ID: 64388d1d97cf
 Revises: 
-Create Date: 2024-12-07 13:29:32.483625
+Create Date: 2024-12-07 15:53:47.556264
 
 """
 from typing import Sequence, Union
@@ -19,7 +19,7 @@ from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
 
 
 # revision identifiers, used by Alembic.
-revision: str = '7c64d125f0e5'
+revision: str = '64388d1d97cf'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -61,6 +61,19 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
+    )
+    op.create_table('suggestions',
+    sa.Column('name', sa.String(length=200), nullable=False),
+    sa.Column('competition', sa.String(length=200), nullable=False),
+    sa.Column('location', sa.String(length=200), nullable=False),
+    sa.Column('start_date', sa.Date(), nullable=False),
+    sa.Column('end_date', sa.Date(), nullable=False),
+    sa.Column('age', sa.String(length=100), nullable=False),
+    sa.Column('format', sa.String(length=20), nullable=False),
+    sa.Column('count_participants', sa.Integer(), nullable=False),
+    sa.Column('status', sa.String(length=20), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('events',
     sa.Column('id', sa.BigInteger(), nullable=False),
@@ -194,6 +207,7 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_users_username'), table_name='users')
     op.drop_table('users')
     op.drop_table('events')
+    op.drop_table('suggestions')
     op.drop_table('roles')
     op.drop_table('representations')
     op.drop_table('locations')

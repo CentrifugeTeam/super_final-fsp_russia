@@ -14,7 +14,7 @@ from ...utils.permissions import Permission
 
 manager = BaseManager(Suggestion)
 
-order_by = (Suggestion.status,)
+order_by = {'status': Suggestion.status}
 
 
 class Router(CrudAPIRouter):
@@ -25,7 +25,7 @@ class Router(CrudAPIRouter):
 
     def _get_all(self):
         @self.get('/', response_model=list[ReadSuggestion])
-        async def func(order_by=ordering_depends(order_by),
+        async def func(order_by: ordering_depends(order_by),
                        session=Depends(get_session)):
             return await manager.list(session, order_by)
 
