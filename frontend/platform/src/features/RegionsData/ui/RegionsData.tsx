@@ -7,7 +7,7 @@ export const RegiosnData = () => {
   // Используем хук useReps для получения данных
   const { data: repsData, isLoading, isError, error } = useReps();
 
-	console.log(repsData)
+	console.log(repsData, 'a')
 
   // Обработка состояния загрузки и ошибки
   if (isLoading) {
