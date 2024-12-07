@@ -177,5 +177,3 @@ async def create_user(session: AsyncSession, full_name: str, email: str | None =
         user.roles = [role1, role2]
         await session.flush()
         return user
-
-    logger.info(f"Создан новый пользователь: {user_data.username}")

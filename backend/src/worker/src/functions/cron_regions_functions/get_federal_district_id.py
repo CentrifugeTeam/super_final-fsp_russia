@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.src.shared.storage.db.models.representations import Representation, FederalRepresentation
+from backend.src.shared.storage.db.models.representations import Representation
 from worker.src.functions.cron_regions_functions.schemas import FederalDistrictBase
 from ...utils import _create_if_dont_exist
 

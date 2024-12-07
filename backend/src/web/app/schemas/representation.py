@@ -15,13 +15,10 @@ class ReadRepresentation(RepresentationBase):
     id: int
 
 
-class RegionRepresentationBase(BaseModel):
+class ReadRegionRepresentationBase(BaseModel):
+    id: int
     representation: ReadRepresentation
     leader: ReadUser
-
-
-class ReadRegionRepresentation(RegionRepresentationBase):
-    id: int
 
 
 class ReadFederalRepresentation(BaseModel):
@@ -44,13 +41,11 @@ class FederalRepresentationBase(BaseModel):
     leader: LeaderBase
     contacts: str
 
+
 class ReadFederalRepresentationBase(FederalRepresentationBase):
     id: int
+
 
 class FederalRepresentation(BaseModel):
     region: ReadFederalRepresentationBase
     name: str
-
-
-
-

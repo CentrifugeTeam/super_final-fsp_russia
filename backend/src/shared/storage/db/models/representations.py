@@ -5,16 +5,9 @@ from .base import Base, IDMixin
 
 class FederalRegionRepresentation(IDMixin, Base):
     __tablename__ = 'federation_region_representations'
-    federal_district_id: Mapped[int] = mapped_column(ForeignKey('federal_representations.id'), nullable=False)
+    federal_district_id: Mapped[int] = mapped_column(ForeignKey('representations.id'), nullable=False)
     region_representation_id: Mapped[int] = mapped_column(ForeignKey('region_representations.id'), nullable=False)
     # Связь с регионами
-
-
-class FederalRepresentation(IDMixin, Base):
-    __tablename__ = 'federal_representations'
-    representation_id: Mapped[int] = mapped_column(ForeignKey('representations.id', ondelete='CASCADE'))
-    representation: Mapped['Representation'] = relationship(back_populates='federal_representation')
-    # regions
 
 
 class RegionalRepresentation(IDMixin, Base):
@@ -30,8 +23,6 @@ class Representation(IDMixin, Base):
     photo_url: Mapped[str] = mapped_column(String, nullable=True)
     contacts: Mapped[str] = mapped_column(String, nullable=True)
     type: Mapped[str] = mapped_column(String)
-
-    federal_representation: Mapped['FederalRepresentation'] = relationship(back_populates='representation')
 
     def __repr__(self):
         return f"<Representation(region_name={self.name}"
