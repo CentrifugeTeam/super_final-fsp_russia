@@ -63,7 +63,7 @@ export const RegistrationStep1: React.FC<RegistrationStep1Props> = ({
             setNameError(validateName(e.target.value));
           }}
         />
-        {nameError && <div>{nameError}</div>}
+        {nameError && <div className="text-red-500">{nameError}</div>}
       </div>
 
       <div className="items-center gap-1.5">
@@ -80,7 +80,7 @@ export const RegistrationStep1: React.FC<RegistrationStep1Props> = ({
             setSurnameError(validateName(e.target.value));
           }}
         />
-        {surnameError && <div>{surnameError}</div>}
+        {surnameError && <div className="text-red-500">{surnameError}</div>}
       </div>
 
       <div className="items-center gap-1.5">
@@ -97,7 +97,9 @@ export const RegistrationStep1: React.FC<RegistrationStep1Props> = ({
             setPatronymicError(validateName(e.target.value));
           }}
         />
-        {patronymicError && <div>{patronymicError}</div>}
+        {patronymicError && (
+          <div className="text-red-500"> {patronymicError}</div>
+        )}
       </div>
 
       <div className="grid w-full max-w-sm items-center gap-1.5">

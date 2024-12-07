@@ -10,20 +10,18 @@ export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
-  ); // Check if the user is authenticated
-  const navigate = useNavigate(); // Use navigate to redirect to login or profile page
+  );
+  const navigate = useNavigate();
 
-  // Toggle the menu visibility
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Handle redirect to the appropriate page based on authentication
   const handleAuthRedirect = () => {
     if (isAuthenticated) {
-      navigate("/profile/edit"); // Navigate to profile if authenticated
+      navigate("/profile/edit");
     } else {
-      navigate("/login"); // Navigate to login if not authenticated
+      navigate("/login");
     }
   };
 

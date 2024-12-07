@@ -10,36 +10,30 @@ import {
   isStep2Valid,
 } from "@/features/Registration/utils/validators";
 
-// Интерфейс для компонента
 export const RegistrationForm: React.FC = () => {
   const nav = useNavigate();
-  const { mutate: registerUser, isError, error } = useRegisterUserMutation(); // Get error state from mutation
+  const { mutate: registerUser, isError, error } = useRegisterUserMutation(); // Убрали isSuccess
 
-  // Состояния для хранения значений полей
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [patronymic, setPatronymic] = useState("");
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // Добавили новое состояние
-  const [profilePicture, setProfilePicture] = useState<File | null>(null); // State for profile picture
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [step, setStep] = useState(1);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
-  // Состояние для отслеживания текущего шага
-  const [step, setStep] = useState(1); // 1 - шаг с именем, фамилией и отчеством, 2 - шаг с логином и паролем
-
-  // Обработчик для кнопки "Далее"
   const handleNextStep = () => {
     if (step === 1) {
-      setStep(2); // Переходим ко второму шагу
+      setStep(2);
     } else if (step === 2) {
-      // Проверка совпадения пароля и подтверждения пароля
       if (password !== confirmPassword) {
         alert("Пароли не совпадают");
         return;
       }
 
-      // Создаем объект для регистрации
       const registerData = {
         username: login,
         first_name: name,
@@ -47,15 +41,17 @@ export const RegistrationForm: React.FC = () => {
         last_name: surname,
         email: email,
         password: password,
-        photo: profilePicture || new File([], ""), // Send the profile picture or an empty file
+        photo: profilePicture || new File([], ""),
       };
 
-      // Отправляем данные на сервер
-      registerUser(registerData);
+      registerUser(registerData, {
+        onSuccess: () => {
+          setRegistrationSuccess(true);
+        },
+      });
     }
   };
 
-  // Обработчик для Яндекс входа
   const handleYandexLogin = () => {
     window.location.href =
       "https://oauth.yandex.ru/authorize?force_confirm=1&client_id=91926807198745df874fea559c810a19&response_type=code&redirect_uri=https://centrifugo.tech/auth_loading";
@@ -70,67 +66,80 @@ export const RegistrationForm: React.FC = () => {
     <div className={styles.content}>
       <h1 className={styles.title}>Регистрация</h1>
 
-      {step === 1 ? (
-        <RegistrationStep1
-          name={name}
-          surname={surname}
-          patronymic={patronymic}
-          onNameChange={setName}
-          onSurnameChange={setSurname}
-          onPatronymicChange={setPatronymic}
-          onProfilePictureChange={setProfilePicture} // Handle profile picture change
-        />
-      ) : (
-        <RegistrationStep2
-          login={login}
-          email={email}
-          password={password}
-          confirmPassword={confirmPassword} // Передаем состояние для подтверждения пароля
-          onLoginChange={setLogin}
-          onEmailChange={setEmail}
-          onPasswordChange={setPassword}
-          onConfirmPasswordChange={setConfirmPassword} // Обработчик изменения подтверждения пароля
-        />
-      )}
-
-      <Button
-        size="auth"
-        className={`bg-[#463ACB] hover:bg-[#3d33b0] ${
-          !isCurrentStepValid && "disabled:opacity-50"
-        }`}
-        onClick={handleNextStep}
-        disabled={!isCurrentStepValid}
-      >
-        Далее
-      </Button>
-
-      {/* Show error message if registration fails */}
-      {isError && error && (
-        <p className={styles.errorMessage}>
-          {error.response?.data?.message ||
-            "Ошибка регистрации. Попробуйте снова."}
+      {registrationSuccess ? (
+        <p className="text-green-500">
+          Пользователь успешно зарегистрирован! <br />
+          <span
+            className="text-black self-center"
+            onClick={() => nav("/login")}
+          >
+            Перейти к логину
+          </span>
         </p>
+      ) : (
+        <>
+          {step === 1 ? (
+            <RegistrationStep1
+              name={name}
+              surname={surname}
+              patronymic={patronymic}
+              onNameChange={setName}
+              onSurnameChange={setSurname}
+              onPatronymicChange={setPatronymic}
+              onProfilePictureChange={setProfilePicture}
+            />
+          ) : (
+            <RegistrationStep2
+              login={login}
+              email={email}
+              password={password}
+              confirmPassword={confirmPassword}
+              onLoginChange={setLogin}
+              onEmailChange={setEmail}
+              onPasswordChange={setPassword}
+              onConfirmPasswordChange={setConfirmPassword}
+            />
+          )}
+
+          <Button
+            size="auth"
+            className={`bg-[#463ACB] hover:bg-[#3d33b0] ${
+              !isCurrentStepValid && "disabled:opacity-50"
+            }`}
+            onClick={handleNextStep}
+            disabled={!isCurrentStepValid}
+          >
+            Далее
+          </Button>
+
+          {isError && error && (
+            <p className="text-red-500">
+              {error.response?.data?.message ||
+                "Ошибка регистрации. Попробуйте снова."}
+            </p>
+          )}
+
+          <p className={styles.or}>или</p>
+
+          <Button
+            size="auth"
+            className="bg-[#ffcc00] hover:bg-[#e1b400] text-black"
+            onClick={handleYandexLogin}
+          >
+            Войти с Яндекс ID
+          </Button>
+          <Button size="auth" className="bg-[#0077FF] hover:bg-[#0067dd]">
+            Войти через VK ID
+          </Button>
+
+          <p className={styles.loginText}>
+            Уже есть аккаунта?
+            <span className={styles.link} onClick={() => nav("/login")}>
+              Войти
+            </span>
+          </p>
+        </>
       )}
-
-      <p className={styles.or}>или</p>
-
-      <Button
-        size="auth"
-        className="bg-[#ffcc00] hover:bg-[#e1b400] text-black"
-        onClick={handleYandexLogin}
-      >
-        Войти с Яндекс ID
-      </Button>
-      <Button size="auth" className="bg-[#0077FF] hover:bg-[#0067dd]">
-        Войти через VK ID
-      </Button>
-
-      <p className={styles.loginText}>
-        Уже есть аккаунта?
-        <span className={styles.link} onClick={() => nav("/login")}>
-          Войти
-        </span>
-      </p>
     </div>
   );
 };
