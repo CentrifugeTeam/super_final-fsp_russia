@@ -85,7 +85,7 @@ export const SendEmail = () => {
                 value={email}
                 onChange={handleInputChange}
               />
-              {error && <p className="text-red-500 text-sm">{error}</p>}
+              {/* {error && <p className="text-red-500 text-sm">{error}</p>} */}
             </div>
             <Button
               type="submit"
