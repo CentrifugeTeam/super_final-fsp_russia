@@ -31,6 +31,7 @@ export interface IRegionResponse {
   RegionRepresentation: IRegionRepresentation; // Представление региона
   team_count: number; // Количество команд в регионе
   users_count: number; // Количество пользователей в регионе
+	federal_name: string;
 }
 
 // Функция для выполнения GET-запроса с использованием идентификатора региона

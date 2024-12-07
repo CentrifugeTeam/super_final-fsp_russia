@@ -21,6 +21,7 @@ import { WelcomePage } from "@/pages/WelcomePage";
 import { ProfileEdit } from "@/features/EditProfile";
 import { EditRequest } from "@/pages/EditRequest";
 import { SendEmail } from "@/pages/SendEmail";
+import { RegionByIdPage } from "@/pages/RegionByIdPage";
 import { EmailVerified } from "@/pages/EmailVerified";
 
 export const AppRouter = () => {
@@ -36,6 +37,7 @@ export const AppRouter = () => {
       <Route path="/about_us" element={<WelcomePage />} />
       <Route path="/contacts" element={<ContactsPage />} />
       <Route path="/regions" element={<FeedPage />} />
+      <Route path="/regions/region/:id" element={<RegionByIdPage />} />
       <Route path="requests/:id/edit" element={<EditRequest />} />
       <Route path="/send_email" element={<SendEmail />} />
       <Route path="/email_verified" element={<EmailVerified />} />
