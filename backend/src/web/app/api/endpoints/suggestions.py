@@ -2,9 +2,11 @@ from typing import Callable, Any, Literal
 
 from fastapi import Depends, Body
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from crud.openapi_responses import missing_token_or_inactive_user_response, forbidden_response
 from service_calendar.app.utils.email_sender import Message
+from worker.src.exceptions import ResourceExistsException
 from ...conf import smtp_message
 from ...utils.crud import PermissionCrudAPIRouter, CrudAPIRouter
 from shared.storage.db.models import Suggestion
@@ -61,21 +63,28 @@ class Router(CrudAPIRouter):
             '/{id}/status',
             response_model=self.schema,
             responses={**missing_token_or_inactive_user_response
+
                        }
         )
         async def func(id: int, status: Literal['accepted', 'rejected'] = Body(embed=True),
                        text: str = Body(embed=True),
                        session: AsyncSession = Depends(self.get_session)):
-            model: Suggestion = await self.manager.get_or_404(session, id=id, options=[Suggestion.user])
-            model.status = status
-            session.add(model)
-            await session.commit()
+            model: Suggestion = await self.manager.get_or_404(session, id=id, options=[joinedload(Suggestion.user)])
+
             if status == 'accepted':
-                await smtp_message.asend_email(model.user.email,
-                                               Message(url_for_button=f'https://centrifugo.tech/suggestions/{id}',
-                                                       title='Вашу заявку одобрили! Смотрите подробнее:',
-                                                       text_on_button='Заявка', text=text)
-                                               )
+                try:
+                    await manager.create_event_from_suggestion(session, model)
+                    model.status = status
+                    session.add(model)
+                    await session.commit()
+                except ResourceExistsException:
+                    return model
+                else:
+                    await smtp_message.asend_email(model.user.email,
+                                                   Message(url_for_button=f'https://centrifugo.tech/suggestions/{id}',
+                                                           title='Вашу заявку одобрили! Смотрите подробнее:',
+                                                           text_on_button='Заявка', text=text)
+                                                   )
 
             return model
 

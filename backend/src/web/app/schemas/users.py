@@ -58,7 +58,7 @@ class ReadUser(BaseUser):
     # is_superuser: Булево значение, указывающее, является ли пользователь суперпользователем.
     """
     id: int
-    photo_url: str
+    photo_url: str | None
     is_superuser: bool
     is_verified: bool
 
@@ -70,19 +70,19 @@ class UpdateUser(_UpdateUser):
     photo_url: str | None = None
 
     def model_dump(
-        self,
-        *,
-        mode: Literal['json', 'python'] | str = 'python',
-        include: IncEx | None = None,
-        exclude: IncEx | None = None,
-        context: Any | None = None,
-        by_alias: bool = False,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-        round_trip: bool = False,
-        warnings: bool | Literal['none', 'warn', 'error'] = True,
-        serialize_as_any: bool = False,
+            self,
+            *,
+            mode: Literal['json', 'python'] | str = 'python',
+            include: IncEx | None = None,
+            exclude: IncEx | None = None,
+            context: Any | None = None,
+            by_alias: bool = False,
+            exclude_unset: bool = False,
+            exclude_defaults: bool = False,
+            exclude_none: bool = False,
+            round_trip: bool = False,
+            warnings: bool | Literal['none', 'warn', 'error'] = True,
+            serialize_as_any: bool = False,
     ) -> dict[str, Any]:
         return super().model_dump(
             mode=mode,

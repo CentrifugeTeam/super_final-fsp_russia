@@ -17,18 +17,21 @@ logger = getLogger(__name__)
 
 
 async def cron_update_calendar_table(ctx):
-    logger.info('start fetching pdf')
-    file_name = await fetch_pdf(ctx)
-    logger.info('fetched pdf_file')
-    maker = ctx['async_session_maker']
-    maker: async_sessionmaker
-    parser = ParserPDF()
     try:
-        rows = parser.grap_rows(file_name)
-        logger.info('fetched rows %d', len(rows))
-        await update_db(maker, rows)
-    finally:
-        os.remove(file_name)
+        logger.info('start fetching pdf')
+        file_name = await fetch_pdf(ctx)
+        logger.info('fetched pdf_file')
+        maker = ctx['async_session_maker']
+        maker: async_sessionmaker
+        parser = ParserPDF()
+        try:
+            rows = parser.grap_rows(file_name)
+            logger.info('fetched rows %d', len(rows))
+            await update_db(maker, rows)
+        finally:
+            os.remove(file_name)
+    except Exception as e:
+        logger.error('error in cron_update_calendar_table', exc_info=True)
 
 
 async def _fetch_pdf(ctx, url_to_pdf: str):

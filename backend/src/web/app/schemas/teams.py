@@ -5,7 +5,7 @@ from .users import BaseUser
 
 class Team(BaseModel):
     name: str
-    users: list[BaseUser]
+    users: list['ReadUser']
 
 
 class TeamCreate(Team):

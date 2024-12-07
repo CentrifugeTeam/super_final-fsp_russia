@@ -47,7 +47,7 @@ class SportEvent(Base):
     start_date: Mapped[date] = mapped_column(Date, nullable=False)  # Дата начала
     end_date: Mapped[date] = mapped_column(Date, nullable=False)  # Дата окончания
     participants_count: Mapped[int] = mapped_column(Integer, nullable=False)  # Количество участников
-
+    format: Mapped[str] = mapped_column(String(length=20), nullable=True, default=None)  # Онлайн или офлайн
     type_event_id: Mapped[int] = mapped_column(ForeignKey('event_types.id', ondelete='CASCADE'))
     location_id: Mapped[int] = mapped_column(
         ForeignKey('locations.id', ondelete='CASCADE'))  # Связь с местом проведения
@@ -56,4 +56,3 @@ class SportEvent(Base):
     location: Mapped[Location] = relationship(back_populates='sports', cascade='delete')
     age_groups: Mapped[list[AgeGroup]] = relationship(back_populates='sport', cascade='delete')
     competitions: Mapped[list[Competition]] = relationship(back_populates='sport', cascade='delete')
-

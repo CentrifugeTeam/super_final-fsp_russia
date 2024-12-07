@@ -82,8 +82,8 @@ class JWTStrategy(_JWTStrategy):
             return res
 
     async def write_token(self, user: User) -> dict:
-        await user.get_principals()
-        payload = {"sub": str(user.id), "aud": self.token_audience, 'roles': user.roles}
+        roles = await user.get_principals()
+        payload = {"sub": str(user.id), "aud": self.token_audience, 'roles': list(roles)}
         access_token, refresh_token = self.generate_pair_of_tokens(payload)
 
         return {'access_token': access_token, 'refresh_token': refresh_token}

@@ -81,12 +81,13 @@ async def save_event_and_related_data(session: AsyncSession, row: Row):
         if event is None:
             event = await _create_model(session, {**row.event.model_dump(by_alias=True), 'location_id': location.id,
                                                   'type_event_id': event_type.id}, SportEvent)
-            users: list[User] = await event_type.awaitable_attrs.users
-            for user in users:
-                if not getattr(user_events, user.email):
-                    user_events[user.email] = [event.name]
-                else:
-                    user_events[user.email].append(event.name)
+            if event.name.isprintable():
+                users: list[User] = await event_type.awaitable_attrs.users
+                for user in users:
+                    if not getattr(user_events, user.email):
+                        user_events[user.email] = [event.name]
+                    else:
+                        user_events[user.email].append(event.name)
 
         # Сохраняем возрастные группы (AgeGroup)
         for sex in row.sexes:
@@ -109,6 +110,7 @@ async def save_event_and_related_data(session: AsyncSession, row: Row):
 
     except SQLAlchemyError as e:
         await session.rollback()  # Откатываем сессию в случае ошибки
+        logger.exception('error while saving event and related data', exc_info=e)
     else:
         for user_email, event_names in user_events.items():
             await smtp_message.asend_email(user_email,

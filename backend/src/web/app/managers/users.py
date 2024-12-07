@@ -84,6 +84,8 @@ class UsersManager(BaseManager):
                 create_data['photo_url'] = photo_url
             except Exception as e:
                 pass
+        else:
+            create_data['photo_url'] = None
 
         db_obj = self.model(**create_data)
         session.add(db_obj)
