@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "./base";
 // import { ISuggestion } from "@/interfaces";
 
@@ -30,5 +30,24 @@ export const useSuggestionById = (id: string) => {
     queryFn: () => fetchSuggestionById(id), // Функция для загрузки данных
     staleTime: 1000 * 60 * 5, // Данные считаются свежими в течение 5 минут
     enabled: !!id, // Запрос не будет выполнен, если ID не существует
+  });
+};
+
+const updateSuggestionById = async (
+  id: string,
+  data: Partial<ISuggestion>
+): Promise<ISuggestion> => {
+  const response = await api.patch<ISuggestion>(`/suggestions/${id}`, data);
+  return response.data;
+};
+
+// Хук для обновления данных заявки
+export const useUpdateSuggestionById = () => {
+  return useMutation<
+    ISuggestion,
+    Error,
+    { id: string; data: Partial<ISuggestion> }
+  >({
+    mutationFn: ({ id, data }) => updateSuggestionById(id, data),
   });
 };
