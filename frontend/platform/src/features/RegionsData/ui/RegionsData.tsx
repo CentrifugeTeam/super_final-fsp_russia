@@ -4,12 +4,12 @@ import { data } from "../api/regionsData";
 import FederalDistrict from "@/components/FederalDistrictData/FederalDistrictData";
 import Region from "@/components/Region/Region";
 import { IRegion } from "@/interfaces";
-import { useReps } from "@/shared/api/reps"; // Import the hook
+import { useReps } from "@/shared/api/reps";
 
 export const RegiosnData = () => {
-  const { data: repsData } = useReps(); // Use the hook
+  const { data: repsData } = useReps();
+  //TODO вставить полученные данные в верстку
 
-  // Log the fetched data to the console
   console.log("Fetched reps data:", repsData);
 
   return (
