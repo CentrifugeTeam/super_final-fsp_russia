@@ -7,12 +7,12 @@ export const Layout = () => {
   const location = useLocation();
 
   // Список путей, где Header должен отображаться
-  const showHeaderOnRoutes = ["/regions", "/regionss"];
+  const showHeaderOnRoutes = ["/regions", "/contacts"];
   // Список путей, где Footer должен отображаться
-  const showFooterOnRoutes = ["/regions", "/regionss"];
+  const showFooterOnRoutes = ["/regions", "/contacts"];
 
-  const shouldShowHeader = showHeaderOnRoutes.includes(location.pathname);
-  const shouldShowFooter = showFooterOnRoutes.includes(location.pathname);
+  const shouldShowHeader = showHeaderOnRoutes.includes(location.pathname) || location.pathname.startsWith("/regions/region");
+  const shouldShowFooter = showFooterOnRoutes.includes(location.pathname) || location.pathname.startsWith("/regions/region");
 
   return (
     <div className={styles.layout}>

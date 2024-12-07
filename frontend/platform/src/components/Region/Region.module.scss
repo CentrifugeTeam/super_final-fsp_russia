@@ -15,6 +15,11 @@
 
 	.regionName{
 		width: 200px;
+		cursor: pointer;
+	}
+
+	.regionName:hover{
+		color: #a9a1ff;
 	}
 
 	.leader{

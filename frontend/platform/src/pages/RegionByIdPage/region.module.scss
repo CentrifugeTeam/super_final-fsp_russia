@@ -1,37 +1,114 @@
 .wrapper {
-  margin-top: 192px;
-  margin-left: 4%;
-  margin-right: 4%;
-  .nameOfPage {
-    color: rgb(0, 0, 0);
-    font-size: 25px;
-    font-weight: 700;
+  margin-top: 120px;
+  margin-left: 2.7%;
+  margin-right: 2.7%;
+	padding-top: 54px;
+	background-color: #3B3671;
+	height: 64vh;
+	width: 95%;
+	position: absolute;
+	border-radius: 10px;
+
+	.content{
+		margin-left: 10%;
+		margin-right: 10%;
+
+		.nameOfPage {
+			color: rgb(0, 0, 0);
+			font-size: 25px;
+			font-weight: 700;
+		}
+
+		.block {
+			display: flex;
+			width: 100%;
+			height: 419px;
+			padding: 30px;
+			background-color: #1b1c21;
+			border-radius: 10px;
+
+			.block2 {
+				display: flex;
+				width: 100%;
+				height: 100%;
+				border: 1px solid #2d2e37;
+				border-radius: 8px;
+				padding: 60px;
+				padding-top: 40px;
+
+				.image {
+					width: 241px;
+					height: 241px;
+					border-radius: 8px;
+				}
+
+				.info {
+					.regionHeader{
+						display: flex;
+						align-items: center;
+						margin-bottom: 44px;
+
+						.regionName{
+							padding-left: 30px;
+							padding-right: 30px;
+							padding-top: 20px;
+							padding-bottom: 23px;
+							height: 60px;
+							font-size: 18px;
+							font-weight: 600;
+							border-radius: 5px;
+							background-color: #463ACB;
+							margin-right: 25px;
+						}
+
+						.federalName{
+							padding-left: 30px;
+							padding-right: 30px;
+							padding-top: 20px;
+							padding-bottom: 23px;
+							font-size: 18px;
+							font-weight: 600;
+							height: 60px;
+							border-radius: 5px;
+							background-color: #71717A;
+						}
+					}
+
+					.firstData{
+						display: flex;
+						align-items: center;
+						margin-bottom: 35px;
+					}
+
+					.secontData{
+						display: flex;
+						align-items: center;
+					}
+
+					.fspInfo{
+						width: 250px;
+					}
+
+					.nameOfInfo{
+						font-size: 18px;
+						margin-bottom: 5px;
+						font-weight: 650;
+					}
+
+					.info{
+						font-weight: 300;
+					}
+				}
+			}
+		}
   }
+}
 
-  .block {
-    display: flex;
-    width: 100%;
-    height: 419px;
-    padding: 30px;
-    background-color: #1b1c21;
-    border-radius: 10px;
 
-    .block2 {
-      display: flex;
-      width: 100%;
-      height: 100%;
-      border: 1px solid #2d2e37;
-      border-radius: 8px;
-
-      .image {
-        width: 241px;
-        height: 241px;
-      }
-
-      .info {
-        .grid {
-        }
-      }
-    }
+@media (max-width: 768px) {
+  .wrapper {
+		margin-top: 110px;
+    position: block;
+		height: 44vh;
   }
 }

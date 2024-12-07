@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "./base";
-import { IData } from "@/interfaces";
+import { IFederalDistrictData } from "@/interfaces";
 
 
 
 // Функция для выполнения GET-запроса
-const fetchReps = async (): Promise<IData> => {
-  const response = await api.get<IData>("/reps/");
+const fetchReps = async (): Promise<IFederalDistrictData[]> => {
+  const response = await api.get<IFederalDistrictData[]>("/reps/");
   return response.data;
 };
 
