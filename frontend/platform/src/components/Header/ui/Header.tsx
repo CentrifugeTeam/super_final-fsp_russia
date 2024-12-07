@@ -39,7 +39,7 @@ export const Header = () => {
       <div className={`${styles.links} ${isMenuOpen ? styles.open : ""}`}>
 				<Link to="/about_us">О нас</Link>
         <Link to="/regions">Регионы</Link>
-        <a>Календарь</a>
+				<Link to="/calendar/">Календарь</Link>
         <a>Статистика</a>
         <Link to="/contacts">Контакты</Link>
         <a onClick={handleAuthRedirect}>
