@@ -1,22 +1,22 @@
 from pydantic import BaseModel
 from fastapi_sqlalchemy_toolkit import make_partial_model
-from .users import BaseUser
+from .users import BaseUser, ReadUser
 
 
-class Team(BaseModel):
+class BaseTeam(BaseModel):
     name: str
-    users: list['ReadUser']
+    users: list[ReadUser]
 
 
-class TeamCreate(Team):
+class TeamCreate(BaseTeam):
     pass
 
 
-class TeamRead(Team):
+class TeamRead(BaseTeam):
     id: int
 
 
-TeamUpdate = make_partial_model(Team)
+TeamUpdate = make_partial_model(BaseTeam)
 
 
 class RegisterTeamToYandexCalendar(BaseModel):
