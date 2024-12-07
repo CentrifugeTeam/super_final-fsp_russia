@@ -1,1 +1,1 @@
-export { ProfilePanel } from './ProfilePanel'
+export { ProfilePanel } from "./ProfilePanel";

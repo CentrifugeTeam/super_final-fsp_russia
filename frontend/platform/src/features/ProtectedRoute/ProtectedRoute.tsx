@@ -17,6 +17,9 @@ export const ProtectedRoute = () => {
     "/profile",
     "/profile/edit",
     "/profile/requests",
+    "/profile/solutions",
+    "/profile/protocols",
+    "/profile/rating",
   ]; // Example routes where Header should show
   // Список путей, где Footer должен отображаться
   const showFooterOnRoutes = ["/about_us"]; // Example routes where Footer should show

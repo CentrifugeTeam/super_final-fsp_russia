@@ -12,7 +12,7 @@ import { SendCode } from "@/pages/SendCode";
 import { ProtectedRoute } from "@/features/ProtectedRoute";
 import { ProfilePage } from "@/pages/ProfilePage";
 import SendCodeVk from "@/pages/SendCodeVk/SendCodeVk";
-import { FeedPage } from "@/pages/FeedPage";
+// import { FeedPage } from "@/pages/FeedPage";
 import { SendEmail } from "@/pages/SendEmail";
 import { SendPassword } from "@/pages/SendPassword";
 import { RegionByIdPage } from "@/pages/RegionByIdPage";
@@ -28,15 +28,15 @@ export const AppRouter = () => {
       <Route path="/registration" element={<RegistrationPage />} />
       <Route path="/auth_loading" element={<SendCode />} />
       <Route path="/auth_loading_vk" element={<SendCodeVk />} />
-      <Route path="/regions" element={<FeedPage />} />
+      {/* <Route path="/regions" element={<FeedPage />} /> */}
       <Route path="/send_email" element={<SendEmail />} />
       <Route path="/send_password" element={<SendPassword />} />
-      <Route path="/regionss" element={<RegionByIdPage />} />
+      <Route path="/regions" element={<RegionByIdPage />} />
 
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
         <Route path="/profile" element={<ProfilePage />} />
-				<Route path="/profile/*" element={<ProfilePage />} />
+        <Route path="/profile/*" element={<ProfilePage />} />
       </Route>
     </Route>
   );

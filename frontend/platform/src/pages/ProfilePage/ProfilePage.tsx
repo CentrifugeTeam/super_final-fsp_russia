@@ -1,24 +1,15 @@
-// import { useDispatch } from "react-redux";
-// import { logout } from "@/app/redux/slices/authSlice"; // Убедитесь, что путь к вашему authSlice правильный
-// import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { ProfileEdit } from "@/features/EditProfile";
 import { ProfilePanel } from "@/features/ProfilePanel";
 import style from "./profilepage.module.scss";
 import { RequestEdit } from "@/features/RequestEdit";
+import { SolutionEdit } from "@/features/SolutionEdit"; // Импортируем компонент SolutionEdit
+import { RatingEdit } from "@/features/RatingEdit";
 
 export const ProfilePage = () => {
   const location = useLocation();
   const activeComponent = location.pathname.split("/").pop();
   console.log(activeComponent);
-
-  // const dispatch = useDispatch();
-  // const navigate = useNavigate();
-
-  // const handleLogout = () => {
-  //   dispatch(logout()); // Сбрасываем состояние аутентификации
-  //   navigate("/login"); // Перенаправляем на страницу логина
-  // };
 
   return (
     <div className={style.profileContent}>
@@ -32,6 +23,10 @@ export const ProfilePage = () => {
           <ProfileEdit />
         ) : activeComponent === "requests" ? (
           <RequestEdit />
+        ) : activeComponent === "solutions" ? ( // Добавляем условие для solutions
+          <SolutionEdit />
+        ) : activeComponent === "rating" ? ( // Добавляем условие для solutions
+          <RatingEdit />
         ) : (
           <p>Добро пожаловать в ваш профиль!</p>
         )}
