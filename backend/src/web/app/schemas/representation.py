@@ -31,6 +31,13 @@ class ReadRegionsCard(BaseModel):
     leader: LeaderBase
 
 
-class FederalRepresentation(BaseModel):
+class FullFederalRepresentation(BaseModel):
     regions: list[ReadRegionsCard]
     name: str
+
+
+class ReadFederalRepresentation(BaseModel):
+    id: int
+    name: str
+
+
