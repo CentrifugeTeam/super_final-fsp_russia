@@ -27,7 +27,7 @@ export const Footer = () => {
 					<img src={VkQr} alt="" />
 					<img className={styles.tgQr} src={TgQr} alt="" />
 				</div>
-				<div>
+				<div className={styles.contacts}>
 					<h1>Контакты</h1>
 					<h2>info@fsp-russia.com</h2>
 					<h2 className={styles.phone}>+7 (499) 678 03 05</h2>
