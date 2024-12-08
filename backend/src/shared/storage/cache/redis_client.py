@@ -1,4 +1,6 @@
+from fastapi import HTTPException
 from redis.asyncio import Redis
+from starlette import status
 
 
 class RedisClient(Redis):
@@ -16,8 +18,10 @@ class RedisClient(Redis):
     async def forgot_password(self, token: str, user):
         await self.set(token, user.id)
 
-
     async def reset_password(self, token: str):
-        user_id = int(await self.get(token))
+        user_id = await self.get(token)
+        if not user_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Invalid token')
+        user_id = int(user_id)
         await self.delete(token)
         return user_id
