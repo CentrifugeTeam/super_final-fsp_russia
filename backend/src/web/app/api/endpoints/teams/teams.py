@@ -33,6 +33,10 @@ class TeamsRouter(CrudAPIRouter):
                                                      nullable_filter_expressions={TeamSolution.score: score})
 
 
+    def _set_score(self):
+        pass
+
+
     def _attach_to_team(self):
         @self.post('{%s}/attach' % self.resource_identifier, response_model=TeamRead)
         async def attach_to_team(

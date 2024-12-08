@@ -12,6 +12,7 @@ import sqlalchemy as sa
 
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncConnection
 from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
+from web.alembic.seed import seed_db
 
 #class Factory(SQLAlchemyFactory):
 #    __model__ =
@@ -193,8 +194,9 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
-    async def seed_db(connection: AsyncConnection):
+    async def wrapper(connection: AsyncConnection):
         session = AsyncSession(bind=connection)
+
 #       Factory.__async_session__ = session
 #       await Factory.create_batch_async(10)
 
