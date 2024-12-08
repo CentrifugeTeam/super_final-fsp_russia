@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "./base"; // Предполагается, что `api` настроен с базовым URL и заголовками
 
 export interface TeamsRequestParams {
-  federal_name: string;
+  federal_name?: string;
   score?: number; // Сделано необязательным
   page: number;
   size: number;

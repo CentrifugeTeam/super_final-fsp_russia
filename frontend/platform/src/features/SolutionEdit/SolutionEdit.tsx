@@ -17,6 +17,10 @@ export const SolutionEdit = () => {
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const { data: regions, isLoading, isError } = useFederations();
 
+  // Проверка, есть ли данные для регионов
+  const regionsAvailable =
+    regions && Array.isArray(regions) && regions.length > 0;
+
   return (
     <div className={styles.contet}>
       <div className={styles.header}>
@@ -58,7 +62,8 @@ export const SolutionEdit = () => {
               )}
               {/* Пункты для всех регионов */}
               {!isLoading &&
-                !isError && [
+                !isError &&
+                regionsAvailable && [
                   <DropdownMenuRadioItem
                     key="all"
                     value="all"
@@ -76,6 +81,16 @@ export const SolutionEdit = () => {
                     </DropdownMenuRadioItem>
                   )),
                 ]}
+              {/* Если нет данных для отображения */}
+              {regionsAvailable && regions.length === 0 && (
+                <DropdownMenuRadioItem
+                  value="noRegions"
+                  disabled
+                  className="bg-white text-gray-500 px-4 py-2"
+                >
+                  Нет доступных регионов
+                </DropdownMenuRadioItem>
+              )}
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
