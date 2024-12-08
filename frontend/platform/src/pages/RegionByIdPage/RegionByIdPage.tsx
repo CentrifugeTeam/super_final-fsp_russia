@@ -27,6 +27,7 @@ export const RegionByIdPage = () => {
           <div className={styles.block2}>
             <div className={styles.image}>
               <img
+								className={styles.img}
                 src={data.RegionRepresentation.representation.photo_url}
                 alt={data.RegionRepresentation.representation.name}
               />
@@ -54,15 +55,18 @@ export const RegionByIdPage = () => {
 									<h1>{data.federal_name}</h1>
 								</div>
 
-								<h4 className={styles.nameOfInfo}>Участники</h4>
-								<p className={styles.info}>{data.team_count}</p>
+								<div className={styles.infoUsers}>
+									<h4 className={styles.nameOfInfo}>Участники</h4>
+									<p className={styles.info}>{data.team_count}</p>
 
-								<h4 className={styles.nameOfInfo}>Команды</h4>
-								<p className={styles.info}>{data.team_count}</p>
+									<h4 className={styles.nameOfInfo}>Команды</h4>
+									<p className={styles.info}>{data.team_count}</p>
+								</div>
 							</div>
 						</div>
           </div>
         </div>
+			{/* button */}
       </div>
     </div>
   );
