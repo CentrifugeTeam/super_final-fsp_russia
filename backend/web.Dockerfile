@@ -19,4 +19,4 @@ USER developer
 ENV PATH="/opt/venv/bin:$PATH"
 ENV PYTHONPATH='/src:$PYTHONPATH'
 ENTRYPOINT [ "/src/web/alembic.sh" ]
-CMD ["uvicorn", "web.app.app:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+CMD ["uvicorn", "web.app.app:app", "--host", "0.0.0.0", "--port", "80", "--reload", "--forwarded-allow-ips=*", "--proxy-headers"]

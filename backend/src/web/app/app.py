@@ -22,7 +22,10 @@ for model in models.__dict__.values():
     if isclass(model) and issubclass(model, Base) and model is not Base:
         admin.add_view(ModelView(model))
 logging.basicConfig(level=logging.INFO)
+
 app = FastAPI(root_path='/api', lifespan=lifespan)
+
 app.include_router(api)
-add_pagination(app)
+
 admin.mount_to(app)
+add_pagination(app)

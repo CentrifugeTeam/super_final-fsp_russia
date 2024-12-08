@@ -38,7 +38,10 @@ class User(IDMixin, Base):
         rep = await self.awaitable_attrs.representation
         principals = set()
         if rep is not None:
-            principals.add(f'representation:{rep.name}')
+            if rep.type == 'federation':
+                principals.add('federal')
+            else:
+                principals.add(rep.type)
         for role in await self.awaitable_attrs.roles:
             principals.add(f"role:{role.name}")
         if self.is_superuser:
