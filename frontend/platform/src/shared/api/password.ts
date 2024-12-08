@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { api } from "./base";
 
 interface ForgotPasswordResponse {
@@ -18,12 +19,20 @@ export const sendForgotPasswordEmail = async (
   return response.data;
 };
 
-export const resetPassword = async (
-  data: ResetPasswordRequest
-): Promise<ForgotPasswordResponse> => {
-  const response = await api.post<ForgotPasswordResponse>(
-    "/accounts/password/reset", // Обновите эндпоинт на нужный
-    data // Отправляем объект с token и password
-  );
+interface ResetPasswordRequest {
+  token: string;
+  password: string;
+}
+
+// Функция для отправки запроса на сброс пароля
+const sendPasswordResetRequest = async (data: ResetPasswordRequest) => {
+  const response = await api.post("/accounts/password/reset", data);
   return response.data;
+};
+
+// Кастомный хук для сброса пароля
+export const useSendPasswordResetRequest = () => {
+  return useMutation({
+    mutationFn: sendPasswordResetRequest,
+  });
 };

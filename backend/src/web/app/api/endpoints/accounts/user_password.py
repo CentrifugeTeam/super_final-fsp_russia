@@ -34,7 +34,7 @@ async def forgot_password(
     token = await user_manager.forgot_password(user, redis)
     await smtp_message.asend_email(
         email,
-        Message(url_for_button=f'https://centrifugo.tech/reset?token={token}', title='Заменить пароль', text_on_button='кнопка',
+        Message(url_for_button=f'https://centrifugo.tech/change_pass/?token={token}', title='Заменить пароль', text_on_button='Кнопка',
                 text='Востановление пароля')
     )
     return Response(status_code=status.HTTP_204_NO_CONTENT)

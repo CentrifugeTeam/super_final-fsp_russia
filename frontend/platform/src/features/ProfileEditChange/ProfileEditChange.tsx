@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useUserProfile } from "@/shared/api/getProfile"; // Хук для получения данных профиля
 import { useUpdateUserProfile } from "@/shared/api/updateProfile"; // Хук для обновления профиля
+import { useSendVerifyRequest } from "@/shared/api/acceptEmail"; // Хук для отправки email-подтверждения
 import styles from "./profileeditchange.module.scss";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,8 @@ import baseAvatar from "../../assets/base_profile_avatar.png";
 export const ProfileEditChange = () => {
   const { data: userProfile, isLoading, isError } = useUserProfile();
   const { mutate: updateProfile, status } = useUpdateUserProfile(); // Получаем status
+  const { mutate: sendVerificationEmail, status: verificationStatus } =
+    useSendVerifyRequest(); // Хук для отправки email подтверждения
 
   // Локальное состояние для управления полями
   const [formData, setFormData] = useState({
@@ -96,6 +99,19 @@ export const ProfileEditChange = () => {
     });
   };
 
+  // Функция для отправки email-подтверждения
+  const handleEmailConfirmation = () => {
+    const emailData = { email: formData.email };
+    sendVerificationEmail(emailData, {
+      onSuccess: () => {
+        console.log("Verification email sent!");
+      },
+      onError: (error) => {
+        console.error("Error sending verification email:", error);
+      },
+    });
+  };
+
   if (isLoading) {
     return <p>Загрузка...</p>;
   }
@@ -136,6 +152,15 @@ export const ProfileEditChange = () => {
               {status === "pending" ? "Сохранение..." : "Сохранить изменения"}
             </Button>
           </div>
+          <Button
+            className="h-[50px] w-[100%] bg-[#958BFF] text-[20px] mt-7"
+            onClick={handleEmailConfirmation} // Отправляем запрос для подтверждения email
+            disabled={verificationStatus === "pending"} // Ожидание мутации
+          >
+            {verificationStatus === "pending"
+              ? "Отправка..."
+              : "Подтвердить почту"}
+          </Button>
         </div>
         <div className="gap-3 flex flex-col">
           <div className="grid w-full max-w-sm items-center gap-1.5">

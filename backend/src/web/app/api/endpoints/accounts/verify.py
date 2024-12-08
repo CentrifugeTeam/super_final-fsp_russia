@@ -45,7 +45,7 @@ async def request_verify_token(
     token = await user_manager.forgot_password(user, redis)
     await smtp_message.asend_email(
         email,
-        Message(url_for_button=f'https://centrifugo.tech/verify?token={token}', title='Форма для подтверждения почты',
+        Message(url_for_button=f'https://centrifugo.tech/email_verified/?token={token}', title='Форма для подтверждения почты',
                 text_on_button='Подтвердить почту', text='Подтвердить почту')
     )
     return Response(status_code=status.HTTP_204_NO_CONTENT)

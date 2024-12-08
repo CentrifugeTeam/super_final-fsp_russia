@@ -22,7 +22,9 @@ class User(IDMixin, Base):
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     representation_id: Mapped[int] = mapped_column(ForeignKey('representations.id'), nullable=True)
+    team_id: Mapped[int] = mapped_column(ForeignKey('teams.id'), nullable=True, default=None)
 
+    team: Mapped['Team'] = relationship(back_populates='users')
     oauth_accounts: Mapped[list['OAuthAccount']] = relationship(back_populates='user')
     files: Mapped[list['File']] = relationship(back_populates='user', secondary='user_files', cascade='all, delete')
     roles: Mapped[list['Role']] = relationship(secondary='user_roles', back_populates='users')
