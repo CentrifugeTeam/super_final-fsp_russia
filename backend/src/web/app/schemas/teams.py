@@ -3,6 +3,7 @@ from datetime import date
 from pydantic import BaseModel
 from fastapi_sqlalchemy_toolkit import make_partial_model
 
+from web.app.schemas.team_solution import ReadTeamSolution
 from .representation import ReadFederalRepresentation
 from .users import BaseUser, ReadUser
 
@@ -29,7 +30,8 @@ class TeamRead(BaseTeam):
 class FullTeamRead(BaseTeam):
     users: list[ReadUser]
     event_id: int
-    federal_representation: ReadFederalRepresentation
+    federal: ReadFederalRepresentation
+    solutions: list['ReadTeamSolution']
 
 
 TeamUpdate = make_partial_model(BaseTeam)
