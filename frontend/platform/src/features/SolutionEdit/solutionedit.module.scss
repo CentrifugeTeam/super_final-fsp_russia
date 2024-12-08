@@ -18,4 +18,48 @@
   .profileEditComponenst {
     margin-top: 30px;
   }
+
+  // Стили для DropdownMenu
+  .dropdownContent {
+    background-color: white;
+    color: black;
+    border: 1px solid #e5e7eb; // Светло-серая рамка
+    border-radius: 4px; // Закругленные углы
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); // Тень
+    padding: 8px;
+    z-index: 10; // Убедитесь, что меню поверх других элементов
+  }
+
+  .dropdownLabel {
+    font-size: 14px;
+    color: black;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .dropdownItem {
+    background-color: white;
+    color: black;
+    padding: 8px 12px;
+
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .dropdownItem:hover {
+    background-color: #f3f4f6; // Светло-серый цвет при наведении
+  }
+
+  .dropdownItem[aria-checked="true"] {
+    background-color: #000000; // Светло-серый цвет для выбранного элемента
+    font-weight: 600;
+  }
+
+  .dropdownSeparator {
+    height: 1px;
+    background-color: #e5e7eb;
+    margin: 4px 0;
+  }
 }
