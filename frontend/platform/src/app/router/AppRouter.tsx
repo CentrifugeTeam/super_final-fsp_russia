@@ -24,6 +24,7 @@ import { SendEmail } from "@/pages/SendEmail";
 import { RegionByIdPage } from "@/pages/RegionByIdPage";
 import { EmailVerified } from "@/pages/EmailVerified";
 import { ChangePassword } from "@/pages/ChangePassword";
+import { SolutionEditPage } from "@/pages/SolutionEditPage";
 
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
@@ -55,7 +56,7 @@ export const AppRouter = () => {
 
           {/* Маршрут для редактирования заявки */}
           <Route path="solutions" element={<SolutionEdit />} />
-          <Route path="solutions" element={<SolutionEdit />} />
+          <Route path="solutions/:id/edit" element={<SolutionEditPage />} />
 
           <Route path="rating" element={<RatingEdit />} />
         </Route>
