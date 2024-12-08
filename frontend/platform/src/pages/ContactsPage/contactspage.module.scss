@@ -40,6 +40,10 @@
 				padding-right: 50px;
 				padding-bottom: 75px;
 
+				.textInfo{
+					display: flex;
+				}
+
 				.email{
 					margin-top: 5px;
 					margin-bottom: 10px;
@@ -67,6 +71,71 @@
   .wrapper {
 		margin-top: 110px;
     position: block;
-		height: 41.1vh;
+		height: 56.9vh;
+
+		.content{
+			margin-left: 2%;
+			margin-right: 2%;
+		}
+
+		.block{
+			height: 323px !important;
+
+			.block2{
+				padding: 0px !important;
+				padding-left: 10% !important;
+				border: none !important;
+
+				.desctopQr{
+					display: none;
+				}
+
+				.contacts{
+					margin-left: 25px;
+				}
+
+				.mobileQr{
+					display: block;
+					text-align: center;
+
+					.img{
+						margin-top: -10px;
+						margin-left: -15px;
+						max-width: 160px;
+						max-height: 130px;
+					}
+
+					.tg{
+						margin-top: 20px;
+					}
+				}
+
+				.mainText{
+					font-size: 14px;
+				}
+
+				.text{
+					font-size: 12px;
+				}
+
+				.textInfo{
+					display: block !important;
+				}
+
+				.pressService{
+					margin-top: 20px;
+				}
+			}
+		}
+
+		.button{
+			display: none;
+		}
   }
+}
+
+@media (min-width: 768px) {
+	.mobileQr{
+		display: none;
+	}
 }
