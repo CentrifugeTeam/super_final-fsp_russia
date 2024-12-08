@@ -25,10 +25,6 @@ export const Header = () => {
     }
   };
 
-  const handleCalendarRedirect = () => {
-    navigate("/calendar/", { state: { isFromPlatform: true } });
-  };
-
   return (
     <div className={styles.header}>
       <div className={styles.logoMenu}>
@@ -43,7 +39,7 @@ export const Header = () => {
       <div className={`${styles.links} ${isMenuOpen ? styles.open : ""}`}>
         <Link to="/about_us">О нас</Link>
         <Link to="/regions">Регионы</Link>
-        <a onClick={handleCalendarRedirect}>Календарь</a>
+        <a href="https://centrifugo.tech/calendar/?type=FSP">Календарь</a>
         <a>Статистика</a>
         <Link to="/contacts">Контакты</Link>
         <a onClick={handleAuthRedirect}>

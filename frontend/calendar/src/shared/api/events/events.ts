@@ -30,6 +30,7 @@ export interface FilterParams {
 export const fetchSportEvents = async (
   filters: FilterParams
 ): Promise<{ items: ISportEvent[]; total: number }> => {
+	console.log(filters)
   // Удаляем параметры с пустыми значениями
   const cleanedParams = Object.fromEntries(
     Object.entries(filters).filter(([_, value]) => {

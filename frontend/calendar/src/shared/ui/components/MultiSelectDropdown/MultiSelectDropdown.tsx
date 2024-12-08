@@ -23,7 +23,6 @@ export const MultiSelectDropdown = ({
   onSearch = () => {},
 	isEror = false
 }: MultiSelectDropdownProps) => {
-	console.log(isEror)
   const [isOpen, setIsOpen] = useState(false);
   const [localValue, setLocalValue] = useState<string[]>(value);
   const [searchQuery, setSearchQuery] = useState("");

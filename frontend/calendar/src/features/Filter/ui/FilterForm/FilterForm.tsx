@@ -30,10 +30,10 @@ const calculateEndDate = (sortPeriod: string): string => {
 
 export const FilterForm = ({
   onFilterChange,
-	isFromPlatform
+	type,
 }: {
   onFilterChange: (filters: Record<string, any>) => void;
-	isFromPlatform: boolean;
+	type: string | null;
 }) => {
   const [isFilterVisible, setFilterVisible] = useState(false);
 
@@ -48,7 +48,7 @@ export const FilterForm = ({
   const [multiSelectValues4, setMultiSelectValues4] = useState<string[]>([]); // Место проведения
   const [multiSelectValues5, setMultiSelectValues5] = useState<string[]>([]); // Программа
 
-	const [searchQuery, setSearchQuery] = useState<string>(isFromPlatform ? "FSP" : "");
+	const [searchQuery, setSearchQuery] = useState<string>("");
   const [sexQuery, setSexQuery] = useState<string>("");
   const [sex, setSex] = useState<string[]>([]);
   const [minAge, setMinAge] = useState<string>("");
@@ -159,9 +159,9 @@ export const FilterForm = ({
   useEffect(() => {
     const savedFilters = Cookies.get("filterData");
 
-    if (savedFilters) {
-      const parsedFilters = JSON.parse(savedFilters);
-
+    if (savedFilters || type) {
+      const parsedFilters = JSON.parse(savedFilters ? savedFilters : '{"eventNames":[],"sportTypes":[],"disciplines":[],"locations":[],"programs":[],"sex":[],"minAge":"","maxAge":"","startDate":"","endDate":"","memberCount":"","sortPeriod":""}');
+			type ? parsedFilters.eventNames.push(type) : null;
       // Проверка и установка значений для разных фильтров
       setMultiSelectEventName(
         Array.isArray(parsedFilters.eventNames)

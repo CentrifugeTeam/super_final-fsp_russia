@@ -5,7 +5,7 @@ import { useSportEvents } from "../../shared/api/events";
 import styles from "./mainpage.module.scss";
 import { getEventStatus } from "../../shared/utils/getEventStatus";
 import { News } from "../../shared/ui/components/News";
-import { useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 // Функция для получения текущей даты в формате YYYY-MM-DD
 // const getCurrentDate = () => {
@@ -13,14 +13,28 @@ import { useLocation } from "react-router-dom";
 //   return today.toISOString().split("T")[0]; // Берём только дату без времени
 // };
 
+interface Filters {
+	page: number;
+	size: number;
+	sports: string[];
+	categories: string[];
+	competitions: string[];
+	cities: string[];
+	participant_type: string;
+	participant_from?: number; // или другой нужный тип
+	participant_to?: number;   // или другой нужный тип
+	participants_count?: number; // или другой нужный тип
+	end_date?: string; // или другой нужный тип
+}
+
 export const MainPage = () => {
-	const location = useLocation();
-	const { isFromPlatform } = location.state || { isFromPlatform: false };
+	const [searchParams] = useSearchParams();
+  const type = searchParams.get("type");
 
   const size = 9; // Количество элементов на странице
   const [isMobile, setIsMobile] = useState(false);
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Filters>({
     page: 1,
     size,
     sports: [],
@@ -46,6 +60,18 @@ export const MainPage = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+	useEffect(() => {
+		if (type) {
+			setFilters((prevFilters) => {
+				const updatedSports = [...new Set([...prevFilters.sports, type])];
+				return {
+					...prevFilters,
+					sports: updatedSports,
+				};
+			});
+		}
+	}, [type]);
 
   const { data, isLoading, error } = useSportEvents(filters);
 
@@ -87,7 +113,7 @@ export const MainPage = () => {
         <br /> И СПОРТИВНЫХ МЕРОПРИЯТИЙ
       </h1>
       <News />
-      <FilterForm onFilterChange={handleFilterChange} isSomethingTrue={isFromPlatform} />
+      <FilterForm onFilterChange={handleFilterChange} type={type} />
       <div className={styles.miniCards}>
         {data?.items.map((event) => {
           const { status, statusColor } = getEventStatus(
