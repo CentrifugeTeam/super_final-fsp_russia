@@ -84,7 +84,7 @@ class RepresentationManager(BaseManager):
     async def get_region_card(self, session: AsyncSession, id: int):
         team_stmt = (
             select(func.count(Team.id))
-            .filter(Team.region_representation_id == id)
+            .filter(Team.federal_representation_id == id)
             .scalar_subquery()
         )
 
