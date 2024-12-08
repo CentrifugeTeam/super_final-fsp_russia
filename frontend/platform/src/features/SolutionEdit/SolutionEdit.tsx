@@ -11,9 +11,11 @@ import {
   DropdownMenuRadioItem,
 } from "@radix-ui/react-dropdown-menu";
 import { useState } from "react";
+import { useFederations } from "@/shared/api/federations"; // Подключаем хук
 
 export const SolutionEdit = () => {
-  const [position, setPosition] = useState("bottom");
+  const [selectedRegion, setSelectedRegion] = useState<string>("all");
+  const { data: regions, isLoading, isError } = useFederations();
 
   return (
     <div className={styles.contet}>
@@ -22,36 +24,50 @@ export const SolutionEdit = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="text-black">
-              Все регионы
+              {selectedRegion === "all" ? "Все регионы" : selectedRegion}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56 bg-white text-black border border-gray-200 shadow-md">
-            <DropdownMenuLabel className="text-black">
-              Все регионы
+            <DropdownMenuLabel className="text-black px-4">
+              Выберите регион
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-gray-200 h-px my-1" />
             <DropdownMenuRadioGroup
-              value={position}
-              onValueChange={setPosition}
+              value={selectedRegion}
+              onValueChange={setSelectedRegion}
             >
-              <DropdownMenuRadioItem
-                value="top"
-                className="bg-white text-black hover:bg-gray-100"
-              >
-                Top
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem
-                value="bottom"
-                className="bg-white text-black hover:bg-gray-100"
-              >
-                Bottom
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem
-                value="right"
-                className="bg-white text-black hover:bg-gray-100"
-              >
-                Right
-              </DropdownMenuRadioItem>
+              {/* Загрузка данных */}
+              {isLoading && (
+                <DropdownMenuRadioItem
+                  value="loading"
+                  disabled
+                  className="bg-white text-gray-500 px-4 py-2"
+                >
+                  Загрузка...
+                </DropdownMenuRadioItem>
+              )}
+              {/* Ошибка при загрузке */}
+              {isError && (
+                <DropdownMenuRadioItem
+                  value="error"
+                  disabled
+                  className="bg-white text-red-500 px-4 py-2"
+                >
+                  Ошибка загрузки
+                </DropdownMenuRadioItem>
+              )}
+              {/* Пункты для всех регионов */}
+              {!isLoading &&
+                !isError &&
+                regions?.map((region: { id: string; name: string }) => (
+                  <DropdownMenuRadioItem
+                    key={region.id}
+                    value={region.name}
+                    className="bg-white text-black hover:bg-gray-100 px-4 py-2"
+                  >
+                    {region.name}
+                  </DropdownMenuRadioItem>
+                ))}
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
