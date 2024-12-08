@@ -3,6 +3,7 @@ from typing import Callable, Any
 from fastapi import Depends, HTTPException
 from fastapi_pagination import Page
 from fastapi_sqlalchemy_toolkit import NullableQuery
+from sqlalchemy.orm import joinedload
 from starlette import status
 
 from shared.crud import not_found_response, missing_token_or_inactive_user_response
@@ -29,7 +30,9 @@ class TeamsRouter(CrudAPIRouter):
                 score: int | NullableQuery | None = None,
                 session=Depends(get_session)
         ) -> Page[FullTeamRead]:
-            return await self.manager.paginated_list(session, filter_expressions={SportEvent.name: event_name},
+            return await self.manager.paginated_list(session,
+                                                     opitions=[joinedload(Team.federal), joinedload(Team.solutions)],
+                                                     filter_expressions={SportEvent.name: event_name},
                                                      nullable_filter_expressions={TeamSolution.score: score})
 
 

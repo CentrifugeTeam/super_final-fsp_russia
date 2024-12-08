@@ -1,3 +1,4 @@
+from shared.storage.db.models import Representation
 from .base import Base, IDMixin
 from sqlalchemy import Column, Integer, String, UniqueConstraint, ForeignKey, Date
 from sqlalchemy.orm import relationship, mapped_column, Mapped
@@ -14,6 +15,7 @@ class Team(IDMixin, Base):
     created_at: Mapped[date] = mapped_column(Date)
     about: Mapped[str] = mapped_column(String(length=255))
     solutions: Mapped[list['TeamSolution']] = relationship(back_populates='team')
+    federal: Mapped['Representation'] = relationship(back_populates='teams')
 
 
 

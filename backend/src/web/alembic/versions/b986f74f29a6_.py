@@ -201,7 +201,7 @@ def upgrade() -> None:
 #       await Factory.create_batch_async(10)
 
 
-    op.run_async(seed_db)
+    op.run_async(wrapper)
 
 
 def downgrade() -> None:

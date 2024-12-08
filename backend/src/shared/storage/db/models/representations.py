@@ -31,6 +31,7 @@ class Representation(IDMixin, Base):
     region: Mapped['RegionRepresentation'] = relationship(back_populates='representation',
                                                           foreign_keys='RegionRepresentation.representation_id')
     users: Mapped[list['User']] = relationship(back_populates='representation')
+    teams: Mapped['Representation'] = relationship(back_populates='federal')
 
     def __repr__(self):
         return f"<Representation(region_name={self.name}"
