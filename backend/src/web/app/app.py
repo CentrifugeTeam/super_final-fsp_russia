@@ -17,7 +17,7 @@ async def lifespan(app):
     yield
 
 
-admin = Admin(engine, title='Панель Администрирования')
+admin = Admin(engine, title='Панель Администрирования', base_url='/api/admin')
 for model in models.__dict__.values():
     if isclass(model) and issubclass(model, Base) and model is not Base:
         admin.add_view(ModelView(model))
