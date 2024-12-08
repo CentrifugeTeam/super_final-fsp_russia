@@ -1,10 +1,9 @@
 # Запуск приложения
 
-## Развертка 
-### Создать контейнер: 
-    docker compose build
+## Развертка
+
 ### Запустить контейнер:
-    docker compose up
+    docker compose -f docker-compose.local.yml up  --build
 
 ## После запуска на localhost будут доступны следующие адреса:
     http://localhost/api/docs - Rest API
