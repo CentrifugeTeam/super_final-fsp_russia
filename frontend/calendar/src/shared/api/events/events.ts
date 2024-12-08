@@ -30,14 +30,13 @@ export interface FilterParams {
 export const fetchSportEvents = async (
   filters: FilterParams
 ): Promise<{ items: ISportEvent[]; total: number }> => {
-	console.log(filters)
   // Удаляем параметры с пустыми значениями
   const cleanedParams = Object.fromEntries(
     Object.entries(filters).filter(([_, value]) => {
       return (
         value !== null && // Убираем `null`
         value !== undefined && // Убираем `undefined`
-        value !== "" && // Убираем пустую строку
+        value !== "" && // Убираем пустые строки
         (!Array.isArray(value) || value.length > 0) // Убираем пустые массивы
       );
     })
@@ -74,10 +73,15 @@ export const fetchSportEvents = async (
   };
 };
 
-export const useSportEvents = (filters: FilterParams) => {
+// Хук для использования sport events с фильтрами
+export const useSportEvents = (
+  filters: FilterParams
+) => {
+	console.log(filters)
+
   return useQuery({
     queryKey: ["sportEvents", filters],
     queryFn: () => fetchSportEvents(filters),
-    staleTime: 60 * 1000, // Данные считаются актуальными в течение 1 минуты
+    staleTime: 60 * 1000,
   });
 };

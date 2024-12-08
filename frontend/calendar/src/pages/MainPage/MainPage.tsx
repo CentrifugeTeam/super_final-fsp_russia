@@ -1,35 +1,31 @@
 import { useState, useEffect } from "react";
-import { MiniCartSportEvent } from "../../shared/ui/components/MiniCardSportEvent";
-import { FilterForm } from "../../features/Filter/ui/FilterForm";
 import { useSportEvents } from "../../shared/api/events";
-import styles from "./mainpage.module.scss";
-import { getEventStatus } from "../../shared/utils/getEventStatus";
+import { FilterForm } from "../../features/Filter/ui/FilterForm";
+import { MiniCartSportEvent } from "../../shared/ui/components/MiniCardSportEvent";
 import { News } from "../../shared/ui/components/News";
 import { useSearchParams } from "react-router-dom";
+import styles from "./mainpage.module.scss";
+import { getEventStatus } from "../../shared/utils/getEventStatus";
 
-// Функция для получения текущей даты в формате YYYY-MM-DD
-// const getCurrentDate = () => {
-//   const today = new Date();
-//   return today.toISOString().split("T")[0]; // Берём только дату без времени
-// };
-
+// Интерфейс для фильтров
 interface Filters {
-	page: number;
-	size: number;
-	sports: string[];
-	categories: string[];
-	competitions: string[];
-	cities: string[];
-	participant_type: string;
-	participant_from?: number; // или другой нужный тип
-	participant_to?: number;   // или другой нужный тип
-	participants_count?: number; // или другой нужный тип
-	end_date?: string; // или другой нужный тип
+  page: number;
+  size: number;
+  sports: string[];
+  categories: string[];
+  competitions: string[];
+  cities: string[];
+  participant_type: string;
+  participant_from?: number;
+  participant_to?: number;
+  participants_count?: number;
+  end_date?: string;
 }
 
 export const MainPage = () => {
-	const [searchParams] = useSearchParams();
-  const type = searchParams.get("type");
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get("type"); // Получаем параметр `type` из URL
+	const [isUsed, setIsUsed] = useState(type ? true : false);
 
   const size = 9; // Количество элементов на странице
   const [isMobile, setIsMobile] = useState(false);
@@ -37,7 +33,7 @@ export const MainPage = () => {
   const [filters, setFilters] = useState<Filters>({
     page: 1,
     size,
-    sports: [],
+    sports: isUsed ? [type] : [],
     categories: [],
     competitions: [],
     cities: [],
@@ -45,7 +41,6 @@ export const MainPage = () => {
     participant_from: undefined,
     participant_to: undefined,
     participants_count: undefined,
-    // start_date: getCurrentDate(),
     end_date: undefined,
   });
 
@@ -55,23 +50,10 @@ export const MainPage = () => {
     };
     handleResize();
     window.addEventListener("resize", handleResize);
-
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-	useEffect(() => {
-		if (type) {
-			setFilters((prevFilters) => {
-				const updatedSports = [...new Set([...prevFilters.sports, type])];
-				return {
-					...prevFilters,
-					sports: updatedSports,
-				};
-			});
-		}
-	}, [type]);
 
   const { data, isLoading, error } = useSportEvents(filters);
 
@@ -90,6 +72,7 @@ export const MainPage = () => {
   };
 
   const handleFilterChange = (newFilters: any) => {
+		setIsUsed(false)
     setFilters((prevFilters) => ({
       ...prevFilters,
       ...newFilters,
@@ -113,7 +96,7 @@ export const MainPage = () => {
         <br /> И СПОРТИВНЫХ МЕРОПРИЯТИЙ
       </h1>
       <News />
-      <FilterForm onFilterChange={handleFilterChange} type={type} />
+      <FilterForm onFilterChange={handleFilterChange} type={isUsed ? type : ''} />
       <div className={styles.miniCards}>
         {data?.items.map((event) => {
           const { status, statusColor } = getEventStatus(

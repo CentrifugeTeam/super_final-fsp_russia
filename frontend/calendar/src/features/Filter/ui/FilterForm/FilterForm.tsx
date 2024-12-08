@@ -161,7 +161,7 @@ export const FilterForm = ({
 
     if (savedFilters || type) {
       const parsedFilters = JSON.parse(savedFilters ? savedFilters : '{"eventNames":[],"sportTypes":[],"disciplines":[],"locations":[],"programs":[],"sex":[],"minAge":"","maxAge":"","startDate":"","endDate":"","memberCount":"","sortPeriod":""}');
-			type ? parsedFilters.eventNames.push(type) : null;
+			type ? parsedFilters.sportTypes.push(type) : null;
       // Проверка и установка значений для разных фильтров
       setMultiSelectEventName(
         Array.isArray(parsedFilters.eventNames)
