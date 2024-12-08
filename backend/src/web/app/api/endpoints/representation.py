@@ -8,7 +8,7 @@ from ...dependencies import get_session
 
 from ...utils.crud import CrudAPIRouter
 from ...schemas import ReadRegionRepresentationBase
-from ...schemas.representation import FederalRepresentation
+from ...schemas.representation import FullFederalRepresentation, ReadFederalRepresentation
 from ...schemas import ReadCardRepresentation
 from ...managers.representation import RepresentationManager
 
@@ -22,11 +22,18 @@ class RepresentationAPIRouter(CrudAPIRouter):
                          ReadRegionRepresentationBase)
 
     def _get_all(self) -> Callable[..., Any]:
-        @self.get('/', response_model=list[FederalRepresentation])
+        @self.get('/', response_model=list[FullFederalRepresentation])
         async def func(
-                session=Depends(get_session)
+                session=Depends(get_session),
+
         ):
             return await reps_manager.list(session)
+
+        @self.get('/federations', response_model=list[ReadFederalRepresentation])
+        async def func(
+                session=Depends(get_session),
+        ):
+            return await reps_manager.federations(session)
 
     def _get_one(self):
         @self.get(

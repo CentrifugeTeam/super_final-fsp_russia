@@ -16,8 +16,9 @@ logger = getLogger(__name__)
 
 async def cron_update_calendar_table(ctx):
     logger.info('start fetching pdf')
+
+    file_name = await fetch_pdf(ctx)
     try:
-        file_name = await fetch_pdf(ctx)
         logger.info('fetched pdf_file')
         maker = ctx['async_session_maker']
         maker: async_sessionmaker

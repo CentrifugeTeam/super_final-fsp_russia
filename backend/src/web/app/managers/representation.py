@@ -47,6 +47,9 @@ class RepresentationManager(BaseManager):
             **simple_filters,
         )
 
+    async def federations(self, session: AsyncSession):
+        return await super().list(session, filter_expressions={Representation.type: 'federation'})
+
     async def list(
             self,
             session: AsyncSession,

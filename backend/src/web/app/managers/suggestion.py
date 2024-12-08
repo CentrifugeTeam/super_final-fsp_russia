@@ -25,7 +25,7 @@ class SuggestionManager(BaseManager):
 
             location = await create_if_dont_exist(session, dict(country='Российская Федерация', region=None,
                                                                 city=suggestion.location), Location)
-            event_type = await create_if_dont_exist(session, dict(sport='FSP'), EventType)
+            event_type = await create_if_dont_exist(session, dict(sport='Спортивное программирование'), EventType)
 
             event = await create_if_dont_exist(session, dict(
                 name=suggestion.name,
