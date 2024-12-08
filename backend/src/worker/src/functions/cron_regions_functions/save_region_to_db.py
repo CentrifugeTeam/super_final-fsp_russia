@@ -46,8 +46,9 @@ async def save_region_to_db(session: AsyncSession, region_data):
         iafile = IAFile()
         try:
             region_url = await iafile.prompt_for_file(prompt)
-        except GenerationFileException:
+        except (GenerationFileException, Exception):
             region_url = None
+
         obj = model(**_dict,
                     photo_url=region_url,
                     )
