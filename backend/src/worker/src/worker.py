@@ -49,12 +49,11 @@ settings = {
     "queue": queue,
     "functions": [test],
     "concurrency": 10,
-    "cron_jobs": [CronJob(cron_update_calendar_table, cron="* * * * * 1"),
-                  CronJob(parse_and_save, cron="* * * * * 40"),
-                  CronJob(cron_job, cron="* * * * * 50")],
+    "cron_jobs": [CronJob(cron_update_calendar_table, cron="*/3 * * * *"),
+                  CronJob(parse_and_save, cron="*/1 * * * *"),
+                  CronJob(cron_job, cron="*/2 * * * *")],
     "startup": startup,
     "shutdown": shutdown,
     "before_process": before_process,
     "after_process": after_process,
 }
-# TODO: fix 3 cronjobs
