@@ -7,6 +7,7 @@ from .settings import settings as conf_settings
 
 from .functions.cron_pdf import cron_update_calendar_table
 from .functions.cron_regions_functions.parse_and_save import parse_and_save
+from .functions.events_archive.function import cron_job
 
 logger = getLogger(__name__)
 
@@ -48,8 +49,9 @@ settings = {
     "queue": queue,
     "functions": [test],
     "concurrency": 10,
-    "cron_jobs": [CronJob(cron_update_calendar_table, cron="* * * * * 1"),
-                  CronJob(parse_and_save, cron="* * * * * 59")],
+    "cron_jobs": [CronJob(cron_update_calendar_table, cron="* * * * * */1"),
+                  CronJob(parse_and_save, cron="* * * * * 59"),
+                  CronJob(cron_job, cron="* * * * * 20")],
     "startup": startup,
     "shutdown": shutdown,
     "before_process": before_process,

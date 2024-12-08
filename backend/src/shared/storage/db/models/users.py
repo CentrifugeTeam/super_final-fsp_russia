@@ -16,7 +16,7 @@ class User(IDMixin, Base):
     first_name: Mapped[str] = mapped_column(String, nullable=True)
     middle_name: Mapped[str] = mapped_column(String, nullable=True)
     last_name: Mapped[str] = mapped_column(String, nullable=True)
-    email: Mapped[str] = mapped_column(String, nullable=False)
+    email: Mapped[str] = mapped_column(String, nullable=False, unique=True)
     photo_url: Mapped[str] = mapped_column(String, nullable=True)
     about: Mapped[str] = mapped_column(String(length=100), nullable=True)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)

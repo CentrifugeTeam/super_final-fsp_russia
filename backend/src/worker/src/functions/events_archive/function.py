@@ -1,5 +1,5 @@
 from ...parser.parser_events_archive import fetch_calendar_data, EventArchive, logger
-x
+
 from .save_parsed import save
 
 
