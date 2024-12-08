@@ -58,23 +58,31 @@ export const SolutionEdit = () => {
               )}
               {/* Пункты для всех регионов */}
               {!isLoading &&
-                !isError &&
-                regions?.map((region: { id: string; name: string }) => (
+                !isError && [
                   <DropdownMenuRadioItem
-                    key={region.id}
-                    value={region.name}
+                    key="all"
+                    value="all"
                     className="bg-white text-black hover:bg-gray-100 px-4 py-2"
                   >
-                    {region.name}
-                  </DropdownMenuRadioItem>
-                ))}
+                    Все регионы
+                  </DropdownMenuRadioItem>,
+                  ...regions.map((region: { id: string; name: string }) => (
+                    <DropdownMenuRadioItem
+                      key={region.id}
+                      value={region.name}
+                      className="bg-white text-black hover:bg-gray-100 px-4 py-2"
+                    >
+                      {region.name}
+                    </DropdownMenuRadioItem>
+                  )),
+                ]}
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
       <div className={styles.profileEditComponenst}>
-        <SolutionEditCard />
+        <SolutionEditCard selectedRegion={selectedRegion} />
       </div>
     </div>
   );
