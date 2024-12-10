@@ -5,6 +5,9 @@ from pydantic import BaseModel
 
 
 class ErrorModel(BaseModel):
+    """
+    Модель ошибки, которая возвращает детали ошибки.
+    """
     detail: Union[str, dict[str, str]]
 
 
@@ -28,8 +31,6 @@ missing_token_or_inactive_user_response = {
 }
 
 auth_responses = {**forbidden_response, **missing_token_or_inactive_user_response}
-
-
 
 
 not_found_response = {

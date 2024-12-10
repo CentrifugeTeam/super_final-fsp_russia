@@ -31,12 +31,10 @@ async def startup(ctx):
 
 async def shutdown(ctx):
     pass
-    # await ctx["db"].disconnect()
 
 
 async def before_process(ctx):
     ctx["job"].timeout = None
-    # logger.info("job %s and its timeout %d", ctx['job'], ctx["job"].timeout)
 
 
 async def after_process(ctx):

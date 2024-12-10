@@ -19,6 +19,13 @@ r = APIRouter()
 async def email(settings: UserSettings,
                 session: AsyncSession = Depends(get_session)
                 ):
+    """
+    Обрабатывает запрос на регистрацию пользователя.
+
+    :param settings: Настройки пользователя.
+    :param session: Асинхронная сессия SQLAlchemy.
+    :return: Ответ без содержимого тела.
+    """
     async with session.begin():
         email = Email(email=settings.email)
         await users_manager.create(session, email, type_events=[settings.event_types_id], commit=False)

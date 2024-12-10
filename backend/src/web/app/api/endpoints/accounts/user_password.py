@@ -30,6 +30,14 @@ async def forgot_password(
         session: AsyncSession = Depends(get_session),
         redis: RedisClient = Depends(get_redis),
 ):
+    """
+    Отправляет письмо с ссылкой для сброса пароля пользователю.
+
+    :param email: Электронная почта пользователя.
+    :param session: Асинхронная сессия SQLAlchemy.
+    :param redis: Клиент Redis.
+    :return: Ответ без содержимого тела.
+    """
     user = await user_manager.get_or_404(session, email=email)
     token = await user_manager.forgot_password(user, redis)
     await smtp_message.asend_email(
@@ -54,6 +62,15 @@ async def reset_password(
         session: AsyncSession = Depends(get_session),
         redis: RedisClient = Depends(get_redis),
 ):
+    """
+    Сбрасывает пароль пользователя по токену.
+
+    :param token: Токен для сброса пароля.
+    :param password: Новый пароль пользователя.
+    :param session: Асинхронная сессия SQLAlchemy.
+    :param redis: Клиент Redis.
+    :return: Объект пользователя после сброса пароля.
+    """
     try:
         return await user_manager.reset_password(session, redis, token, password)
     except (InvalidResetPasswordToken,):
@@ -61,3 +78,4 @@ async def reset_password(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Invalid reset password token',
         )
+

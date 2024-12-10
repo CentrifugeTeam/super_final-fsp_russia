@@ -9,7 +9,6 @@ from shared.storage.db.models import Representation, RegionRepresentation
 from .get_federal_district_id import get_or_create_federal
 from logging import getLogger
 from ...utils import create_user, _create_if_dont_exist
-from ...exceptions import ResourceExistsException
 
 logger = getLogger(__name__)
 

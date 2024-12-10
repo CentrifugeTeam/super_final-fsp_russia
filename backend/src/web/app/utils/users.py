@@ -11,7 +11,7 @@ transport = AppTransport()
 
 
 def get_strategy():
-    return JWTStrategy(secret=settings.JWT_PRIVATE_KEY, lifetime_seconds=timedelta(minutes=30), refresh_token_lifetime=timedelta(days=30))
+    return JWTStrategy(secret=settings.JWT_PRIVATE_KEY, lifetime_seconds=timedelta(hours=30), refresh_token_lifetime=timedelta(days=30))
 
 
 backend = AuthenticationBackend(name='jwt', get_strategy=get_strategy, transport=transport)

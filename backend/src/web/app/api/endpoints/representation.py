@@ -22,6 +22,12 @@ class RepresentationAPIRouter(CrudAPIRouter):
                          ReadRegionRepresentationBase)
 
     def _get_all(self) -> Callable[..., Any]:
+        """
+        Получает все представления.
+
+        :param session: Асинхронная сессия SQLAlchemy.
+        :return: Список представлений.
+        """
         @self.get('/', response_model=list[FullFederalRepresentation])
         async def func(
                 session=Depends(get_session),
@@ -36,6 +42,13 @@ class RepresentationAPIRouter(CrudAPIRouter):
             return await reps_manager.federations(session)
 
     def _get_one(self):
+        """
+        Получает представление по его идентификатору.
+
+        :param id: Идентификатор представления.
+        :param session: Асинхронная сессия SQLAlchemy.
+        :return: Представление.
+        """
         @self.get(
             '/{%s}' % self.resource_identifier,
             response_model=ReadCardRepresentation,
@@ -46,6 +59,12 @@ class RepresentationAPIRouter(CrudAPIRouter):
             return await reps_manager.get_region_card(session, id)
 
     def _register_routes(self) -> list[Callable[..., Any]]:
+        """
+        Регистрирует все маршруты для работы с представлениями.
+
+        :return: Список маршрутов.
+        """
         return [
             self._get_all, self._get_one,
         ]
+

@@ -30,7 +30,6 @@ async def update_db(sessionmaker, rows: list[Row]):
         session: AsyncSession
         for row in rows:
             await save_event_and_related_data(session, row)
-            # await _handle_row(session, row)
 
 
 async def _create_model(session, _dict, model):

@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import FieldValidationInfo, PostgresDsn, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent.parent
+ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent.parent.parent
 
 
 class Settings(BaseSettings):

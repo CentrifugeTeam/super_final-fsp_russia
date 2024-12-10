@@ -1,6 +1,5 @@
 from fastapi import APIRouter
-from . import yandex, vk
+from . import yandex
 
 r = APIRouter()
 r.include_router(yandex.r, prefix="/yandex")
-r.include_router(vk.r, prefix="/vk")
