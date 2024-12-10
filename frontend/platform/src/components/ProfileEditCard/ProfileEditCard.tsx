@@ -12,12 +12,13 @@ export const ProfileCard = () => {
     (state) => state.profile
   );
 
-  // Загружаем профиль при монтировании
+  // Загружаем профиль только если он не был загружен ранее
   useEffect(() => {
-    if (!profile) {
+    if (!profile && !isLoading) {
+      // Добавляем проверку, чтобы запрос не выполнялся, если данные уже загружены
       dispatch(fetchProfile());
     }
-  }, [dispatch, profile]);
+  }, [dispatch, profile, isLoading]); // Даем зависимости для отслеживания состояния
 
   if (isLoading) return <p className="text-black">Загрузка...</p>;
   if (isError)
