@@ -4,7 +4,7 @@ import styles from "./requestedit.module.scss";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
-export const RequestEdit = () => {
+export const Requests = () => {
   const navigate = useNavigate();
   const { data: suggestions, isLoading, isError } = useSuggestions();
 
@@ -43,4 +43,4 @@ export const RequestEdit = () => {
   );
 };
 
-export default RequestEdit;
+export default Requests;

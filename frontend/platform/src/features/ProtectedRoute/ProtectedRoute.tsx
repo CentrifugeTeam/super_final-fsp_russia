@@ -15,7 +15,7 @@ export const ProtectedRoute = () => {
   const showHeaderOnRoutes = [
     "/about_us",
     "/profile",
-    "/profile/edit",
+    "/profile/me",
     "/profile/requests",
     "/profile/solutions",
     "/profile/protocols",

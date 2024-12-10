@@ -38,9 +38,9 @@ export const ProfilePanel = () => {
         {/* Мой профиль */}
         <h3
           className={`${styles.active} ${
-            location.pathname === "/profile/edit" ? styles.activeSelected : ""
+            location.pathname === "/profile/me" ? styles.activeSelected : ""
           }`}
-          onClick={() => navigate("/profile/edit")}
+          onClick={() => navigate("/profile/me")}
         >
           Мой профиль
         </h3>

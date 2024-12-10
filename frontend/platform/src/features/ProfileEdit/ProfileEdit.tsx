@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ProfileEditCard } from "@/components/ProfileEditCard";
+import { ProfileCard } from "@/components/ProfileEditCard";
 import { ProfileEditChange } from "../ProfileEditChange";
 import styles from "./profileedit.module.scss";
 
@@ -12,7 +12,7 @@ export const ProfileEdit = () => {
   };
 
   return (
-    <div className={styles.contet}>
+    <div className={styles.content}>
       <div className={styles.header}>
         <h1 className={styles.headerText}>Мой профиль</h1>
 
@@ -25,7 +25,7 @@ export const ProfileEdit = () => {
       </div>
 
       <div className={styles.profileEditComponenst}>
-        {isEdit ? <ProfileEditChange /> : <ProfileEditCard />}
+        {isEdit ? <ProfileEditChange /> : <ProfileCard />}
       </div>
     </div>
   );

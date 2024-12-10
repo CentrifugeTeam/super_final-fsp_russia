@@ -1,1 +1,1 @@
-export { SolutionEdit } from "./SolutionEdit";
+export { Solutions } from "./SolutionEdit";

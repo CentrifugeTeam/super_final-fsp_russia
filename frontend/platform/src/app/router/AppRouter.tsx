@@ -11,20 +11,21 @@ import { RegistrationPage } from "@/pages/RegistrationPage";
 import { SendCode } from "@/pages/SendCode";
 import { ProtectedRoute } from "@/features/ProtectedRoute";
 import { ProfilePage } from "@/pages/ProfilePage";
-import { RequestEdit } from "@/features/RequestEdit";
-import { SolutionEdit } from "@/features/SolutionEdit";
+import { Requests } from "@/features/RequestEdit";
+import { Solutions } from "@/features/SolutionEdit";
 import { RatingEdit } from "@/features/RatingEdit";
 import { NewRequest } from "@/pages/NewRequest";
 import { FeedPage } from "@/pages/FeedPage";
 import { ContactsPage } from "@/pages/ContactsPage";
 import { WelcomePage } from "@/pages/WelcomePage";
-import { ProfileEdit } from "@/features/EditProfile";
 import { EditRequest } from "@/pages/EditRequest";
 import { SendEmail } from "@/pages/SendEmail";
 import { RegionByIdPage } from "@/pages/RegionByIdPage";
 import { EmailVerified } from "@/pages/EmailVerified";
 import { ChangePassword } from "@/pages/ChangePassword";
 import { SolutionEditPage } from "@/pages/SolutionEditPage";
+import { ProfileCard } from "@/components/ProfileEditCard";
+import { ProfileEditChange } from "@/features/ProfileEditChange";
 
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
@@ -49,13 +50,14 @@ export const AppRouter = () => {
       <Route element={<ProtectedRoute />}>
         <Route path="/profile" element={<ProfilePage />}>
           {/* Вложенные маршруты для различных вкладок профиля */}
-          <Route path="edit" element={<ProfileEdit />} />
-          <Route path="requests" element={<RequestEdit />} />
+          <Route path="me" element={<ProfileCard />} />
+          <Route path="me/:id/edit" element={<ProfileEditChange />} />
+          <Route path="requests" element={<Requests />} />
           <Route path="requests/new" element={<NewRequest />} />
           <Route path="requests/:id/edit" element={<EditRequest />} />
 
           {/* Маршрут для редактирования заявки */}
-          <Route path="solutions" element={<SolutionEdit />} />
+          <Route path="solutions" element={<Solutions />} />
           <Route path="solutions/:id/edit" element={<SolutionEditPage />} />
 
           <Route path="rating" element={<RatingEdit />} />

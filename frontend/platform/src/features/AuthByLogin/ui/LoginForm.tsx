@@ -60,7 +60,7 @@ export const LoginForm = () => {
           refreshToken: data.refresh_token,
         })
       );
-      nav("/profile/edit");
+      nav("/profile/me");
     }
   }, [status, data, dispatch, nav]);
 

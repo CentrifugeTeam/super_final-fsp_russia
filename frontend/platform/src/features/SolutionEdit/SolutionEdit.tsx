@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import { useFederations } from "@/shared/api/federations"; // Подключаем хук
 
-export const SolutionEdit = () => {
+export const Solutions = () => {
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const { data: regions, isLoading, isError } = useFederations();
 
@@ -103,4 +103,4 @@ export const SolutionEdit = () => {
   );
 };
 
-export default SolutionEdit;
+export default Solutions;
