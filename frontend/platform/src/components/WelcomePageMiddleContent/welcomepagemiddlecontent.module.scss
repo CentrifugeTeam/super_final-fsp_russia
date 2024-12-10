@@ -1,20 +1,86 @@
-.middleContent{
-	margin-bottom: 60px;
+.middleContent {
+  margin-bottom: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;  // Центрируем элементы по горизонтали
 
-	.mapHeader{
-		margin-top: 40px;
-		display: flex;
-		align-items: center;
+  .mapHeader {
+		width: 70%;
+    margin-top: 50px;
+    display: flex;
+    align-items: center;
 		justify-content: space-between;
 
-		.headerText{
-			margin-left: 5%;
-			margin-right: 5%;
-			margin-bottom: 45px;
-			max-width: 700px;
-			color: black;
-			font-size: 25px;
-			font-weight: 700;
-		}
+    .headerText {
+      margin: 0 5%;  // Заменяем отдельные марджины на общее отступление по горизонтали
+      margin-bottom: 45px;
+      max-width: 700px;
+      color: black;
+      font-size: 25px;
+      font-weight: 700;
+			text-align: center;
+    }
+  }
+
+  .divForMap {
+    display: flex;
+    justify-content: center;  // Центрируем карту по горизонтали
+    align-items: center;      // Центрируем карту по вертикали
+    height: 500px;            // Можно установить фиксированную высоту для контейнера карты
+    width: 100%;              // Ширина на весь экран
+		margin-top: 8%;
+    margin-bottom: 100px;      // Отступ от карты к нижнему контенту
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+
+@media (max-width: 1200px) {
+	.mapHeader {
+		width: 100% !important;
+	}
+}
+
+
+@media (max-width: 1000px) {
+	.divForMap {
+		margin-top: 4% !important;
+		margin-bottom: 50px !important;
+	}
+}
+
+
+@media (max-width: 768px) {
+	.headerText {
+		width: 100% !important;
+		font-size: 18px !important;
+		margin: 0px !important;
+	}
+
+	.divForMap {
+		margin-top: -20px !important;
+		margin-bottom: -40px !important;
+	}
+}
+
+
+@media (max-width: 650px) {
+
+	.divForMap {
+		margin-top: -60px !important;
+		margin-bottom: -100px !important;
+	}
+}
+
+
+@media (max-width: 470px) {
+
+	.divForMap {
+		margin-top: -100px !important;
+		margin-bottom: -140px !important;
 	}
 }

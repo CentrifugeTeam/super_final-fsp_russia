@@ -4,8 +4,8 @@
 	background-color: #11192C;
 	border-radius: 10px;
 	padding-top: 40px;
-	padding-left: 105px;
-	padding-right: 105px;
+	padding-left: 20%;
+	padding-right: 20%;
 	padding-bottom: 50px;
 
 	.hr{
@@ -16,6 +16,7 @@
 	.firstContentDiv{
 		display: flex;
 		align-items: center;
+		justify-content: center;
 
 		.firstText{
 			height: max-content;
@@ -24,6 +25,7 @@
 			border-radius: 12px;
 			padding: 20px;
 			margin-right: 26px;
+			flex-grow: 1;
 		}
 
 		.secontText{
@@ -34,6 +36,7 @@
 			border-radius: 12px;
 			padding: 20px;
 			margin-right: 26px;
+			flex-grow: 1;
 		}
 
 		.firstContentTitle{
@@ -44,6 +47,31 @@
 	}
 }
 
+@media (min-width: 1700px){
+	.firstContent{
+		padding-left: 10%;
+		padding-right: 10%;
+	}
+
+	.text {
+   	font-size: 24px;
+  }
+}
+
+
+@media (max-width: 1700px){
+	.firstContent{
+		padding-left: 5%;
+		padding-right: 5%;
+	}
+}
+
+@media (max-width: 1350px){
+	.firstContent{
+		padding-left: 1%;
+		padding-right: 1%;
+	}
+}
 
 @media (max-width: 768px){
 	.firstContent{

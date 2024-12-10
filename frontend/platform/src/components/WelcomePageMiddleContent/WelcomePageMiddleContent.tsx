@@ -12,7 +12,7 @@ export const WelcomePageMiddleContent = () => {
         </h1>
       </div>
 
-      <div>
+      <div className={styles.divForMap}>
         <img src={mapImg} alt="Карта" />
       </div>
     </div>
