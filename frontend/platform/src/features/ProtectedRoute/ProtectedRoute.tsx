@@ -16,6 +16,7 @@ export const ProtectedRoute = () => {
     "/about_us",
     "/profile",
     "/profile/me",
+    "/profile/me/edit",
     "/profile/requests",
     "/profile/solutions",
     "/profile/protocols",

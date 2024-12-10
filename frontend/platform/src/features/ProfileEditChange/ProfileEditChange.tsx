@@ -1,56 +1,58 @@
-import { useState, useEffect } from "react";
-import { useUserProfile } from "@/shared/api/getProfile"; // Хук для получения данных профиля
+import { useEffect, useState } from "react";
 import { useUpdateUserProfile } from "@/shared/api/updateProfile"; // Хук для обновления профиля
 import { useSendVerifyRequest } from "@/shared/api/acceptEmail"; // Хук для отправки email-подтверждения
-import styles from "./profileeditchange.module.scss";
+import { useDispatch, useSelector } from "react-redux"; // Для использования Redux
+import { RootState } from "@/app/redux/store"; // Тип для состояния Redux
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import baseAvatar from "../../assets/base_profile_avatar.png";
+import { setProfile } from "@/app/redux/slices/profileSlice"; // Мутатор для обновления профиля в Redux
+
+import styles from "./profileeditchange.module.scss";
 
 export const ProfileEditChange = () => {
-  const { data: userProfile, isLoading, isError } = useUserProfile();
-  const { mutate: updateProfile, status } = useUpdateUserProfile(); // Получаем status
+  const dispatch = useDispatch();
+  const { profile } = useSelector((state: RootState) => state.profile); // Получаем профиль из Redux
+  const { mutate: updateProfile, status } = useUpdateUserProfile(); // Получаем статус обновления
   const { mutate: sendVerificationEmail, status: verificationStatus } =
     useSendVerifyRequest(); // Хук для отправки email подтверждения
 
   // Локальное состояние для управления полями
   const [formData, setFormData] = useState({
-    username: "",
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    email: "",
-    about: "",
-    photo_file: null as File | null, // Для хранения самого файла
-    photo_url: "", // Для хранения URL, полученного от сервера
-    photo_preview_url: "", // Для хранения временного URL изображения (для превью)
+    username: profile?.username || "",
+    first_name: profile?.first_name || "",
+    middle_name: profile?.middle_name || "",
+    last_name: profile?.last_name || "",
+    email: profile?.email || "",
+    about: profile?.about || "",
+    photo_file: null as File | null, // Для хранения файла
+    photo_preview_url: profile?.photo_url || baseAvatar, // Для отображения превью
   });
 
-  // Обновляем состояние при изменении userProfile
+  // Используем useEffect для обновления формы, если данные в Redux изменятся
   useEffect(() => {
-    if (userProfile) {
+    if (profile) {
       setFormData({
-        username: userProfile.username || "",
-        first_name: userProfile.first_name || "",
-        middle_name: userProfile.middle_name || "",
-        last_name: userProfile.last_name || "",
-        email: userProfile.email || "",
-        about: userProfile.about || "",
-        photo_url: userProfile.photo_url || "", // Получаем URL фото, если он есть
-        photo_file: null, // сбрасываем файл при загрузке данных
-        photo_preview_url: userProfile.photo_url || "", // Сохраняем URL для отображения
+        username: profile.username,
+        first_name: profile.first_name,
+        middle_name: profile.middle_name,
+        last_name: profile.last_name,
+        email: profile.email,
+        about: profile.about,
+        photo_file: null,
+        photo_preview_url: profile.photo_url || baseAvatar,
       });
     }
-  }, [userProfile]);
+  }, [profile]);
 
   // Обработчик изменений в полях формы
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: value,
-    });
+    }));
   };
 
   // Обработчик изменения фото
@@ -59,11 +61,11 @@ export const ProfileEditChange = () => {
       const file = e.target.files[0];
       const previewUrl = URL.createObjectURL(file); // Создаем временный URL для отображения
 
-      setFormData({
-        ...formData,
-        photo_file: file, // Сохраняем сам файл для отправки
+      setFormData((prevData) => ({
+        ...prevData,
+        photo_file: file, // Сохраняем файл для отправки
         photo_preview_url: previewUrl, // Сохраняем URL для отображения
-      });
+      }));
     }
   };
 
@@ -77,23 +79,19 @@ export const ProfileEditChange = () => {
     updatedData.append("email", formData.email);
     updatedData.append("about", formData.about);
 
-    // Если файл присутствует, добавляем в FormData
     if (formData.photo_file) {
-      updatedData.append("file", formData.photo_file); // Здесь "file" — это поле, ожидающее бинарный файл
+      updatedData.append("file", formData.photo_file); // Добавляем файл, если он есть
     }
 
-    // Логирование данных для отладки
-    console.log("Sending data:", updatedData);
-
-    // Вызов мутации для отправки данных
     updateProfile(updatedData, {
       onSuccess: (data) => {
-        // При успешном обновлении профиля, получаем URL фотографии
         if (data && data.photo_url) {
           setFormData((prevData) => ({
             ...prevData,
-            photo_url: data.photo_url, // Сохраняем URL изображения
+            photo_preview_url: data.photo_url, // Обновляем URL после успешного сохранения
           }));
+          // Обновляем данные профиля в Redux
+          dispatch(setProfile(data));
         }
       },
     });
@@ -102,23 +100,8 @@ export const ProfileEditChange = () => {
   // Функция для отправки email-подтверждения
   const handleEmailConfirmation = () => {
     const emailData = { email: formData.email };
-    sendVerificationEmail(emailData, {
-      onSuccess: () => {
-        console.log("Verification email sent!");
-      },
-      onError: (error) => {
-        console.error("Error sending verification email:", error);
-      },
-    });
+    sendVerificationEmail(emailData);
   };
-
-  if (isLoading) {
-    return <p>Загрузка...</p>;
-  }
-
-  if (isError) {
-    return <p>Ошибка при загрузке данных.</p>;
-  }
 
   return (
     <div className={styles.contet}>
@@ -127,7 +110,6 @@ export const ProfileEditChange = () => {
       <div className={styles.inputAndCheckEmail}>
         <div>
           <div className={styles.changeAvatar}>
-            {/* Отображаем превью выбранной картинки или фото из userProfile */}
             <img
               src={formData.photo_preview_url || baseAvatar}
               alt="Avatar"
@@ -154,8 +136,8 @@ export const ProfileEditChange = () => {
           </div>
           <Button
             className="h-[50px] w-[100%] bg-[#958BFF] text-[20px] mt-7"
-            onClick={handleEmailConfirmation} // Отправляем запрос для подтверждения email
-            disabled={verificationStatus === "pending"} // Ожидание мутации
+            onClick={handleEmailConfirmation}
+            disabled={verificationStatus === "pending"} // Ожидание
           >
             {verificationStatus === "pending"
               ? "Отправка..."
@@ -170,13 +152,12 @@ export const ProfileEditChange = () => {
             >
               Имя
             </Label>
-
             <Input
               className="w-[360px] h-[60px]"
               id="first_name"
               name="first_name"
               type="text"
-              placeholder={formData.first_name || "Введите ваше имя"}
+              value={formData.first_name}
               onChange={handleChange}
             />
           </div>
@@ -184,13 +165,12 @@ export const ProfileEditChange = () => {
             <Label htmlFor="last_name" className="text-black font-bold text-lg">
               Фамилия
             </Label>
-
             <Input
               className="w-[360px] h-[60px]"
               id="last_name"
               name="last_name"
               type="text"
-              placeholder={formData.last_name || "Введите вашу фамилию"}
+              value={formData.last_name}
               onChange={handleChange}
             />
           </div>
@@ -201,41 +181,36 @@ export const ProfileEditChange = () => {
             >
               Отчество
             </Label>
-
             <Input
               className="w-[360px] h-[60px]"
               id="middle_name"
               name="middle_name"
               type="text"
-              placeholder={formData.middle_name || "Введите ваше отчество"}
+              value={formData.middle_name}
               onChange={handleChange}
             />
           </div>
-
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-black font-bold text-lg">Email</Label>
-
             <Input
               className="w-[360px] h-[50px]"
               id="email"
               name="email"
               type="email"
-              placeholder={formData.email || "Введите ваш email"}
+              value={formData.email}
               onChange={handleChange}
             />
           </div>
-
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="about" className="text-black font-bold text-lg">
               О себе
             </Label>
-
             <Input
               className="w-[360px] h-[50px]"
               id="about"
               name="about"
               type="text"
-              placeholder={formData.about || "Введите информацию о себе"}
+              value={formData.about}
               onChange={handleChange}
             />
           </div>

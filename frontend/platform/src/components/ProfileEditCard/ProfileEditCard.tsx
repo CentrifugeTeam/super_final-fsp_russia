@@ -1,24 +1,41 @@
-import { Button } from "../ui/button";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@/app/redux/hooks";
+import { fetchProfile, setProfile } from "@/app/redux/slices/profileSlice";
 import styles from "./profileeditcard.module.scss";
-import { useUserProfile } from "@/shared/api/getProfile";
+import { Button } from "../ui/button";
 
 export const ProfileCard = () => {
-  const { data: profile, isLoading, isError } = useUserProfile();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { profile, isLoading, isError } = useAppSelector(
+    (state) => state.profile
+  );
 
-  // Если данные загружаются, показываем индикатор загрузки
+  // Загружаем профиль при монтировании
+  useEffect(() => {
+    if (!profile) {
+      dispatch(fetchProfile());
+    }
+  }, [dispatch, profile]);
+
   if (isLoading) return <p className="text-black">Загрузка...</p>;
-
-  // Если произошла ошибка, показываем сообщение об ошибке
   if (isError)
     return <p className="text-red-500">Ошибка при загрузке данных профиля</p>;
-
-  // Проверка на наличие profile
   if (!profile)
     return <p className="text-red-500">Данные профиля не найдены</p>;
 
+  const handleEdit = () => {
+    dispatch(setProfile(profile)); // Передаем данные профиля в Redux
+    navigate("/profile/me/edit"); // Редирект на страницу редактирования
+  };
+
   return (
     <>
-      <Button className="h-[50px] bg-[#463ACB] hover:bg-[#3d33b0] text-[20px] self-end">
+      <Button
+        className="h-[50px] bg-[#463ACB] hover:bg-[#3d33b0] text-[20px] self-end"
+        onClick={handleEdit}
+      >
         Редактировать профиль
       </Button>
 

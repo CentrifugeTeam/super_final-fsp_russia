@@ -30,7 +30,7 @@ import { ProfileEditChange } from "@/features/ProfileEditChange";
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
     <Route path="/" element={<Layout />}>
-      {/* Перенаправление на /about_us по умолчанию */}
+      {/* Перенаправление на страницу "О нас" по умолчанию */}
       <Route index element={<Navigate to="/about_us" />} />
 
       {/* Открытые страницы */}
@@ -49,17 +49,17 @@ export const AppRouter = () => {
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
         <Route path="/profile" element={<ProfilePage />}>
-          {/* Вложенные маршруты для различных вкладок профиля */}
+          {/* Профиль */}
           <Route path="me" element={<ProfileCard />} />
-          <Route path="me/:id/edit" element={<ProfileEditChange />} />
+          <Route path="me/edit" element={<ProfileEditChange />} />
+          {/* Заявки */}
           <Route path="requests" element={<Requests />} />
           <Route path="requests/new" element={<NewRequest />} />
           <Route path="requests/:id/edit" element={<EditRequest />} />
-
-          {/* Маршрут для редактирования заявки */}
+          {/* Решения */}
           <Route path="solutions" element={<Solutions />} />
           <Route path="solutions/:id/edit" element={<SolutionEditPage />} />
-
+          {/* Рейтинг */}
           <Route path="rating" element={<RatingEdit />} />
         </Route>
       </Route>
