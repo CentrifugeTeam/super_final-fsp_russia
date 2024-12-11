@@ -16,6 +16,7 @@ jobs:
       - name: Install Yandex Cloud CLI
         run: |
           curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          export PATH=$PATH:/home/runner/yandex-cloud/bin
 
       - name: Authenticate to Yandex Cloud
         run: |
@@ -50,6 +51,7 @@ jobs:
 
           # Establish an SSH connection and execute commands on the remote server
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@centrifugo.tech <<EOF
+            cd /home/ubuntu/deploy
             docker compose pull
             docker compose up -d
           EOF
