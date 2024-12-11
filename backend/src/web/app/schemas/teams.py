@@ -10,27 +10,24 @@ from .users import BaseUser, ReadUser
 
 class BaseTeam(BaseModel):
     name: str
-    created_at: date
-    about: str
+    about: str | None = None
 
 
 class TeamCreate(BaseTeam):
-    event_id: int
-    federal_representation_id: int
+    area_id: int
+
 
 
 class TeamRead(BaseTeam):
     id: int
-    event_id: int
-    federal_representation_id: int
-
-
+    area_id: int
+    created_at: date
+    photo_url: str
 
 
 class FullTeamRead(BaseTeam):
     id: int
     users: list[ReadUser]
-    event_id: int
     federal: ReadFederalRepresentation
     solutions: list['ReadTeamSolution']
 

@@ -21,7 +21,6 @@ class User(IDMixin, Base):
     about: Mapped[str] = mapped_column(String(length=100), nullable=True)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
-    representation_id: Mapped[int] = mapped_column(ForeignKey('representations.id'), nullable=True)
     team_id: Mapped[int] = mapped_column(ForeignKey('teams.id'), nullable=True, default=None)
 
     team: Mapped['Team'] = relationship(back_populates='users')
@@ -29,9 +28,8 @@ class User(IDMixin, Base):
     files: Mapped[list['File']] = relationship(back_populates='user', secondary='user_files', cascade='all, delete')
     roles: Mapped[list['Role']] = relationship(secondary='user_roles', back_populates='users')
     type_events: Mapped[list['EventType']] = relationship(back_populates='users', secondary='user_settings')
-    region_representation: Mapped['RegionRepresentation'] = relationship(back_populates='leader')
-    # representation: Mapped[list['Representation']] = relationship(back_populates='users')
-    representation: Mapped['Representation'] = relationship(back_populates='users')
+
+    region_representation: Mapped['Area'] = relationship(back_populates='leader')
     suggestions: Mapped[list['Suggestion']] = relationship(back_populates='user')
 
     async def get_principals(self):

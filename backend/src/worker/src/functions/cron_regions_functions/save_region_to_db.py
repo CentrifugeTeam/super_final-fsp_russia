@@ -5,7 +5,7 @@ from web.app.exceptions import GenerationFileException
 from web.app.utils.ai.upload_file import IAFile
 from worker.src.functions.cron_regions_functions.schemas import BlockRegionalRepresentation
 from sqlalchemy.exc import IntegrityError
-from shared.storage.db.models import Representation, RegionRepresentation
+from shared.storage.db.models import District, Area
 from .get_federal_district_id import get_or_create_federal
 from logging import getLogger
 from ...utils import create_user, _create_if_dont_exist
@@ -55,14 +55,12 @@ async def save_region_to_db(session: AsyncSession, region_data):
         await session.flush()
         return obj
 
-    repr = await _create_if_dont_exist(session,
-                                       {'name': block.region_name, 'contacts': block.contacts,
-                                        'type': 'region'}, Representation, _if_dont_exist_repr)
-
     try:
-        region = await _create_if_dont_exist(session, dict(representation_id=repr.id, leader_id=leader_user.id,
-                                                           federal_district_id=federal_district_id),
-                                             RegionRepresentation)
+        area = await _create_if_dont_exist(session,
+                                           {'name': block.region_name, 'contacts': block.contacts,
+                                            'leader_id': leader_user.id,
+                                            'district_id': federal_district_id
+                                            }, Area, _if_dont_exist_repr)
     except IntegrityError as e:
         logger.error(f"Ошибка сохранения региона {region_data['region_name']}: {e}")
         await session.rollback()

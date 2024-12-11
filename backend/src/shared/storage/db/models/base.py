@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import datetime, date
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, func, Integer
+from sqlalchemy import DateTime, func, Integer, Date
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -11,7 +11,13 @@ from sqlalchemy.orm import (
 
 
 class Base(AsyncAttrs, DeclarativeBase):
-    pass
+
+
+    def _asdict(self):
+        return {
+            column.name: getattr(self, column.name)
+            for column in self.__table__.columns
+        }
 
 
 class UUIDMixin:
@@ -27,6 +33,6 @@ class IDMixin:
 
 
 class CreatedAtMixin:
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+    created_at: Mapped[date] = mapped_column(
+        Date, server_default=func.now()
     )

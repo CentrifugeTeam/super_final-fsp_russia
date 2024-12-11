@@ -8,7 +8,8 @@ from ...dependencies import get_session
 
 from ...utils.crud import CrudAPIRouter
 from ...schemas import ReadRegionRepresentationBase
-from ...schemas.representation import FullFederalRepresentation, ReadFederalRepresentation
+from ...schemas.representation import FullFederalRepresentation, ReadFederalRepresentation, ReadRegionsCard, \
+    ReadRepresentation
 from ...schemas import ReadCardRepresentation
 from ...managers.representation import RepresentationManager
 
@@ -28,6 +29,7 @@ class RepresentationAPIRouter(CrudAPIRouter):
         :param session: Асинхронная сессия SQLAlchemy.
         :return: Список представлений.
         """
+
         @self.get('/', response_model=list[FullFederalRepresentation])
         async def func(
                 session=Depends(get_session),
@@ -49,6 +51,7 @@ class RepresentationAPIRouter(CrudAPIRouter):
         :param session: Асинхронная сессия SQLAlchemy.
         :return: Представление.
         """
+
         @self.get(
             '/{%s}' % self.resource_identifier,
             response_model=ReadCardRepresentation,
@@ -67,4 +70,3 @@ class RepresentationAPIRouter(CrudAPIRouter):
         return [
             self._get_all, self._get_one,
         ]
-

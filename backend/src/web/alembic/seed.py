@@ -14,7 +14,7 @@ from faker import Faker
 from polyfactory import Ignore, Use, AsyncPersistenceProtocol
 
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncConnection
-from shared.storage.db.models import Team, Representation, SportEvent, EventType, User, TeamSolution
+from shared.storage.db.models import Team, District, SportEvent, EventType, User, TeamSolution
 from web.app.managers.representation import RepresentationManager
 from fastapi_sqlalchemy_toolkit import ModelManager
 from web.app.schemas.users import CreateUser
