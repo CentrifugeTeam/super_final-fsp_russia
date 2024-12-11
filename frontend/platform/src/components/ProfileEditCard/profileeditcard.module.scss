@@ -1,4 +1,5 @@
 .card {
+  margin-top: 30px;
   width: 100%;
   padding: 30px;
   background-color: #ffffff;
@@ -6,20 +7,25 @@
   display: flex;
 
   .imgContainer {
-    margin-right: 30px;
     width: 204px;
     height: 204px;
-    overflow: hidden;
-    border-radius: 10px;
-  }
+    border-radius: 10px; /* Скруглённые углы */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Обрезаем лишнее содержимое */
+    background-color: #f0f0f0; /* Фон, если картинка отсутствует */
 
-  .img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    .img {
+      width: 100%; /* Растягиваем картинку */
+      height: 100%;
+      object-fit: cover; /* Сохраняем пропорции и заполняем весь блок */
+      object-position: center; /* Центрируем изображение */
+    }
   }
 
   .personData {
+    margin-left: 20px;
     width: 100%;
 
     .header {

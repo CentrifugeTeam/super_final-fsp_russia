@@ -1,4 +1,3 @@
-// import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./profilepanel.module.scss";
 import { RoleProfilePanel } from "@/components/RoleProfilePanel";
@@ -77,15 +76,6 @@ export const ProfilePanel = () => {
         >
           Рейтинг
         </h3>
-
-				<h3
-					className={`${styles.active} ${
-						location.pathname === "/profile/teams" ? styles.activeSelected : ""
-					}`}
-					onClick={() => navigate("/profile/teams")}
-				>
-					Команды
-				</h3>
       </div>
     </div>
   );
