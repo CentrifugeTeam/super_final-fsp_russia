@@ -4,6 +4,8 @@ from fastapi import Depends, HTTPException
 from fastapi_pagination import Page
 from fastapi_sqlalchemy_toolkit import NullableQuery
 from sqlalchemy.orm import joinedload
+
+from shared.crud import not_found_response
 from shared.storage.db.models import SportEvent, Team, TeamSolution, Representation
 from web.app.dependencies import get_session
 from web.app.utils.crud import MockCrudAPIRouter, CrudAPIRouter
@@ -29,21 +31,13 @@ class TeamsRouter(CrudAPIRouter):
                                                      nullable_filter_expressions={TeamSolution.score: score})
 
     def _get_team(self):
-        @self.get("/{%s}" % self.resource_identifier, response_model=FullTeamRead)
+        @self.get("/{%s}" % self.resource_identifier, response_model=FullTeamRead, responses={**not_found_response})
         async def get_team(
                 id: int,
                 session=Depends(get_session)
         ) -> FullTeamRead:
-            team = await session.execute(
-                select(Team)
-                .options(joinedload(Team.federal), joinedload(Team.solutions))
-                .where(Team.id == id)
-            ).scalar_one_or_none()
-
-            if team is None:
-                raise HTTPException(status_code=404, detail="Team not found")
-
-            return team
+            return await self.manager.get_or_404(session,
+                                                 options=[joinedload(Team.federal), joinedload(Team.solutions)], id=id)
 
     def _set_score(self):
         pass
