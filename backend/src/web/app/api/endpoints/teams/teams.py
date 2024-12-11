@@ -37,8 +37,7 @@ class TeamsRouter(CrudAPIRouter):
                 session=Depends(get_session)
         ) -> FullTeamRead:
             return await self.manager.get_or_404(session,
-                                                 options=[joinedload(Team.federal), joinedload(Team.solutions)], id=id)
-
+                                                 options=[joinedload(Team.federal), joinedload(Team.solutions), joinedload(Team.users)], id=id)
     def _set_score(self):
         pass
 

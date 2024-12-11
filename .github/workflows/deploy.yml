@@ -34,8 +34,9 @@ jobs:
 
           # Establish an SSH connection and execute commands on the remote server
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@centrifugo.tech <<EOF
-            cd /home/ubuntu/deploy
-            docker compose pull
+            cd /home/ubuntu/deploy &&
+            git pull origin main &&
+            docker compose pull &&
             docker compose up -d
           EOF
 
