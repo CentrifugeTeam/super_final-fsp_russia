@@ -58,7 +58,6 @@ async def save_region_to_db(session: AsyncSession, region_data):
     try:
         area = await _create_if_dont_exist(session,
                                            {'name': block.region_name, 'contacts': block.contacts,
-                                            'leader_id': leader_user.id,
                                             'district_id': federal_district_id
                                             }, Area, _if_dont_exist_repr)
     except IntegrityError as e:

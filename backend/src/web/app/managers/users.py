@@ -71,6 +71,7 @@ class UsersManager(BaseManager):
 
         in_obj.password = self.password_helper.hash(in_obj.password)
         create_data = in_obj.model_dump()
+        create_data.update(attrs)
 
         # Добавляем дефолтные значения полей для валидации уникальности
         for field, default in self.defaults.items():
