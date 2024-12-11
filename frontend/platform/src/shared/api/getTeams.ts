@@ -80,7 +80,7 @@ export const useTeams = (params: TeamsRequestParams) => {
 
 // Функция для получения команды
 const fetchTeamById = async (id: string): Promise<TeamById> => {
-  const response = await api.get<TeamById>(`/teams/{team}?id=${Number(id)}`);
+  const response = await api.get<TeamById>(`/teams/${id}`);
   return response.data;
 };
 

@@ -1,3 +1,4 @@
+import select
 from typing import Callable, Any
 
 from fastapi import Depends, HTTPException
@@ -34,9 +35,15 @@ class TeamsRouter(CrudAPIRouter):
 				id: int,
 				session=Depends(get_session)
 		) -> FullTeamRead:
-			team = await self.manager.get_by_id(id, session)  # Здесь используем метод get_by_id у менеджера
-			if not team:
+			team = await session.execute(
+				select(Team)
+				.options(joinedload(Team.federal), joinedload(Team.solutions))
+				.where(Team.id == id)
+			).scalar_one_or_none()
+
+			if team is None:
 				raise HTTPException(status_code=404, detail="Team not found")
+
 			return team
 
 	def _set_score(self):
