@@ -16,7 +16,7 @@ jobs:
       - name: Install Yandex Cloud CLI
         run: |
           curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
-          export PATH=$PATH:/home/runner/yandex-cloud/bin
+          echo "export PATH=$PATH:/home/runner/yandex-cloud/bin" >> $GITHUB_ENV
 
       - name: Authenticate to Yandex Cloud
         run: |
@@ -30,17 +30,6 @@ jobs:
 
       - name: Push image
         run: docker compose push
-
-
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-
-
-      # Шаг 1. Клонирование репозитория
-      - name: Checkout code
-        uses: actions/checkout@v4
 
       - name: SSH and run commands
         env:
@@ -58,6 +47,7 @@ jobs:
 
           rm -f private_key.pem # Remove the private key file after use for security
 
+      
 
 
     
