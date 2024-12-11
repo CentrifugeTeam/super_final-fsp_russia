@@ -1,12 +1,12 @@
 // import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "./profilepanel.module.scss";
 import { RoleProfilePanel } from "@/components/RoleProfilePanel";
 import { PersonInfoProfilePanel } from "@/components/PersonInfoProfilePanel";
 
 export const ProfilePanel = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Определение текущего пути
+  // const location = useLocation(); // Определение текущего пути
   // // const [isFederal, setIsFederal] = useState<boolean>(false); // Стейт для проверки роли
 
   // useEffect(() => {
