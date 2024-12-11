@@ -1,27 +1,25 @@
-import { useEffect, useState } from "react";
-import { useUpdateUserProfile } from "@/shared/api/updateProfile"; // Хук для обновления профиля
-import { useSendVerifyRequest } from "@/shared/api/acceptEmail"; // Хук для отправки email-подтверждения
-import { useDispatch, useSelector } from "react-redux"; // Для использования Redux
-import { RootState } from "@/app/redux/store"; // Тип для состояния Redux
+import React, { useEffect, useState } from "react";
+import { useUpdateUserProfile } from "@/shared/api/updateProfile"; // Hook to update profile
+import { useSendVerifyRequest } from "@/shared/api/acceptEmail"; // Hook to send email verification
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/app/redux/store"; // Redux state type
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import baseAvatar from "../../assets/base_profile_avatar.png";
-import { setProfile } from "@/app/redux/slices/profileSlice"; // Мутатор для обновления профиля в Redux
-
+import { setProfile } from "@/app/redux/slices/profileSlice"; // Redux action to update profile
 import styles from "./profileeditchange.module.scss";
 import { useNavigate } from "react-router-dom";
+import { validateEmail } from "@/features/Registration/utils/validators"; // Import validation functions
 
 export const ProfileEditChange = () => {
   const dispatch = useDispatch();
-  const { profile } = useSelector((state: RootState) => state.profile); // Получаем профиль из Redux
-  const { mutate: updateProfile, status } = useUpdateUserProfile(); // Получаем статус обновления
+  const { profile } = useSelector((state: RootState) => state.profile);
+  const { mutate: updateProfile, status } = useUpdateUserProfile();
   const navigate = useNavigate();
-
   const { mutate: sendVerificationEmail, status: verificationStatus } =
-    useSendVerifyRequest(); // Хук для отправки email подтверждения
+    useSendVerifyRequest();
 
-  // Локальное состояние для управления полями
   const [formData, setFormData] = useState({
     username: profile?.username || "",
     first_name: profile?.first_name || "",
@@ -29,11 +27,14 @@ export const ProfileEditChange = () => {
     last_name: profile?.last_name || "",
     email: profile?.email || "",
     about: profile?.about || "",
-    photo_file: null as File | null, // Для хранения файла
-    photo_preview_url: profile?.photo_url || baseAvatar, // Для отображения превью
+    photo_file: null as File | null,
+    photo_preview_url: profile?.photo_url || baseAvatar,
   });
 
-  // Используем useEffect для обновления формы, если данные в Redux изменятся
+  const [errors, setErrors] = useState({
+    email: "",
+  });
+
   useEffect(() => {
     if (profile) {
       setFormData({
@@ -49,31 +50,37 @@ export const ProfileEditChange = () => {
     }
   }, [profile]);
 
-  // Обработчик изменений в полях формы
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
+
+    if (name === "email") {
+      const emailError = validateEmail(value);
+      setErrors((prevErrors) => ({ ...prevErrors, email: emailError }));
+    }
   };
 
-  // Обработчик изменения фото
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      const previewUrl = URL.createObjectURL(file); // Создаем временный URL для отображения
-
+      const previewUrl = URL.createObjectURL(file);
       setFormData((prevData) => ({
         ...prevData,
-        photo_file: file, // Сохраняем файл для отправки
-        photo_preview_url: previewUrl, // Сохраняем URL для отображения
+        photo_file: file,
+        photo_preview_url: previewUrl,
       }));
     }
   };
 
-  // Функция для отправки данных на сервер
   const handleSave = () => {
+    if (errors.email) {
+      alert("Please fix validation errors before saving.");
+      return;
+    }
+
     const updatedData = new FormData();
     updatedData.append("username", formData.username);
     updatedData.append("first_name", formData.first_name);
@@ -81,9 +88,8 @@ export const ProfileEditChange = () => {
     updatedData.append("last_name", formData.last_name);
     updatedData.append("email", formData.email);
     updatedData.append("about", formData.about);
-
     if (formData.photo_file) {
-      updatedData.append("file", formData.photo_file); // Добавляем файл, если он есть
+      updatedData.append("file", formData.photo_file);
     }
 
     updateProfile(updatedData, {
@@ -91,17 +97,20 @@ export const ProfileEditChange = () => {
         if (data && data.photo_url) {
           setFormData((prevData) => ({
             ...prevData,
-            photo_preview_url: data.photo_url, // Обновляем URL после успешного сохранения
+            photo_preview_url: data.photo_url,
           }));
-          // Обновляем данные профиля в Redux
           dispatch(setProfile(data));
         }
       },
     });
   };
 
-  // Функция для отправки email-подтверждения
   const handleEmailConfirmation = () => {
+    if (errors.email) {
+      alert("Please fix validation errors before sending email confirmation.");
+      return;
+    }
+
     const emailData = { email: formData.email };
     sendVerificationEmail(emailData);
   };
@@ -118,7 +127,6 @@ export const ProfileEditChange = () => {
       </Button>
       <div className={styles.contet}>
         <h1 className={styles.headerText}>Контактные данные</h1>
-
         <div className={styles.inputAndCheckEmail}>
           <div className="flex flex-col max-w-[350px] h-full">
             <div className={styles.changeAvatar}>
@@ -134,14 +142,14 @@ export const ProfileEditChange = () => {
                 id="picture"
                 type="file"
                 accept="image/jpeg,image/png,image/gif"
-                onChange={handlePhotoChange} // Вызываем обработчик изменения фото
+                onChange={handlePhotoChange}
               />
             </div>
             <div className={styles.saveButton}>
               <Button
                 className="h-[50px] w-[100%] bg-[#463ACB] hover:bg-[#3d33b0] text-[20px] mt-7"
                 onClick={handleSave}
-                disabled={status === "pending"} // Ожидание мутации
+                disabled={status === "pending"}
               >
                 {status === "pending" ? "Сохранение..." : "Сохранить изменения"}
               </Button>
@@ -149,7 +157,7 @@ export const ProfileEditChange = () => {
             <Button
               className="h-[50px] w-[100%] bg-[#463ACB] hover:bg-[#3d33b0] text-[20px] mt-7"
               onClick={handleEmailConfirmation}
-              disabled={verificationStatus === "pending"} // Ожидание
+              disabled={verificationStatus === "pending"}
             >
               {verificationStatus === "pending"
                 ? "Отправка..."
@@ -215,6 +223,9 @@ export const ProfileEditChange = () => {
                 value={formData.email}
                 onChange={handleChange}
               />
+              {errors.email && (
+                <span className="text-red-500">{errors.email}</span>
+              )}
             </div>
             <div className="grid w-full max-w-sm items-center gap-1.5">
               <Label htmlFor="about" className="text-black font-bold text-lg">
