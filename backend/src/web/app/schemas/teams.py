@@ -28,6 +28,7 @@ class TeamRead(BaseTeam):
 
 
 class FullTeamRead(BaseTeam):
+    id: int
     users: list[ReadUser]
     event_id: int
     federal: ReadFederalRepresentation
