@@ -32,6 +32,8 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            git pull origin main
+            source /home/ubuntu/yandex-cloud/path.bash.inc 
             cd /home/ubuntu/deploy
             docker compose pull
             docker compose down

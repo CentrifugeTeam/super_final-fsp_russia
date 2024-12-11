@@ -54,7 +54,7 @@ export const RegistrationForm: React.FC = () => {
 
   const handleYandexLogin = () => {
     window.location.href =
-      "https://oauth.yandex.ru/authorize?force_confirm=1&client_id=91926807198745df874fea559c810a19&response_type=code&redirect_uri=https://centrifugo.tech/auth_loading";
+      "https://oauth.yandex.ru/authorize?force_confirm=1&client_id=91926807198745df874fea559c810a19&response_type=code&redirect_uri=https://hackcentrifuge.ru/auth_loading";
   };
 
   const isCurrentStepValid =
