@@ -28,7 +28,7 @@ class LeaderBase(BaseModel):
 
 class ReadRegionsCard(BaseModel):
     representation: ReadRepresentation
-    leader: LeaderBase
+    leader: LeaderBase | None
 
 
 class FullFederalRepresentation(BaseModel):

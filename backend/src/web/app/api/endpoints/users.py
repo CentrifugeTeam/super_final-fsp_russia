@@ -63,12 +63,16 @@ class UsersRouter(CrudAPIRouter):
                 raise HTTPException(status_code=422, detail=e.errors())
             return await user_manager.create_user(session, user, file=photo)
 
+    @staticmethod
+    def _response_me(user: User, representation):
+        return ReadUserMe.model_validate({'representation': representation, **user._asdict()}, from_attributes=True)
+
     def _me(self):
         @self.get('/me', response_model=ReadUserMe,
                   responses={**missing_token_or_inactive_user_response})
         async def func(user=Depends(authenticator.get_user())):
-            await user.awaitable_attrs.representation
-            return user
+            representation = await user.awaitable_attrs.area
+            return self._response_me(user, representation)
 
         @self.patch('/me', response_model=ReadUser,
                     responses={**missing_token_or_inactive_user_response, **bad_request_response})
@@ -109,7 +113,9 @@ class UsersRouter(CrudAPIRouter):
             except FileDoesntSave as e:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Could not upload file')
 
-            return await user_manager.update(session, user_in_db, user)
+            user = await user_manager.update(session, user_in_db, user, refresh_attribute_names=['area'])
+            representation = await user.awaitable_attrs.area
+            return self._response_me(user, representation)
 
     def _register_routes(self) -> list[Callable[..., Any]]:
         return [self._me, self._create, self._get_one, self._get_all]

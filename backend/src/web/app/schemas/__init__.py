@@ -20,6 +20,6 @@ class ReadCardRepresentation(BaseModel):
     federal_name: str
     team_count: int
     users_count: int
-    events_count: int
-    last_events: list[EventRead]
+    events_count: int | None
+    last_events: list[EventRead] | None
     top_months: list[MonthStatistics]

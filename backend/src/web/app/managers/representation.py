@@ -87,13 +87,18 @@ class RepresentationManager(BaseManager):
             for region in item.areas:
                 representation = ReadRepresentation.model_validate({'type': 'region', **region._asdict()},
                                                                    from_attributes=True)
+                leader = self._handle_leader_response(region)
                 regions.append(
-                    ReadRegionsCard.model_validate({'leader': region.leader, 'representation': representation},
+                    ReadRegionsCard.model_validate({'leader': leader, 'representation': representation},
                                                    from_attributes=True))
             response.append(FullFederalRepresentation.model_validate({'name': item.name, 'regions': regions},
                                                                      from_attributes=True))
 
         return response
+
+    @staticmethod
+    def _handle_leader_response(area: Area):
+        return area.leader[0] if area.leader else None
 
     async def get_region_card(self, session: AsyncSession, id: int):
         team_stmt = (
@@ -123,13 +128,32 @@ class RepresentationManager(BaseManager):
         region = result['District'].areas[0]
         representation = ReadRepresentation.model_validate({'type': 'region', **region._asdict()},
                                                            from_attributes=True)
+        leader = self._handle_leader_response(region)
         region_representation = ReadRegionRepresentationBase.model_validate(
-            {'id': result['District'].id, 'leader': region.leader,
+            {'id': result['District'].id, 'leader': leader,
              'representation': representation}, from_attributes=True)
+
+
+        federal_name = result['District'].name
+        top_month_stmt = (
+            select(SportEvent.start_date, func.count(User.id))
+            .join(User, User.team_id == SportEvent.id)
+            .join(Team, Team.id == User.team_id)
+            .where(Team.area_id == id)
+            .group_by(func.date(SportEvent.start_date))
+            .order_by(func.count(Team.id).desc())
+            .limit(3)
+        )
+
+        top_month = await session.execute(top_month_stmt)
+        top_months = [MonthStatistics(date=month[0], count_participants=month[1]) for month in top_month]
 
         region = region.name.split(' ')
         if len(region) != 2:
-            raise HTTPException(status_code=404, detail="Representation not found")
+            return ReadCardRepresentation.model_validate(
+                {'top_months': top_months, 'events_count': None, 'last_events': None,
+                 'federal_name': federal_name, **result, 'RegionRepresentation': region_representation},
+                from_attributes=True)
 
         last_events_stmt = (
             select(SportEvent)
@@ -144,22 +168,10 @@ class RepresentationManager(BaseManager):
                             .where(Location.region.ilike(f"%{region[0]}%"))
                             )
 
-        federal_name = result['District'].name
+
         last_events = await session.scalars(last_events_stmt)
         event_count = await session.scalar(event_count_stmt)
 
-        top_month_stmt = (
-            select(SportEvent.start_date, func.count(User.id))
-            .join(User, User.team_id == SportEvent.id)
-            .join(Team, Team.id == User.team_id)
-            .where(Team.area_id == id)
-            .group_by(func.date(SportEvent.start_date))
-            .order_by(func.count(Team.id).desc())
-            .limit(3)
-        )
-
-        top_month = await session.execute(top_month_stmt)
-        top_months = [MonthStatistics(date=month[0], count_participants=month[1]) for month in top_month]
         return ReadCardRepresentation.model_validate(
             {'top_months': top_months, 'events_count': event_count, 'last_events': last_events,
              'federal_name': federal_name, **result, 'RegionRepresentation': region_representation},

@@ -9,7 +9,6 @@ class Team(IDMixin, CreatedAtMixin, Base):
     __tablename__ = 'teams'
     name: Mapped[str] = mapped_column(String, unique=True)
     photo_url: Mapped[str] = mapped_column(String, nullable=True)
-
     about: Mapped[str] = mapped_column(String(length=255), nullable=True)
 
     area_id: Mapped[int] = mapped_column(Integer, ForeignKey('areas.id'))

@@ -8,12 +8,13 @@ class Area(IDMixin, Base):
     name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     photo_url: Mapped[str] = mapped_column(String, nullable=True)
     contacts: Mapped[str] = mapped_column(String, nullable=True)
-    leader_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     district_id: Mapped[int] = mapped_column(ForeignKey('districts.id'), nullable=False)
 
+
     district: Mapped['District'] = relationship(back_populates='areas')
-    leader: Mapped['User'] = relationship(back_populates='region_representation')
+    leader: Mapped[list['User']] = relationship(primaryjoin="and_(Area.id == User.area_id, User.is_leader == True)")
     teams: Mapped[list['Team']] = relationship(back_populates='area')
+    users: Mapped[list['User']] = relationship(back_populates='area')
 
 
 class District(IDMixin, Base):
@@ -24,5 +25,4 @@ class District(IDMixin, Base):
     # users: Mapped[list['User']] = relationship(back_populates='representation')
     teams: Mapped[list['Team']] = relationship(back_populates='district', secondary='areas')
 
-    def __repr__(self):
-        return f"<Representation(region_name={self.name}"
+
