@@ -32,7 +32,7 @@ class TeamsRouter(CrudAPIRouter):
         pass
 
     def _attach_to_team(self):
-        @self.post('{%s}/attach' % self.resource_identifier, response_model=TeamRead)
+        @self.post('{%s}/attach' % self.resource_identifier, response_model=FullTeamRead)
         async def attach_to_team(
                 user_id: int,
         ):

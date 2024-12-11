@@ -79,7 +79,7 @@ export const SolutionEditCard = ({ selectedRegion, selectedTeam }: SolutionEditC
       {/* Отображаем все команды */}
       {filteredTeams.map((team, index) => (
         <div key={index} className={styles.table2}>
-          <h1 onClick={(() => navigate(`/profile/team/${team.solutions}`))}>{team.name}</h1>
+          <h1 className={styles.teamName} onClick={(() => navigate(`/profile/team/${team.id}`))}>{team.name}</h1>
           <h1>{team.federal.name}</h1>
           <h1>
             {selectedTeam

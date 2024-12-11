@@ -27,6 +27,7 @@ import { SolutionEditPage } from "@/pages/SolutionEditPage";
 import { ProfileCard } from "@/components/ProfileEditCard";
 import { ProfileEditChange } from "@/features/ProfileEditChange";
 import { Teams } from "@/features/Teams";
+import { TeamById } from "@/features/TeamById";
 
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
@@ -64,6 +65,7 @@ export const AppRouter = () => {
           <Route path="rating" element={<RatingEdit />} />
 					{/* Команды */}
 					<Route path="teams" element={<Teams />} />
+					<Route path="team/:id" element={<TeamById />} />
         </Route>
       </Route>
     </Route>

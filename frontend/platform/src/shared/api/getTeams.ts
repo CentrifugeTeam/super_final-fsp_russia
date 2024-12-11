@@ -13,6 +13,7 @@ export interface Team {
   name: string;
   created_at: string;
   about: string;
+	id: number;
   users: Array<{
     username: string;
     first_name: string;
@@ -79,14 +80,14 @@ export const useTeams = (params: TeamsRequestParams) => {
 
 // Функция для получения команды
 const fetchTeamById = async (id: string): Promise<TeamById> => {
-  const response = await api.get<TeamById>(`/teams/${id}`);
+  const response = await api.get<TeamById>(`/teams/{team}?id=${Number(id)}`);
   return response.data;
 };
 
 // Хук для использования данных команды по ID
-export const useSuggestionById = (id: string) => {
+export const useTeamById = (id: string) => {
   return useQuery({
-    queryKey: ["teams", id], // Уникальный ключ запроса, зависит от ID
+    queryKey: ["team", id], // Уникальный ключ запроса, зависит от ID
     queryFn: () => fetchTeamById(id), // Функция для загрузки данных
     staleTime: 1000 * 60 * 5, // Данные считаются свежими в течение 5 минут
     enabled: !!id, // Запрос не будет выполнен, если ID не существует
