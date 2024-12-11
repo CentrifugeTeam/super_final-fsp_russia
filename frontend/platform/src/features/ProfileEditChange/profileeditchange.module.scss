@@ -39,5 +39,10 @@
     gap: 20px;
     align-items: center;
     justify-content: space-around;
+
+    @media (max-width: 1373px) {
+      display: flex;
+      flex-direction: column;
+    }
   }
 }

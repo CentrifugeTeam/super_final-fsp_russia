@@ -31,9 +31,13 @@
   }
 
   .fio {
-    font-size: 20px;
-    color: black;
-    font-weight: 600;
+    font-size: 20px; /* Размер шрифта */
+    color: black; /* Цвет текста */
+    font-weight: 600; /* Жирность шрифта */
+    overflow: hidden; /* Обрезаем текст, который не помещается */
+    text-overflow: ellipsis; /* Добавляем многоточие для обрезанного текста */
+    white-space: nowrap; /* Отключаем перенос текста на новую строку */
+    max-width: 200px; /* Ограничиваем ширину до 40px */
   }
 
   .exit {
