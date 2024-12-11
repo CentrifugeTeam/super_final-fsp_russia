@@ -20,7 +20,7 @@ export const RegiosnData = () => {
 
   return (
     <>
-      <h1 className={styles.nameOfPage}>Регионы</h1>
+			<h1 className={styles.nameOfPage}>Регионы</h1>
       <div className={styles.regionsForm}>
         <div className={styles.headerForm}>
           <RegionsFormHeader />
