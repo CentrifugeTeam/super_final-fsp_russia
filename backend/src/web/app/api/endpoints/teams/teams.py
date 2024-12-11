@@ -13,33 +13,44 @@ from web.app.managers.team import TeamManager
 
 class TeamsRouter(CrudAPIRouter):
 
-    def __init__(self):
-        super().__init__(TeamRead, TeamManager(), TeamCreate, TeamUpdate, resource_identifier='team')
+	def __init__(self):
+		super().__init__(TeamRead, TeamManager(), TeamCreate, TeamUpdate, resource_identifier='team')
 
-    def _get_all(self):
-        @self.get("/")
-        async def get_all_teams(
-                federal_name: str | None = None,
-                score: int | NullableQuery | None = None,
-                session=Depends(get_session)
-        ) -> Page[FullTeamRead]:
-            return await self.manager.paginated_list(session,
-                                                     options=[joinedload(Team.federal), joinedload(Team.solutions)],
-                                                     filter_expressions={Representation.name: federal_name},
-                                                     nullable_filter_expressions={TeamSolution.score: score})
+	def _get_all(self):
+		@self.get("/")
+		async def get_all_teams(
+				federal_name: str | None = None,
+				score: int | NullableQuery | None = None,
+				session=Depends(get_session)
+		) -> Page[FullTeamRead]:
+			return await self.manager.paginated_list(session,
+														options=[joinedload(Team.federal), joinedload(Team.solutions)],
+														filter_expressions={Representation.name: federal_name},
+														nullable_filter_expressions={TeamSolution.score: score})
 
-    def _set_score(self):
-        pass
+	def _get_team(self):
+		@self.get("/{id}", response_model=FullTeamRead)
+		async def get_team(
+				id: int,
+				session=Depends(get_session)
+		) -> FullTeamRead:
+			team = await self.manager.get_by_id(id, session)  # Здесь используем метод get_by_id у менеджера
+			if not team:
+				raise HTTPException(status_code=404, detail="Team not found")
+			return team
 
-    def _attach_to_team(self):
-        @self.post('{%s}/attach' % self.resource_identifier, response_model=FullTeamRead)
-        async def attach_to_team(
-                user_id: int,
-        ):
-            # check limit in event
-            pass
+	def _set_score(self):
+		pass
 
-    def _register_routes(self) -> list[Callable[..., Any]]:
-        return [
-            self._get_all, self._get_one, self._create
-        ]
+	def _attach_to_team(self):
+		@self.post('{%s}/attach' % self.resource_identifier, response_model=TeamRead)
+		async def attach_to_team(
+				user_id: int,
+		):
+			# check limit in event
+			pass
+
+	def _register_routes(self) -> list[Callable[..., Any]]:
+		return [
+			self._get_all, self._get_one, self._create
+		]
