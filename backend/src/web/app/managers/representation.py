@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute, joinedload, aliased
 
 from .base import BaseManager
-from shared.storage.db.models import Representation, RegionRepresentation, Team, User
+from shared.storage.db.models import Representation, RegionRepresentation, Team, User, SportEvent
 from ..schemas import ReadCardRepresentation
 
 
@@ -93,6 +93,10 @@ class RepresentationManager(BaseManager):
             where(User.representation_id == id)
             .scalar_subquery()
         )
+
+        # last_events_stmt = (
+        #     select(SportEvent).where(SportEvent.representation_id == id)
+        # )
 
         stmt = (
             select(RegionRepresentation, team_stmt.label("team_count"), user_stmt.label("users_count"))
