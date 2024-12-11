@@ -1,14 +1,16 @@
-from typing import List, Any, Callable
+from typing import List, Any, Callable, Iterable
 
+from fastapi import UploadFile
 from fastapi_pagination.ext.sqlalchemy import paginate
 from fastapi_pagination.bases import BasePage
-from fastapi_sqlalchemy_toolkit.model_manager import ModelT
+from fastapi_sqlalchemy_toolkit.model_manager import ModelT, CreateSchemaT
 from sqlalchemy import UnaryExpression, Select, Row, Function
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute, joinedload
 
 from .base import BaseManager
 from shared.storage.db.models import Team, District, TeamSolution
+from .files import _save_file_to_static
 
 
 class TeamManager(BaseManager):
@@ -32,35 +34,39 @@ class TeamManager(BaseManager):
         result = await session.execute(stmt)
         return result.unique().scalar()
 
-    # async def paginated_list(
-    #         self,
-    #         session: AsyncSession,
-    #         federal_name: str | None = None,
-    #         score: int | None = None,
-    #         **simple_filters: Any,
-    # ) -> BasePage[ModelT | Row]:
-    #     options = [joinedload(Team.district), joinedload(Team.solutions)]
-    #     filter_expressions = {District.name: federal_name},
-    #     nullable_filter_expressions = {TeamSolution.score: score}
-    #     self.handle_filter_expressions(filter_expressions)
-    #     self.handle_nullable_filter_expressions(nullable_filter_expressions)
-    #     filter_expressions = filter_expressions | nullable_filter_expressions
-    #
-    #     stmt = self.assemble_stmt(None, None, options, None, **simple_filters)
-    #     stmt = self.get_joins(
-    #         stmt,
-    #         options=options,
-    #         order_by=None,
-    #         filter_expressions=filter_expressions,
-    #     )
-    #
-    #     for filter_expression, value in filter_expressions.items():
-    #         if isinstance(filter_expression, InstrumentedAttribute | Function):
-    #             stmt = stmt.filter(filter_expression == value)
-    #         else:
-    #             stmt = stmt.filter(filter_expression(value))
-    #
-    #     return await paginate(session, stmt, transformer=None)
+    async def create_team(
+            self,
+            session: AsyncSession,
+            in_obj: CreateSchemaT | None = None,
+            file: UploadFile | None = None,
+            *,
+            commit: bool = True,
+            refresh_attribute_names: Iterable[str] | None = None,
+            **attrs: Any,
+    ) -> ModelT:
+        create_data = in_obj.model_dump()
+
+        # Добавляем дефолтные значения полей для валидации уникальности
+        for field, default in self.defaults.items():
+            if field not in create_data:
+                create_data[field] = default
+
+        await self.run_db_validation(session, in_obj=create_data)
+        if file is not None:
+            try:
+                photo_url = await _save_file_to_static(file)
+                create_data['photo_url'] = photo_url
+            except Exception as e:
+                pass
+        else:
+            create_data['photo_url'] = None
+
+        db_obj = self.model(**create_data)
+        session.add(db_obj)
+        await self.save(session, commit=commit)
+        await session.refresh(db_obj, attribute_names=refresh_attribute_names)
+        return db_obj
+
 
     async def get_federal_representation(self, representation_id: int):
         pass

@@ -1,23 +1,51 @@
-from typing import Callable, Any
+from typing import Callable, Any, Annotated
+
+from pydantic import ValidationError
 from sqlalchemy import select
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, UploadFile, Form
 from fastapi_pagination import Page
 from fastapi_sqlalchemy_toolkit import NullableQuery
 from sqlalchemy.orm import joinedload
+from starlette import status
 
+from crud.openapi_responses import bad_request_response, invalid_response
 from shared.crud import not_found_response
-from shared.storage.db.models import SportEvent, Team, TeamSolution, District
+from shared.storage.db.models import SportEvent, Team, TeamSolution, District, User
 from web.app.dependencies import get_session
 from web.app.schemas.representation import ReadFederalRepresentation
 from web.app.utils.crud import MockCrudAPIRouter, CrudAPIRouter
 from web.app.schemas.teams import TeamCreate, TeamRead, TeamUpdate, FullTeamRead
 from web.app.managers.team import TeamManager
+from web.app.utils.users import authenticator
+from ....managers.representation import area_manager
 
 
 class TeamsRouter(CrudAPIRouter):
 
     def __init__(self):
         super().__init__(TeamRead, TeamManager(), TeamCreate, TeamUpdate, resource_identifier='id')
+
+    def _create(self):
+        @self.post("/", response_model=TeamRead, responses={**invalid_response, **not_found_response},
+                   status_code=status.HTTP_201_CREATED)
+        async def create_team(
+                name: Annotated[str, Form()],
+                area_id: Annotated[int, Form()],
+                about: Annotated[str | None, Form()] = None,
+                photo: UploadFile | None = None,
+                session=Depends(get_session)
+        ) -> TeamRead:
+            """
+            Создание команды.
+            """
+            await area_manager.get_or_404(session, id=area_id)
+            try:
+                team = self.create_schema(name=name, about=about,
+                                          area_id=area_id)
+            except ValidationError as e:
+                raise HTTPException(status_code=422, detail=e.errors())
+            self.manager: TeamManager
+            return await self.manager.create_team(session, team, photo)
 
     def _get_all(self):
         @self.get("/")
@@ -26,6 +54,15 @@ class TeamsRouter(CrudAPIRouter):
                 score: int | NullableQuery | None = None,
                 session=Depends(get_session)
         ) -> Page[FullTeamRead]:
+            """
+            Получение всех команд.
+
+            :param federal_name: Название федерации.
+            :param score: Оценка команды.
+            :param session: Сессия базы данных.
+            :return: Страница с командами.
+            """
+
             def _transformer(items: list[Team]) -> list[FullTeamRead]:
                 result = []
                 for item in items:
@@ -45,11 +82,18 @@ class TeamsRouter(CrudAPIRouter):
             return result
 
     def _get_team(self):
-        @self.get("/{%s}" % self.resource_identifier, response_model=FullTeamRead, responses={**not_found_response})
+        @self.get("/{id}", response_model=FullTeamRead, responses={**not_found_response})
         async def get_team(
                 id: int,
                 session=Depends(get_session)
         ) -> FullTeamRead:
+            """
+            Получение команды по id.
+
+            :param id: Id команды.
+            :param session: Сессия базы данных.
+            :return: Команда.
+            """
             item = await self.manager.get_or_404(session,
                                                  options=[joinedload(Team.district), joinedload(Team.solutions),
                                                           joinedload(Team.users)], id=id)
@@ -58,18 +102,32 @@ class TeamsRouter(CrudAPIRouter):
                 {'federal': federal, 'solutions': item.solutions, 'users': item.users, **item._asdict()},
                 from_attributes=True)
 
-    def _set_score(self):
-        pass
-
     def _attach_to_team(self):
-        @self.post('{%s}/attach' % self.resource_identifier, response_model=TeamRead)
+        @self.post('{id}/attach', response_model=TeamRead, responses={**not_found_response,
+                                                                      **bad_request_response})
         async def attach_to_team(
-                user_id: int,
+                session=Depends(get_session),
+                user_in_db: User = Depends(authenticator.get_user()),
+                team: Team = Depends(self.get_or_404(options=[joinedload(Team.district), joinedload(Team.users)]))
         ):
-            # check limit in event
-            pass
+            """
+            Присоединение пользователя к команде.
+
+            :param session: Сессия базы данных.
+            :param user_in_db: Пользователь, который присоединяется к команде.
+            :param team: Команда, к которой присоединяется пользователь.
+            :return: Присоединенная команда.
+            """
+            if len(team.users) > 5:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Team is full')
+
+            team.users.append(user_in_db)
+            session.add(team)
+            await session.commit()
+            # return TeamRead.model_validate(team._asdict(), from_attributes=True)
+            return team
 
     def _register_routes(self) -> list[Callable[..., Any]]:
         return [
-            self._get_all, self._get_team, self._create
+            self._get_all, self._get_team, self._create, self._attach_to_team
         ]

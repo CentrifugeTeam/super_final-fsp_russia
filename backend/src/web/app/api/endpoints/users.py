@@ -120,7 +120,7 @@ class UsersRouter(CrudAPIRouter):
     def _register_routes(self) -> list[Callable[..., Any]]:
         return [self._me, self._create, self._get_one, self._get_all]
 
-    def get_or_404(self):
+    def get_or_404(self, *args, **kwargs):
         async def wrapper(username: str, session: AsyncSession = Depends(self.get_session)):
             return await self.manager.get_or_404(session, username=username)
 

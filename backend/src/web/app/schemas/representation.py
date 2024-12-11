@@ -1,10 +1,16 @@
 from pydantic import BaseModel
 from typing import Optional, Literal
 
-class RepresentationBase(BaseModel):
+
+class BaseArea(BaseModel):
     name: str
     photo_url: str | None
     contacts: str | None
+
+class ReadArea(BaseArea):
+    id: int
+
+class RepresentationBase(BaseArea):
     type: Literal['region', 'federal']
 
 

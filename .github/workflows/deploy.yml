@@ -13,18 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Login to Yandex Cloud Container Registry
-        id: login-cr
-        uses: yc-actions/yc-cr-login@v2
-        with:
-          yc-sa-json-credentials: ${{ secrets.YANDEX_KEY_JSON }}
-
-      - name: Build image
-        run: docker compose build
-
-      - name: Push image
-        run: docker compose push
-
       - name: SSH and run commands
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -32,10 +20,8 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            git pull origin main
-            source /home/ubuntu/yandex-cloud/path.bash.inc 
             cd /home/ubuntu/deploy
-            docker compose pull
+            git pull origin main
             docker compose down
             docker compose up -d --build
 
