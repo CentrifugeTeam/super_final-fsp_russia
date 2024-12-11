@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/redux/hooks";
-import { fetchProfile, setProfile } from "@/app/redux/slices/profileSlice";
+import { fetchProfile } from "@/app/redux/slices/profileSlice";
 import styles from "./profileeditcard.module.scss";
 import { Button } from "../ui/button";
 
@@ -27,7 +27,7 @@ export const ProfileCard = () => {
     return <p className="text-red-500">Данные профиля не найдены</p>;
 
   const handleEdit = () => {
-    dispatch(setProfile(profile)); // Передаем данные профиля в Redux
+    // dispatch(setProfile(profile)); // Передаем данные профиля в Redux
     navigate("/profile/me/edit"); // Редирект на страницу редактирования
   };
 

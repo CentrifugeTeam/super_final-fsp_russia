@@ -31,15 +31,18 @@ export const PersonInfoProfilePanel = () => {
 
   return (
     <div className={style.container}>
-      <img
-        className={style.avatar}
-        src={profile?.photo_url || baseAvatar}
-        alt="Аватар"
-      />
+      <div className={style.avatar}>
+        <img
+          className={style.img}
+          src={profile?.photo_url || baseAvatar}
+          alt="Аватар"
+        />
+      </div>
+
       <div className={style.nameAndExit}>
-        <h1 className={style.fio}>
-          {`${profile?.last_name} ${profile?.first_name} ${profile?.middle_name}`}
-        </h1>
+        <h1 className={style.fio}>{profile?.last_name}</h1>
+        <h1 className={style.fio}>{profile?.first_name}</h1>
+        <h1 className={style.fio}>{profile?.middle_name}</h1>
         <p className={style.exit} onClick={handleLogout}>
           Выйти
         </p>

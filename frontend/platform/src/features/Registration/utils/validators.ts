@@ -1,6 +1,3 @@
-// src/validation.ts
-
-// Validation for names (no symbols)
 export const validateName = (value: string): string => {
   const regex = /^[A-Za-zА-Яа-яёЁ]+$/;
   if (!value.trim()) {

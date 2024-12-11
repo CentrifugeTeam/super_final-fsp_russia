@@ -6,7 +6,7 @@ import style from "./Region.module.scss";
 const Region: React.FC<{ region: IRegion }> = ({ region }) => {
   const navigate = useNavigate(); // Инициализируем navigate
 
-  const leaderFullName = `${region.leader.first_name} ${region.leader.last_name} ${region.leader.middle_name}`;
+  const leaderFullName = ` ${region.leader.last_name} ${region.leader.first_name} ${region.leader.middle_name}`;
 
   // Функция для обработки клика
   const handleRegionClick = () => {
@@ -16,7 +16,10 @@ const Region: React.FC<{ region: IRegion }> = ({ region }) => {
   return (
     <div className={style.region}>
       {/* Добавляем onClick для перехода по URL */}
-      <h4 className={`${style.text} ${style.regionName}`} onClick={handleRegionClick}>
+      <h4
+        className={`${style.text} ${style.regionName}`}
+        onClick={handleRegionClick}
+      >
         {region.representation.name}
       </h4>
 
@@ -27,7 +30,9 @@ const Region: React.FC<{ region: IRegion }> = ({ region }) => {
         <h4 className={`${style.text} ${style.leader}`}></h4>
       )}
 
-      <h4 className={`${style.text} ${style.contacts}`}>{region.representation.contacts}</h4>
+      <h4 className={`${style.text} ${style.contacts}`}>
+        {region.representation.contacts}
+      </h4>
     </div>
   );
 };
