@@ -2,7 +2,7 @@ import axios from "axios";
 import { store } from "@/app/redux/store"; // Import your Redux store
 import { logout, updateTokens } from "@/app/redux/slices/authSlice"; // Redux actions for managing auth state
 
-const API_BASE_URL = "https://centrifugo.tech/api";
+const API_BASE_URL = "https://hackcentrifuge.ru/api";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,

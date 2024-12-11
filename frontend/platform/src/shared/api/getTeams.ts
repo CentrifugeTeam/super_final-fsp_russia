@@ -49,7 +49,7 @@ interface TeamResponse {
   pages: number;
 };
 
-interface TeamById {
+export interface TeamById {
   name: string;
   created_at: string;
   about: string;

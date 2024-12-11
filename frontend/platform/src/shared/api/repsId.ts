@@ -36,7 +36,7 @@ export interface IRegionResponse {
 
 // Функция для выполнения GET-запроса с использованием идентификатора региона
 const fetchRepsById = async (id: string): Promise<IRegionResponse> => {
-  const response = await api.get<IRegionResponse>(`/reps/${id}`);
+  const response = await api.get<IRegionResponse>(`/reps/${Number(id)-1}`);
   return response.data;
 };
 

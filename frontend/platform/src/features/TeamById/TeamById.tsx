@@ -2,6 +2,7 @@ import styles from "./teambyid.module.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTeamById } from "@/shared/api/getTeams";
+import { TeamCard } from "../TeamCard";
 
 export const TeamById = () => {
     const { id } = useParams();
@@ -12,7 +13,7 @@ export const TeamById = () => {
     }
 
     const { data, isLoading } = useTeamById(id);
-		console.log(data)
+	console.log(data)
 
     return (
         <div className={styles.contet}>
@@ -23,6 +24,10 @@ export const TeamById = () => {
                     Назад
                 </Button>
             </div>
+
+			<div className={styles.teamCard}>
+				{data ? <TeamCard team={data} /> : <div>Loading...</div>}
+			</div>
         </div>
     );
 };
