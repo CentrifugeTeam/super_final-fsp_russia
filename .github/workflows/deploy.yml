@@ -13,17 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Yandex Cloud CLI
-        run: |
-          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
-          exec -l $SHELL
-
-      - name: Authenticate to Yandex Cloud
-        run: |
-          echo "${{ secrets.YANDEX_KEY_JSON }}" > key.json
-          yc config set service_account_key key.json
-      - name: Login to Yandex Cloud
-        run: yc container registry configure-docker
+      - name: Login to Yandex Cloud Container Registry
+        id: login-cr
+        uses: yc-actions/yc-cr-login@v2
+        with:
+          yc-sa-json-credentials: ${{ secrets.YANDEX_KEY_JSON }}
 
       - name: Build image
         run: docker compose build
