@@ -28,7 +28,7 @@ jobs:
       - name: SSH and run commands
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: centrifugo.tech
+          host: ${{ secrets.SSH_HOST }}
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
