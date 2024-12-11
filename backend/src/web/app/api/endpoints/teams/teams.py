@@ -52,5 +52,5 @@ class TeamsRouter(CrudAPIRouter):
 
 	def _register_routes(self) -> list[Callable[..., Any]]:
 		return [
-			self._get_all, self._get_one, self._create
+			self._get_all, self._get_team, self._create
 		]
