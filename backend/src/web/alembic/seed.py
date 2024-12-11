@@ -110,7 +110,6 @@ async def seed_db(session: AsyncSession):
             sport_event_ids.append(event_type.id)
         except Exception as e:
             logger.exception(exc_info=e, msg='exception')
-            await session.rollback()
 
     sport_ids = []
     for i in range(3):
@@ -125,19 +124,17 @@ async def seed_db(session: AsyncSession):
             sport_ids.append(sport.id)
         except Exception as e:
             logger.exception(exc_info=e, msg='exception')
-            await session.rollback()
     try:
         usual_user = UserModelFactory.build(username='user', password='password')
         region_user = UserModelFactory.build(username='region', password='password')
         federation_user = UserModelFactory.build(username='federation', password='password')
         users_manager = UsersManager()
 
-        await users_manager.create_user(session, usual_user)
-        await users_manager.create_user(session, region_user)
-        await users_manager.create_user(session, federation_user)
+        await users_manager.create_user(session, usual_user, area_id=Factory.__random__.choice(area_ids))
+        await users_manager.create_user(session, region_user, area_id=Factory.__random__.choice(area_ids))
+        await users_manager.create_user(session, federation_user, area_id=Factory.__random__.choice(area_ids))
     except Exception as e:
         logger.exception(exc_info=e, msg='exception')
-        await session.rollback()
 
     for i in range(40):
         users = [UserFactory.build() for i in range(3)]
