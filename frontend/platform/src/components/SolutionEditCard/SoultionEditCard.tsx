@@ -1,20 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useTeams } from "@/shared/api/getTeams"; // Хук для запроса данных
 import styles from "./solutioneditcard.module.scss";
-
-// Тип для команды
-interface Team {
-  name: string;
-  federal: {
-    name: string;
-  };
-}
+import { Team } from "@/shared/api/getTeams";
+import { useNavigate } from "react-router-dom";
 
 interface SolutionEditCardProps {
-  selectedRegion: string; // Пропс для выбранного региона
+  selectedRegion?: string; // Пропс для выбранного региона
+	selectedTeam?: string; // Пропс для выбранной команды
 }
 
-export const SolutionEditCard = ({ selectedRegion }: SolutionEditCardProps) => {
+export const SolutionEditCard = ({ selectedRegion, selectedTeam }: SolutionEditCardProps) => {
+	const navigate = useNavigate();
   const [page, setPage] = useState(1); // Состояние текущей страницы
 
   const [teams, setTeams] = useState<Team[]>([]); // Список всех команд (используем тип Team)
@@ -67,6 +63,12 @@ export const SolutionEditCard = ({ selectedRegion }: SolutionEditCardProps) => {
     };
   }, [hasMore, isLoading, isLoadingMore]);
 
+	const filteredTeams = selectedTeam === "all"
+	? teams // Если selectedTeam равно "all", показываем все команды
+	: selectedTeam // Если заданное значение не "all", показываем только выбранную команду
+		? teams.filter(team => team.name === selectedTeam) // Показываем только выбранную команду
+	: teams;
+
   return (
     <div className={styles.content}>
       <div className={styles.table}>
@@ -75,11 +77,19 @@ export const SolutionEditCard = ({ selectedRegion }: SolutionEditCardProps) => {
         <h1>Рейтинг</h1>
       </div>
       {/* Отображаем все команды */}
-      {teams.map((team, index) => (
+      {filteredTeams.map((team, index) => (
         <div key={index} className={styles.table2}>
-          <h1>{team.name}</h1>
+          <h1 onClick={(() => navigate(`/profile/team/${team.solutions}`))}>{team.name}</h1>
           <h1>{team.federal.name}</h1>
-          <h1>Оценить</h1>
+          <h1>
+            {selectedTeam
+              ? team.solutions.map((solution) => (
+                  <div key={solution.id}>
+                    <h1>{solution.score}</h1>
+                  </div>
+                ))
+              : "Оценить"}
+          </h1>
         </div>
       ))}
 
@@ -96,7 +106,7 @@ export const SolutionEditCard = ({ selectedRegion }: SolutionEditCardProps) => {
       {/* Если данных больше нет, показываем надпись "Больше нет данных" */}
       {!hasMore && !isLoadingMore && (
         <div className={styles.loader}>
-          <p className="text-black">Выберите регион</p>
+          <p className="text-black">{selectedRegion ? 'Выберите регион' : 'Выберите команду'}</p>
         </div>
       )}
     </div>

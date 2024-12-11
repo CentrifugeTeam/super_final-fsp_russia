@@ -26,6 +26,7 @@ import { ChangePassword } from "@/pages/ChangePassword";
 import { SolutionEditPage } from "@/pages/SolutionEditPage";
 import { ProfileCard } from "@/components/ProfileEditCard";
 import { ProfileEditChange } from "@/features/ProfileEditChange";
+import { Teams } from "@/features/Teams";
 
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
@@ -61,6 +62,8 @@ export const AppRouter = () => {
           <Route path="solutions/:id/edit" element={<SolutionEditPage />} />
           {/* Рейтинг */}
           <Route path="rating" element={<RatingEdit />} />
+					{/* Команды */}
+					<Route path="teams" element={<Teams />} />
         </Route>
       </Route>
     </Route>

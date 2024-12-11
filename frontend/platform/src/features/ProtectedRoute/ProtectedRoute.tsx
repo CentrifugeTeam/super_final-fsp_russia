@@ -22,6 +22,7 @@ export const ProtectedRoute = () => {
     "/profile/protocols",
     "/profile/rating",
     "/profile/requests/new",
+		"/profile/teams"
   ];
 
   const dynamicHeaderRoutes = [
@@ -42,7 +43,6 @@ export const ProtectedRoute = () => {
 
   // Если не авторизован, перенаправляем только для защищенных маршрутов
   if (!isAuthenticated) {
-    console.log("isAuthenticated:", isAuthenticated);
     return <Navigate to="/login" replace />;
   }
 
