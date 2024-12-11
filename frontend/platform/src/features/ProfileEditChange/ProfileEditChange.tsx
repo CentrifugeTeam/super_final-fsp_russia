@@ -10,11 +10,14 @@ import baseAvatar from "../../assets/base_profile_avatar.png";
 import { setProfile } from "@/app/redux/slices/profileSlice"; // Мутатор для обновления профиля в Redux
 
 import styles from "./profileeditchange.module.scss";
+import { useNavigate } from "react-router-dom";
 
 export const ProfileEditChange = () => {
   const dispatch = useDispatch();
   const { profile } = useSelector((state: RootState) => state.profile); // Получаем профиль из Redux
   const { mutate: updateProfile, status } = useUpdateUserProfile(); // Получаем статус обновления
+  const navigate = useNavigate();
+
   const { mutate: sendVerificationEmail, status: verificationStatus } =
     useSendVerifyRequest(); // Хук для отправки email подтверждения
 
@@ -104,118 +107,131 @@ export const ProfileEditChange = () => {
   };
 
   return (
-    <div className={styles.contet}>
-      <h1 className={styles.headerText}>Контактные данные</h1>
+    <>
+      <Button
+        className="h-[50px] bg-[#463ACB] hover:bg-[#3d33b0] text-[20px] self-end"
+        onClick={() => {
+          navigate("/profile/me");
+        }}
+      >
+        Вернуться в профиль
+      </Button>
+      <div className={styles.contet}>
+        <h1 className={styles.headerText}>Контактные данные</h1>
 
-      <div className={styles.inputAndCheckEmail}>
-        <div>
-          <div className={styles.changeAvatar}>
-            <img
-              src={formData.photo_preview_url || baseAvatar}
-              alt="Avatar"
-              className="object-cover"
-            />
-          </div>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Input
-              className="p-0 pl-10 w-[246px] mt-5"
-              id="picture"
-              type="file"
-              accept="image/jpeg,image/png,image/gif"
-              onChange={handlePhotoChange} // Вызываем обработчик изменения фото
-            />
-          </div>
-          <div className={styles.saveButton}>
+        <div className={styles.inputAndCheckEmail}>
+          <div className="flex flex-col max-w-[350px] h-full">
+            <div className={styles.changeAvatar}>
+              <img
+                src={formData.photo_preview_url || baseAvatar}
+                alt="Avatar"
+                className="object-cover"
+              />
+            </div>
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <Input
+                className="p-0 pl-10 w-full mt-5"
+                id="picture"
+                type="file"
+                accept="image/jpeg,image/png,image/gif"
+                onChange={handlePhotoChange} // Вызываем обработчик изменения фото
+              />
+            </div>
+            <div className={styles.saveButton}>
+              <Button
+                className="h-[50px] w-[100%] bg-[#463ACB] hover:bg-[#3d33b0] text-[20px] mt-7"
+                onClick={handleSave}
+                disabled={status === "pending"} // Ожидание мутации
+              >
+                {status === "pending" ? "Сохранение..." : "Сохранить изменения"}
+              </Button>
+            </div>
             <Button
-              className="h-[50px] bg-[#958BFF] text-[20px] mt-7"
-              onClick={handleSave}
-              disabled={status === "pending"} // Ожидание мутации
+              className="h-[50px] w-[100%] bg-[#463ACB] hover:bg-[#3d33b0] text-[20px] mt-7"
+              onClick={handleEmailConfirmation}
+              disabled={verificationStatus === "pending"} // Ожидание
             >
-              {status === "pending" ? "Сохранение..." : "Сохранить изменения"}
+              {verificationStatus === "pending"
+                ? "Отправка..."
+                : "Подтвердить почту"}
             </Button>
           </div>
-          <Button
-            className="h-[50px] w-[100%] bg-[#958BFF] text-[20px] mt-7"
-            onClick={handleEmailConfirmation}
-            disabled={verificationStatus === "pending"} // Ожидание
-          >
-            {verificationStatus === "pending"
-              ? "Отправка..."
-              : "Подтвердить почту"}
-          </Button>
-        </div>
-        <div className="gap-3 flex flex-col">
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label
-              htmlFor="first_name"
-              className="text-black font-bold text-lg"
-            >
-              Имя
-            </Label>
-            <Input
-              className="w-[360px] h-[60px]"
-              id="first_name"
-              name="first_name"
-              type="text"
-              value={formData.first_name}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="last_name" className="text-black font-bold text-lg">
-              Фамилия
-            </Label>
-            <Input
-              className="w-[360px] h-[60px]"
-              id="last_name"
-              name="last_name"
-              type="text"
-              value={formData.last_name}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label
-              htmlFor="middle_name"
-              className="text-black font-bold text-lg"
-            >
-              Отчество
-            </Label>
-            <Input
-              className="w-[360px] h-[60px]"
-              id="middle_name"
-              name="middle_name"
-              type="text"
-              value={formData.middle_name}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label className="text-black font-bold text-lg">Email</Label>
-            <Input
-              className="w-[360px] h-[50px]"
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="about" className="text-black font-bold text-lg">
-              О себе
-            </Label>
-            <Input
-              className="w-[360px] h-[50px]"
-              id="about"
-              name="about"
-              type="text"
-              value={formData.about}
-              onChange={handleChange}
-            />
+          <div className="gap-3 flex flex-col">
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <Label
+                htmlFor="first_name"
+                className="text-black font-bold text-lg"
+              >
+                Имя
+              </Label>
+              <Input
+                className="w-[360px] h-[60px]"
+                id="first_name"
+                name="first_name"
+                type="text"
+                value={formData.first_name}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <Label
+                htmlFor="last_name"
+                className="text-black font-bold text-lg"
+              >
+                Фамилия
+              </Label>
+              <Input
+                className="w-[360px] h-[60px]"
+                id="last_name"
+                name="last_name"
+                type="text"
+                value={formData.last_name}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <Label
+                htmlFor="middle_name"
+                className="text-black font-bold text-lg"
+              >
+                Отчество
+              </Label>
+              <Input
+                className="w-[360px] h-[60px]"
+                id="middle_name"
+                name="middle_name"
+                type="text"
+                value={formData.middle_name}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <Label className="text-black font-bold text-lg">Email</Label>
+              <Input
+                className="w-[360px] h-[50px]"
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <Label htmlFor="about" className="text-black font-bold text-lg">
+                О себе
+              </Label>
+              <Input
+                className="w-[360px] h-[50px]"
+                id="about"
+                name="about"
+                type="text"
+                value={formData.about}
+                onChange={handleChange}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
