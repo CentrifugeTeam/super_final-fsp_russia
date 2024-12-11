@@ -6,6 +6,31 @@ on:
       - main  # Триггер на пуш в ветку main
 
 jobs:
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Yandex Cloud CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+
+      - name: Authenticate to Yandex Cloud
+        run: |
+          echo "${{ secrets.YANDEX_KEY_JSON }}" > key.json
+          yc config set service_account_key key.json
+      - name: Login to Yandex Cloud
+        run: yc container registry configure-docker
+
+      - name: Build image
+        run: docker compose build
+
+      - name: Push image
+        run: docker compose push
+
+
   deploy:
     runs-on: ubuntu-latest
 
@@ -25,10 +50,8 @@ jobs:
 
           # Establish an SSH connection and execute commands on the remote server
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@centrifugo.tech <<EOF
-            cd /home/ubuntu/deploy &&
-            git pull origin main &&
-            docker compose down &&
-            docker compose up -d --build
+            docker compose pull
+            docker compose up -d
           EOF
 
           rm -f private_key.pem # Remove the private key file after use for security

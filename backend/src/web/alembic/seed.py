@@ -27,6 +27,8 @@ from web.app.conf import async_session_maker
 
 async def seed_db(session: AsyncSession):
     federation_ids = [federation.id for federation in await RepresentationManager().federations(session)]
+    if not federation_ids:
+        return
     stmt = select(SportEvent.id).join(EventType, SportEvent.type_event_id == EventType.id).where(
         EventType.sport == 'Спортивное программирование')
     sport_ids = list(await session.scalars(stmt))

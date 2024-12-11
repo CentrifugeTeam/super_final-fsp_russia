@@ -41,13 +41,13 @@ async def save_region_to_db(session: AsyncSession, region_data):
         federal_district_id = None
 
     async def _if_dont_exist_repr(session, _dict, model):
-        prompt = f'сгенерируй изображение без людей, где будет только по центру изображён герб области: {block.region_name}'
-        iafile = IAFile()
-        try:
-            region_url = await iafile.prompt_for_file(prompt)
-        except (GenerationFileException, Exception):
-            region_url = None
-
+        # prompt = f'сгенерируй изображение без людей, где будет только по центру изображён герб области: {block.region_name}'
+        # iafile = IAFile()
+        # try:
+        #     region_url = await iafile.prompt_for_file(prompt)
+        # except (GenerationFileException, Exception):
+        #     region_url = None
+        region_url = None
         obj = model(**_dict,
                     photo_url=region_url,
                     )
