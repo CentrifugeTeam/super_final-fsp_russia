@@ -8,7 +8,7 @@ class Area(IDMixin, Base):
     name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     photo_url: Mapped[str] = mapped_column(String, nullable=True)
     contacts: Mapped[str] = mapped_column(String, nullable=True)
-    district_id: Mapped[int] = mapped_column(ForeignKey('districts.id'), nullable=False)
+    district_id: Mapped[int] = mapped_column(ForeignKey('districts.id'), nullable=True)
 
 
     district: Mapped['District'] = relationship(back_populates='areas')

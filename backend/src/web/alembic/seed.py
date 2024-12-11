@@ -14,28 +14,24 @@ from faker import Faker
 from polyfactory import Ignore, Use, AsyncPersistenceProtocol
 
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncConnection
-from shared.storage.db.models import Team, District, SportEvent, EventType, User, TeamSolution
-from web.app.managers.representation import RepresentationManager
-from fastapi_sqlalchemy_toolkit import ModelManager
+from shared.storage.db.models import Team, District, SportEvent, EventType, User, TeamSolution, Location, \
+    TeamParticipation, Area
 from web.app.schemas.users import CreateUser
 from web.app.managers.users import UsersManager
 from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
 from polyfactory.factories.pydantic_factory import ModelFactory, T
 from sqlalchemy import select
 from web.app.conf import async_session_maker
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 async def seed_db(session: AsyncSession):
     faker = Faker('ru_RU')
 
-    class FederationFactory(SQLAlchemyFactory):
-        __model__ = User
-        __set_relationships__ = True
-        __session__ = session
-
     class UserFactory(SQLAlchemyFactory):
         __model__ = User
-        __session__ = session
         id: Ignore()
         username = faker.unique.user_name
         first_name = faker.first_name
@@ -50,35 +46,86 @@ async def seed_db(session: AsyncSession):
         id: Ignore()
         score = Use(faker.pyint, min_value=0, max_value=100, step=1)
 
+    class LocationFactory(SQLAlchemyFactory):
+        __model__ = Location
+        id: Ignore()
+        city = faker.unique.city
+        country = faker.unique.country
+        region = faker.unique.region
+
+    class SportFactory(SQLAlchemyFactory):
+        __model__ = SportEvent
+        id: Ignore()
+        name = faker.unique.word
+        format = Use(LocationFactory.__random__.choice, ['офлайн', 'онлайн', 'оба'])
+        type_event_id = Ignore()
+        location_id = Ignore()
+
     class Factory(SQLAlchemyFactory):
         __model__ = Team
-        __session__ = session
         name: faker.unique.word
+        photo_url = None
         id: Ignore()
+        area_id = Ignore()
 
     class UserModelFactory(ModelFactory):
         __model__ = CreateUser
         email = faker.unique.email
 
-    federation_ids = [federation.id for federation in await RepresentationManager().federations(session)]
-    if not federation_ids:
-        try:
-            federation = await FederationFactory.create_async()
-            federation_ids.append(federation.id)
-        except Exception:
-            return
+    class DistrictFactory(SQLAlchemyFactory):
+        __model__ = District
+        id: Ignore()
+        name = faker.unique.word
+
+    class AreaFactory(SQLAlchemyFactory):
+        __model__ = Area
+        id: Ignore()
+        name = faker.unique.word
+        photo_url = None
+        district_id = Ignore()
+
+    federation_ids = []
+    for _ in range(3):
+        district = DistrictFactory.build()
+        session.add(district)
+        await session.commit()
+        federation_ids.append(district.id)
+    area_ids = []
+
+    for _ in range(3):
+        district = AreaFactory.build(district_id=Factory.__random__.choice(federation_ids))
+        session.add(district)
+        await session.commit()
+        area_ids.append(district.id)
 
     stmt = select(SportEvent.id).join(EventType, SportEvent.type_event_id == EventType.id).where(
         EventType.sport == 'Спортивное программирование')
-    sport_ids = list(await session.scalars(stmt))
-    if not sport_ids:
+    sport_event_ids = list(await session.scalars(stmt))
+
+    if not sport_event_ids:
         try:
             event_type = EventType(sport='Спортивное программирование')
             session.add(event_type)
             await session.commit()
-            sport_ids.append(event_type.id)
-        except Exception:
-            return
+            sport_event_ids.append(event_type.id)
+        except Exception as e:
+            logger.exception(exc_info=e, msg='exception')
+            await session.rollback()
+
+    sport_ids = []
+    for i in range(3):
+        try:
+            location = LocationFactory.build()
+            session.add(location)
+            await session.commit()
+            sport = SportFactory.build(location_id=location.id,
+                                       type_event_id=Factory.__random__.choice(sport_event_ids))
+            session.add(sport)
+            await session.commit()
+            sport_ids.append(sport.id)
+        except Exception as e:
+            logger.exception(exc_info=e, msg='exception')
+            await session.rollback()
     try:
         usual_user = UserModelFactory.build(username='user', password='password')
         region_user = UserModelFactory.build(username='region', password='password')
@@ -89,23 +136,26 @@ async def seed_db(session: AsyncSession):
         await users_manager.create_user(session, region_user)
         await users_manager.create_user(session, federation_user)
     except Exception as e:
-        pass
+        logger.exception(exc_info=e, msg='exception')
+        await session.rollback()
 
     for i in range(40):
         users = [UserFactory.build() for i in range(3)]
-        team = Factory.build(federal_representation_id=Factory.__random__.choice(federation_ids)
-                             , event_id=Factory.__random__.choice(sport_ids),
+        team = Factory.build(area_id=Factory.__random__.choice(area_ids),
                              users=users)
 
         session.add(team)
 
         try:
             await session.commit()
-            solution = TeamSolutionFactory.build(team_id=team.id)
+            participation = TeamParticipation(team_id=team.id, event_id=Factory.__random__.choice(sport_event_ids))
+            session.add(participation)
+            solution = TeamSolutionFactory.build(team_id=team.id, event_id=Factory.__random__.choice(sport_ids))
             session.add(solution)
             await session.commit()
 
         except Exception as e:
+            logger.exception(exc_info=e, msg='exception')
             await session.rollback()
 
 
