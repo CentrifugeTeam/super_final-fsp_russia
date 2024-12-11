@@ -6,11 +6,14 @@ import { useNavigate } from "react-router-dom";
 
 interface SolutionEditCardProps {
   selectedRegion?: string; // Пропс для выбранного региона
-	selectedTeam?: string; // Пропс для выбранной команды
+  selectedTeam?: string; // Пропс для выбранной команды
 }
 
-export const SolutionEditCard = ({ selectedRegion, selectedTeam }: SolutionEditCardProps) => {
-	const navigate = useNavigate();
+export const SolutionEditCard = ({
+  selectedRegion,
+  selectedTeam,
+}: SolutionEditCardProps) => {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1); // Состояние текущей страницы
 
   const [teams, setTeams] = useState<Team[]>([]); // Список всех команд (используем тип Team)
@@ -63,11 +66,12 @@ export const SolutionEditCard = ({ selectedRegion, selectedTeam }: SolutionEditC
     };
   }, [hasMore, isLoading, isLoadingMore]);
 
-	const filteredTeams = selectedTeam === "all"
-	? teams // Если selectedTeam равно "all", показываем все команды
-	: selectedTeam // Если заданное значение не "all", показываем только выбранную команду
-		? teams.filter(team => team.name === selectedTeam) // Показываем только выбранную команду
-	: teams;
+  const filteredTeams =
+    selectedTeam === "all"
+      ? teams // Если selectedTeam равно "all", показываем все команды
+      : selectedTeam // Если заданное значение не "all", показываем только выбранную команду
+      ? teams.filter((team) => team.name === selectedTeam) // Показываем только выбранную команду
+      : teams;
 
   return (
     <div className={styles.content}>
@@ -79,17 +83,14 @@ export const SolutionEditCard = ({ selectedRegion, selectedTeam }: SolutionEditC
       {/* Отображаем все команды */}
       {filteredTeams.map((team, index) => (
         <div key={index} className={styles.table2}>
-          <h1 className={styles.teamName} onClick={(() => navigate(`/profile/team/${team.id}`))}>{team.name}</h1>
-          <h1>{team.federal.name}</h1>
-          <h1>
-            {selectedTeam
-              ? team.solutions.map((solution) => (
-                  <div key={solution.id}>
-                    <h1>{solution.score}</h1>
-                  </div>
-                ))
-              : "Оценить"}
+          <h1
+            className={styles.teamName}
+            onClick={() => navigate(`/profile/team/${team.id}`)}
+          >
+            {team.name}
           </h1>
+          <h1>{team.federal.name}</h1>
+          <h1>Оценить</h1>
         </div>
       ))}
 
@@ -106,7 +107,9 @@ export const SolutionEditCard = ({ selectedRegion, selectedTeam }: SolutionEditC
       {/* Если данных больше нет, показываем надпись "Больше нет данных" */}
       {!hasMore && !isLoadingMore && (
         <div className={styles.loader}>
-          <p className="text-black">{selectedRegion ? 'Выберите регион' : 'Выберите команду'}</p>
+          <p className="text-black">
+            {selectedRegion ? "Выберите регион" : "Выберите команду"}
+          </p>
         </div>
       )}
     </div>
