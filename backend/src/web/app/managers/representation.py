@@ -8,8 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute, joinedload, aliased
 
 from .base import BaseManager
-from shared.storage.db.models import Representation, RegionRepresentation, Team, User, SportEvent
-from ..schemas import ReadCardRepresentation
+from shared.storage.db.models import Representation, RegionRepresentation, Team, User, SportEvent, Location, EventType
+from ..schemas import ReadCardRepresentation, MonthStatistics
 
 
 class RepresentationManager(BaseManager):
@@ -94,10 +94,6 @@ class RepresentationManager(BaseManager):
             .scalar_subquery()
         )
 
-        # last_events_stmt = (
-        #     select(SportEvent).where(SportEvent.representation_id == id)
-        # )
-
         stmt = (
             select(RegionRepresentation, team_stmt.label("team_count"), user_stmt.label("users_count"))
         )
@@ -110,6 +106,40 @@ class RepresentationManager(BaseManager):
         if not result:
             raise HTTPException(status_code=404, detail="Representation not found")
         result = next(result)
-        federal_name = result['RegionRepresentation'].federation_representation.name
+        representation = result['RegionRepresentation'].representation
+        region = representation.name.split(' ')
+        if len(region) != 2:
+            raise HTTPException(status_code=404, detail="Representation not found")
 
-        return ReadCardRepresentation.model_validate({'federal_name': federal_name, **result}, from_attributes=True)
+        last_events_stmt = (
+            select(SportEvent)
+            .options(joinedload(SportEvent.location), joinedload(SportEvent.type_event))
+            .where(Location.region.ilike(f"%{region[0]}%"))
+            .order_by(SportEvent.start_date.desc())
+            .limit(6)
+        )
+        event_count_stmt = (select(
+            func.count(SportEvent.id))
+                            .join(Location, Location.id == SportEvent.location_id)
+                            .where(Location.region.ilike(f"%{region[0]}%"))
+                            )
+
+        federal_name = result['RegionRepresentation'].federation_representation.name
+        last_events = await session.scalars(last_events_stmt)
+        event_count = await session.scalar(event_count_stmt)
+
+        top_month_stmt = (
+            select(SportEvent.start_date, func.count(Team.id))
+            .join(Team, Team.event_id == SportEvent.id)
+            .where(Team.federal_representation_id == result['RegionRepresentation'].federation_representation.id)
+            .group_by(func.date(SportEvent.start_date))
+            .order_by(func.count(Team.id).desc())
+            .limit(3)
+        )
+
+        top_month = await session.execute(top_month_stmt)
+        top_months = [MonthStatistics(date=month[0], count_participants=month[1]) for month in top_month]
+        return ReadCardRepresentation.model_validate(
+            {'top_months': top_months, 'events_count': event_count, 'last_events': last_events,
+             'federal_name': federal_name, **result},
+            from_attributes=True)

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 from .users import ReadUser
-
+from datetime import date
 from .representation import ReadRepresentation, RepresentationBase
 from service_calendar.app.schemas.event import EventRead
 
@@ -12,7 +12,8 @@ class ReadRegionRepresentationBase(BaseModel):
     leader: ReadUser
 
 class MonthStatistics(BaseModel):
-    pass
+    date: date
+    count_participants: int
 
 class ReadCardRepresentation(BaseModel):
     RegionRepresentation: ReadRegionRepresentationBase
@@ -21,4 +22,4 @@ class ReadCardRepresentation(BaseModel):
     users_count: int
     events_count: int
     last_events: list[EventRead]
-    # top_months: list[]
+    top_months: list[MonthStatistics]
