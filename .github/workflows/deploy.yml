@@ -26,21 +26,16 @@ jobs:
         run: docker compose push
 
       - name: SSH and run commands
-        env:
-          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }} # Reference the private key stored in GitHub Secrets
-        run: |
-          echo "$PRIVATE_KEY" > private_key.pem # Write the private key to a file
-          chmod 600 private_key.pem # Set the appropriate permissions for the key file
-
-          # Establish an SSH connection and execute commands on the remote server
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@centrifugo.tech <<EOF
-            cd /home/ubuntu/deploy &&
-            git pull origin main &&
-            docker compose pull &&
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: centrifugo.tech
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/deploy
+            docker compose pull
+            docker compose down
             docker compose up -d
-          EOF
-
-          rm -f private_key.pem # Remove the private key file after use for security
 
       
 
