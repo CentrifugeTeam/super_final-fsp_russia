@@ -76,6 +76,15 @@ export const ProfilePanel = () => {
         >
           Рейтинг
         </h3>
+				{/* Рейтинг */}
+        <h3
+          className={`${styles.active} ${
+            location.pathname === "/profile/rating" ? styles.activeSelected : ""
+          }`}
+          onClick={() => navigate("/profile/teams")}
+        >
+          Команды
+        </h3>
       </div>
     </div>
   );

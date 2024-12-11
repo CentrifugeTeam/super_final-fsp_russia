@@ -1,20 +1,54 @@
 .content {
-	display: flex;
-	align-items: center;
+	margin-top: 40px;
+	background-color: white;
+	padding: 30px;
+	padding-bottom: 20px;
+	border-radius: 10px;
 
-	.img {
-		width: 214px;
-		height: 214px;
-		border-radius: 10px;
-		margin-right: 80px;
+	.team{
+		display: flex;
+		align-items: center;
+
+		.img {
+			width: 214px;
+			height: 214px;
+			border-radius: 10px;
+			margin-right: 100px;
+		}
+
+		.teamInfo{
+			width: 100%;
+
+			.name{
+				font-size: 25px;
+				color: black;
+				font-weight: 600;
+			}
+
+			.hr{
+				margin-top: 20px;
+				margin-bottom: 25px;
+				color: #ECEEF4;
+			}
+
+			.titleOfInfo{
+				font-size: 22px;
+				color: black;
+				font-weight: 500;
+			}
+
+			.textInfo{
+				color: #333333;
+				font-size: 18px;
+				width: 100%;
+			}
+		}
 	}
 
-	.teamInfo{
-		width: 100%;
-		.name{
-			font-size: 25px;
-			color: black;
-			font-weight: 600;
-		}
+	.teamUsers{
+		margin-top: 80px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 	}
 }

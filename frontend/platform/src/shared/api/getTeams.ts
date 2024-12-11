@@ -9,35 +9,37 @@ export interface TeamsRequestParams {
 }
 
 // Ответ от API
-export interface Team {
-  name: string;
-  created_at: string;
-  about: string;
+export interface User {
+	username: string;
+	first_name: string;
+	middle_name: string;
+	last_name: string;
+	email: string;
+	about: string;
 	id: number;
-  users: Array<{
-    username: string;
-    first_name: string;
-    middle_name: string;
-    last_name: string;
-    email: string;
-    about: string;
-    id: number;
-    photo_url: string;
-    is_superuser: boolean;
-    is_verified: boolean;
-  }>;
-  event_id: number;
-  federal: {
-    id: number;
-    name: string;
-  };
-  solutions: Array<{
-    team_repository: string;
-    solution: string;
-    score: number;
-    id: number;
-    team_id: number;
-  }>;
+	photo_url: string;
+	is_superuser: boolean;
+	is_verified: boolean;
+}
+
+export interface Team {
+	name: string;
+	created_at: string;
+	about: string;
+	id: number;
+	users: User[]; // Reference the new User interface here
+	event_id: number;
+	federal: {
+			id: number;
+			name: string;
+	};
+	solutions: Array<{
+			team_repository: string;
+			solution: string;
+			score: number;
+			id: number;
+			team_id: number;
+	}>;
 }
 
 // Теперь используем интерфейс Team в TeamResponse
