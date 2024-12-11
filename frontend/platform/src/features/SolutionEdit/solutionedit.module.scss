@@ -1,12 +1,14 @@
 .contet {
-  padding-top: 40px;
-  padding-left: 20px;
-
   .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding-left: 20px;
+  }
+
+  .pagination {
+    margin-top: 20px;
+    justify-self: center;
   }
 
   .headerText {

@@ -18,18 +18,18 @@
     background-color: #f3f0f093;
     margin-top: 20px;
 
-		.teamName {
-			transition: color 0.3s ease;
-		}
+    .teamName {
+      transition: color 0.3s ease;
+    }
 
-		.teamName:hover {
-			cursor: pointer;
-			color: #463ACB;
-		}
+    .teamName:hover {
+      cursor: pointer;
+      color: #463acb;
+    }
 
     h1 {
       color: #000;
-      font-size: 22px;
+      font-size: 14px;
       // font-weight: bold;
     }
   }

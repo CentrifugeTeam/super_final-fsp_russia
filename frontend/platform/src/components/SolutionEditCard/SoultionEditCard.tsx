@@ -1,77 +1,50 @@
-import { useState, useEffect, useRef } from "react";
-import { useTeams } from "@/shared/api/getTeams"; // Хук для запроса данных
+import { useState, useEffect } from "react";
+import { useTeams } from "@/shared/api/getTeams";
 import styles from "./solutioneditcard.module.scss";
 import { Team } from "@/shared/api/getTeams";
 import { useNavigate } from "react-router-dom";
 
 interface SolutionEditCardProps {
-  selectedRegion?: string; // Пропс для выбранного региона
-  selectedTeam?: string; // Пропс для выбранной команды
+  selectedRegion: string;
+  currentPage: number;
+  pageSize: number;
+  onTotalPagesChange: (totalPages: number) => void;
 }
 
 export const SolutionEditCard = ({
   selectedRegion,
-  selectedTeam,
+  currentPage,
+  pageSize,
+  onTotalPagesChange,
 }: SolutionEditCardProps) => {
   const navigate = useNavigate();
-  const [page, setPage] = useState(1); // Состояние текущей страницы
+  const [teams, setTeams] = useState<Team[]>([]);
 
-  const [teams, setTeams] = useState<Team[]>([]); // Список всех команд (используем тип Team)
-  const [hasMore, setHasMore] = useState(true); // Флаг для определения наличия данных
-  const [isLoadingMore, setIsLoadingMore] = useState(false); // Флаг загрузки новых данных
+  const { data, isLoading, isError } = useTeams({
+    federal_name: selectedRegion !== "all" ? selectedRegion : undefined,
+    page: currentPage,
+    size: pageSize,
+  });
 
-  const loaderRef = useRef<HTMLDivElement | null>(null); // Реф для отслеживания загрузчика
-
-  // Формируем параметры запроса
-  const queryParams: { page: number; size: number; federal_name?: string } = {
-    page,
-    size: 50,
-    federal_name: selectedRegion === "all" ? "" : selectedRegion, // Если выбран "Все регионы", передаем пустую строку
-  };
-
-  const { data, isLoading, isError } = useTeams(queryParams);
-
-  // Обновление списка команд при загрузке новых данных
+  // Логирование и проверка типа функции onTotalPagesChange
   useEffect(() => {
-    if (data) {
-      setTeams((prevTeams) => [...prevTeams, ...data.items]); // Добавляем новые команды
-      setHasMore(data.items.length > 0); // Если данные закончились, отключаем подгрузку
-      setIsLoadingMore(false); // Скрываем "Загрузка" после получения данных
-    }
-  }, [data]);
-
-  // Установка Intersection Observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const target = entries[0];
-        if (target.isIntersecting && hasMore && !isLoadingMore && !isLoading) {
-          setIsLoadingMore(true); // Показываем индикатор загрузки
-          setPage((prevPage) => prevPage + 1); // Увеличиваем страницу для подгрузки
-        }
-      },
-      { threshold: 1.0 } // Полное пересечение элемента
+    console.log(
+      "onTotalPagesChange type in SolutionEditCard:",
+      typeof onTotalPagesChange
     );
 
-    const currentLoader = loaderRef.current;
+    if (data) {
+      setTeams(data.items);
+      const totalPages = Math.ceil(data.total / pageSize);
 
-    if (currentLoader) {
-      observer.observe(currentLoader);
-    }
-
-    return () => {
-      if (currentLoader) {
-        observer.unobserve(currentLoader);
+      // Проверка перед вызовом
+      if (typeof onTotalPagesChange === "function") {
+        onTotalPagesChange(totalPages); // вызываем функцию, если она существует
+      } else {
+        console.error("onTotalPagesChange не является функцией!");
       }
-    };
-  }, [hasMore, isLoading, isLoadingMore]);
-
-  const filteredTeams =
-    selectedTeam === "all"
-      ? teams // Если selectedTeam равно "all", показываем все команды
-      : selectedTeam // Если заданное значение не "all", показываем только выбранную команду
-      ? teams.filter((team) => team.name === selectedTeam) // Показываем только выбранную команду
-      : teams;
+    }
+  }, [data, onTotalPagesChange, pageSize]);
 
   return (
     <div className={styles.content}>
@@ -80,9 +53,8 @@ export const SolutionEditCard = ({
         <h1>Регион</h1>
         <h1>Рейтинг</h1>
       </div>
-      {/* Отображаем все команды */}
-      {filteredTeams.map((team, index) => (
-        <div key={index} className={styles.table2}>
+      {teams.map((team) => (
+        <div key={team.id} className={styles.table2}>
           <h1
             className={styles.teamName}
             onClick={() => navigate(`/profile/team/${team.id}`)}
@@ -96,20 +68,9 @@ export const SolutionEditCard = ({
 
       {isLoading && <p>Загрузка...</p>}
       {isError && <p>Ошибка загрузки данных</p>}
-
-      {/* Если есть еще данные для загрузки, показываем текст "Загружается..." */}
-      {hasMore && isLoadingMore && (
-        <div ref={loaderRef} className={styles.loader}>
-          <p>Загрузка...</p>
-        </div>
-      )}
-
-      {/* Если данных больше нет, показываем надпись "Больше нет данных" */}
-      {!hasMore && !isLoadingMore && (
+      {!isLoading && teams.length === 0 && (
         <div className={styles.loader}>
-          <p className="text-black">
-            {selectedRegion ? "Выберите регион" : "Выберите команду"}
-          </p>
+          <p className="text-black">Нет данных для отображения</p>
         </div>
       )}
     </div>
