@@ -23,6 +23,42 @@ export const StatsPage = () => {
     setSelectedRegion(region?.name || ""); // Устанавливаем название региона
   };
 
+  // Функция для печати
+  const handlePrint = () => {
+    const printWindow = window.open("", "", "width=800,height=600");
+
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Печать статистики</title>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; font-size: 12px; }
+              .title { font-size: 14px; font-weight: bold; }
+              .region { font-size: 10px; margin-top: 10px; }
+              .stats-container { margin-top: 20px; font-size: 10px; } /* Уменьшаем размер текста в блоке статистики */
+              .status { color: green; font-size: 10px; }
+            </style>
+          </head>
+          <body>
+            <div>
+              <h1 class="title">Статистика</h1>
+              <p class="region"><strong>Выбранный регион: </strong>${selectedRegion}</p>
+              <div class="stats-container">
+                <!-- Вставляем компонент Stats -->
+                <div id="stats">
+                  ${document.getElementById("stats")?.outerHTML || ""}
+                </div>
+              </div>
+            </div>
+          </body>
+        </html>
+      `);
+      printWindow.document.close(); // Закрываем документ, чтобы инициировать загрузку
+      printWindow.print(); // Запускаем процесс печати
+    }
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.first_block}>
@@ -66,7 +102,10 @@ export const StatsPage = () => {
           </DropdownMenu>
         </div>
         <div className={styles.buttons}>
-          <Button className="bg-[#463ACB] text-white w-[150px] border-none text-[18px] hover:bg-[#1B1C21] hover:text-white">
+          <Button
+            className="bg-[#463ACB] text-white w-[150px] border-none text-[18px] hover:bg-[#1B1C21] hover:text-white"
+            onClick={handlePrint} // Обработчик печати
+          >
             Печать
           </Button>
           <Button className="bg-[#463ACB] text-white w-[150px] border-none text-[18px] hover:bg-[#1B1C21] hover:text-white">
@@ -75,7 +114,9 @@ export const StatsPage = () => {
         </div>
       </div>
 
-      <Stats />
+      <div id="stats">
+        <Stats /> {/* Компонент Stats, который будет напечатан */}
+      </div>
 
       <h1 className="text-[32px]">Завершенные мероприятия</h1>
       <div className={styles.fourth_block}>
