@@ -16,77 +16,15 @@
     align-items: center;
     width: 100%;
     margin-bottom: 122px;
+    margin-top: 100px;
     .title {
       font-weight: bold;
       font-size: 38px;
     }
-  }
 
-  .second_block {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-
-    .info_block {
+    .buttons {
       display: flex;
-      flex-direction: column;
-      width: 50%;
-      h1 {
-        font-size: 32px;
-      }
-
-      .block {
-        background: #1b1c21;
-        height: 470px;
-        border-radius: 10px;
-      }
-    }
-
-    .diagram_block {
-      display: flex;
-      flex-direction: column;
-      width: 50%;
-
-      h1 {
-        font-size: 32px;
-      }
-
-      .block {
-        display: flex;
-        background: #1b1c21;
-        height: 470px;
-        border-radius: 10px;
-        justify-content: center;
-        align-items: center;
-      }
-    }
-  }
-
-  .third_block {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 122px;
-
-    .block {
-      height: 160px;
-      width: 25%;
-      background: #1b1c21;
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-
-      h2 {
-        font-size: 15px;
-        font-weight: bold;
-      }
-
-      p {
-        font-size: 55px;
-        align-self: center;
-        justify-self: center;
-        margin-top: 15px;
-      }
+      gap: 15px;
     }
   }
 
@@ -106,8 +44,13 @@
       border: 1px solid #2d2e37;
       border-radius: 10px;
       justify-content: space-between;
+      padding: 30px;
 
       .left {
+        text-align: start;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         h1 {
           font-size: 28px;
           font-weight: bold;
@@ -121,6 +64,9 @@
 
       .right {
         text-align: end;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         h1 {
           font-size: 28px;
           font-weight: bold;
@@ -132,9 +78,18 @@
         }
 
         .status {
+          display: flex;
+          justify-content: center;
+          align-items: center;
           height: 40px;
           padding-right: 68px;
           padding-left: 68px;
+          background: #71717a;
+          border-radius: 5px;
+          font-size: 20px;
+          font-weight: bold;
+          justify-self: flex-end;
+          align-self: flex-end;
         }
       }
     }

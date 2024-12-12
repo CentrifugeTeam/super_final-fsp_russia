@@ -41,9 +41,6 @@ export const Solutions = () => {
     }
   };
 
-  // Логирование и проверка типа функции setTotalPages
-  console.log("onTotalPagesChange type in Solutions:", typeof setTotalPages);
-
   return (
     <div className={styles.contet}>
       <div className={styles.header}>
