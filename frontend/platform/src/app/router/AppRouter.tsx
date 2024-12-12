@@ -28,6 +28,7 @@ import { ProfileCard } from "@/components/ProfileEditCard";
 import { ProfileEditChange } from "@/features/ProfileEditChange";
 import { Teams } from "@/features/Teams";
 import { TeamById } from "@/features/TeamById";
+import { ProfileByUsername } from "@/features/ProfileById";
 
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
@@ -54,6 +55,8 @@ export const AppRouter = () => {
           {/* Профиль */}
           <Route path="me" element={<ProfileCard />} />
           <Route path="me/edit" element={<ProfileEditChange />} />
+					{/* Профиль пользователя по username */}
+					<Route path=":username" element={<ProfileByUsername />} />
           {/* Заявки */}
           <Route path="requests" element={<Requests />} />
           <Route path="requests/new" element={<NewRequest />} />

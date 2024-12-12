@@ -9,8 +9,12 @@
   }
 
 	.headerTitle{
-		color: black;
+		color: black !important;
 		font-size: 25px;
 		font-weight: 600;
+	}
+
+	.teamCard{
+		max-width: 100%;
 	}
 }

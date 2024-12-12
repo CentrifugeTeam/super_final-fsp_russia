@@ -29,6 +29,7 @@ export const ProtectedRoute = () => {
     "/profile/requests/:id/edit", // Динамический маршрут для Header
     "/profile/solutions/:id/edit", // Динамический маршрут для Header
     "/profile/team/:id",
+		"/profile/:username"
   ];
 
   // Список путей, где Footer должен отображаться

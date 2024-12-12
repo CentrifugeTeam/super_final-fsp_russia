@@ -1,44 +1,62 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/redux/hooks";
 import { fetchProfile } from "@/app/redux/slices/profileSlice";
+import { useUserByUsername } from "@/shared/api/getProfile"; // Хук для получения данных пользователя по username
 import styles from "./profileeditcard.module.scss";
 import { Button } from "../ui/button";
 
 export const ProfileCard = () => {
+  // Получаем username из URL, если это профиль другого пользователя
+  const location = useLocation();
+  const pathname = location.pathname;
+  const username = pathname.split('/').pop(); // Получаем последний сегмент URL как username
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { profile, isLoading, isError } = useAppSelector(
+
+  // Данные профиля из Redux (для текущего пользователя)
+  const { profile: reduxProfile, isLoading: reduxLoading, isError: reduxError } = useAppSelector(
     (state) => state.profile
   );
 
-  // Загружаем профиль только если он не был загружен ранее
+  // Хук для получения данных пользователя по username из API
+	const { data: userProfile, isLoading, isError } = username
+	? useUserByUsername(username)
+	: { data: reduxProfile, isLoading: reduxLoading, isError: reduxError };
+
+  // Логика для загрузки данных профиля
   useEffect(() => {
-    if (!profile && !isLoading) {
-      // Добавляем проверку, чтобы запрос не выполнялся, если данные уже загружены
-      dispatch(fetchProfile());
+    if (!reduxProfile && !reduxLoading && !username) {
+      dispatch(fetchProfile()); // Если нет username в URL, загружаем профиль текущего пользователя
     }
-  }, [dispatch, profile, isLoading]); // Даем зависимости для отслеживания состояния
+  }, [dispatch, reduxProfile, reduxLoading, username]);
 
-  if (isLoading) return <p className="text-black">Загрузка...</p>;
-  if (isError)
-    return <p className="text-red-500">Ошибка при загрузке данных профиля</p>;
-  if (!profile)
-    return <p className="text-red-500">Данные профиля не найдены</p>;
+  // Определяем, какие данные показывать
+  const profile = username ? userProfile : reduxProfile;
+  const isLoadingProfile = username ? isLoading : reduxLoading;
+  const isErrorProfile = username ? isError : reduxError;
 
+  // Обрабатываем состояния загрузки, ошибки и отсутствия данных
+  if (isLoadingProfile) return <p className="text-black">Загрузка...</p>;
+  if (isErrorProfile) return <p className="text-red-500">Ошибка при загрузке данных профиля</p>;
+  if (!profile) return <p className="text-red-500">Данные профиля не найдены</p>;
+
+  // Обработчик редактирования
   const handleEdit = () => {
-    // dispatch(setProfile(profile)); // Передаем данные профиля в Redux
     navigate("/profile/me/edit"); // Редирект на страницу редактирования
   };
 
   return (
     <>
-      <Button
-        className="h-[50px] bg-[#463ACB] hover:bg-[#3d33b0] text-[20px] self-end"
-        onClick={handleEdit}
-      >
-        Редактировать профиль
-      </Button>
+      {!username && (
+        <Button
+          className="h-[50px] bg-[#463ACB] hover:bg-[#3d33b0] text-[20px] self-end"
+          onClick={handleEdit}
+        >
+          Редактировать профиль
+        </Button>
+      )}
 
       <div className={styles.card}>
         <div className={styles.imgContainer}>

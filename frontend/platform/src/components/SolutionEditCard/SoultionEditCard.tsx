@@ -8,7 +8,7 @@ interface SolutionEditCardProps {
   selectedRegion: string;
   currentPage: number;
   pageSize: number;
-  onTotalPagesChange: (totalPages: number) => void;
+  onTotalPagesChange?: (totalPages: number) => void;
 }
 
 export const SolutionEditCard = ({

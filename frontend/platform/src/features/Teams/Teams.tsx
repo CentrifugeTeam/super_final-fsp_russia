@@ -1,7 +1,7 @@
 import { useTeams } from "@/shared/api/getTeams";
 import { useState } from "react";
 import { SolutionEditCard } from "@/components/SolutionEditCard";
-import styles from "./teams.module.scss";
+import styles from "../SolutionEdit/solutionedit.module.scss";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -17,6 +17,7 @@ import { Team } from "@/shared/api/getTeams";
 export const Teams = () => {
 	const [selectedTeam, setSelectedTeam] = useState<string>("all");
   const { data: teams, isLoading, isError } = useTeams({'page':1, 'size':100});
+	console.log(teams)
 
 	const teamsAvailable =
 		teams?.items && Array.isArray(teams.items) && teams.items.length > 0;
@@ -24,7 +25,7 @@ export const Teams = () => {
   return (
     <div className={styles.contet}>
 			<div className={styles.header}>
-				<h1 className={styles.headerTitle}>Команды и рейтинг</h1>
+				<h1 className={styles.headerText}>Команды и рейтинг</h1>
 
 				<DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -100,8 +101,12 @@ export const Teams = () => {
         </DropdownMenu>
 			</div>
 
-			<div className={styles.teams}>
-				<SolutionEditCard selectedTeam={selectedTeam} />
+			<div className={styles.profileEditComponenst}>
+			<SolutionEditCard
+				selectedRegion={selectedTeam}  // Передаем selectedTeam как selectedRegion
+				currentPage={1}
+				pageSize={10}
+			/>
 			</div>
     </div>
   );
