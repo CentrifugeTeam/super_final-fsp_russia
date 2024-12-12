@@ -1,9 +1,10 @@
+from datetime import datetime, date
 from typing import Callable, Any, List
 
 from fastapi import HTTPException
 from fastapi_pagination.bases import BasePage
 from fastapi_sqlalchemy_toolkit.model_manager import ModelT
-from sqlalchemy import UnaryExpression, Select, Row, select, func
+from sqlalchemy import UnaryExpression, Select, Row, select, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute, joinedload, aliased
 
@@ -53,10 +54,35 @@ class RepresentationManager(BaseManager):
     async def federations(self, session: AsyncSession):
         return await super().list(session)
 
+    async def statistics(self, session: AsyncSession, district_id: int):
+        stmt =  (select(Area)
+                 .join(District, District.id == Area.district_id)
+                 .join(User, and_(User.area_id == Area.id, User.is_leader == True))
+                 .join(Team, Team.area_id == Area.id)
+                 .order_by(District.id)
+                 .where(District.id == district_id)
+                 .limit(1)
+                 )
+        result = await session.execute(stmt)
 
-    async def statistics(self,session: AsyncSession):
-        pass
 
+        current_date = datetime.now().date()
+        month_stmt = (
+            select(func.extract('month', SportEvent.start_date), func.count(TeamParticipation.id))
+            .join(TeamParticipation, TeamParticipation.event_id == SportEvent.id)
+            .join(Team, Team.id == TeamParticipation.team_id)
+            .join(Area, Area.id == Team.area_id)
+            .join(District, District.id == Area.district_id)
+            .group_by(func.extract('month', SportEvent.start_date))
+            .where(District.id == district_id)
+            .where(func.extract('year', SportEvent.start_date) == current_date.year)
+
+        )
+        result = await session.execute(month_stmt)
+        months = [MonthStatistics(date(month=int(month), year=current_date.year, day=current_date.day), count) for
+                  month, count in result]
+
+        return
 
     async def list(
             self,
@@ -142,7 +168,6 @@ class RepresentationManager(BaseManager):
             {'id': result['District'].id, 'leader': leader,
              'representation': representation}, from_attributes=True)
 
-
         federal_name = result['District'].name
         top_month_stmt = (
             select(SportEvent.start_date, func.count(TeamParticipation.id))
@@ -175,7 +200,6 @@ class RepresentationManager(BaseManager):
                             .join(Location, Location.id == SportEvent.location_id)
                             .where(Location.region.ilike(f"%{region[0]}%"))
                             )
-
 
         last_events = await session.scalars(last_events_stmt)
         event_count = await session.scalar(event_count_stmt)

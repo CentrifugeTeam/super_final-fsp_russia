@@ -32,9 +32,10 @@ class RepresentationAPIRouter(CrudAPIRouter):
 
         @self.get('/statistics')
         async def func(
+                session=Depends(get_session),
                 region_id: int | None = None,
         ):
-            pass
+            return await reps_manager.statistics(session, region_id)
 
         @self.get('/', response_model=list[FullFederalRepresentation])
         async def func(
