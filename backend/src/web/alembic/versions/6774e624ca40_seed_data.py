@@ -35,6 +35,7 @@ def upgrade() -> None:
         session = AsyncSession(bind=connection, expire_on_commit=False, autoflush=False, autocommit=False)
         await seed_db(session)
 
+
 #       Factory.__async_session__ = session
 #       await Factory.create_batch_async(10)
 
