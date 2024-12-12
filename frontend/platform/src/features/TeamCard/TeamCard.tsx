@@ -7,7 +7,7 @@ type TeamCardProps = {
 };
 
 export const TeamCard = ({ team }: TeamCardProps) => {
-
+	console.log(team)
   if (!team) {
     return <div>Команда не действительна</div>;
   }
@@ -15,11 +15,7 @@ export const TeamCard = ({ team }: TeamCardProps) => {
   return (
     <div className={styles.content}>
       <div className={styles.teamInfo}>
-				<TeamInfoCard name={team.name} about={team.about} users={team.users} />
-			</div>
-
-			<div className={styles.personsOfTeam}>
-
+				<TeamInfoCard name={team.name} about={team.about} users={team.users} solutions={team.solutions} />
 			</div>
     </div>
   );

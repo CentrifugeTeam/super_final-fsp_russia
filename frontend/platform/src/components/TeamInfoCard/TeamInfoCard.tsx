@@ -11,11 +11,11 @@ interface TeamInfoCardProps {
   name: string;
   about: string;
   users: Team['users']; // Use the users type from the Team interface
+	solutions: Team['solutions'];
 }
 
-export const TeamInfoCard: React.FC<TeamInfoCardProps> = ({ name, about, users }) => {
+export const TeamInfoCard: React.FC<TeamInfoCardProps> = ({ name, about, users, solutions }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Состояние для модального окна
-
   const handleOpenModal = () => {
     setIsModalOpen(true); // Открыть модальное окно
   };
@@ -54,7 +54,7 @@ export const TeamInfoCard: React.FC<TeamInfoCardProps> = ({ name, about, users }
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
-            <TeamResults onClose={handleCloseModal} /> {/* Передаем функцию для закрытия */}
+            <TeamResults onClose={handleCloseModal} solutions={solutions} /> {/* Передаем функцию для закрытия */}
           </div>
         </div>
       )}

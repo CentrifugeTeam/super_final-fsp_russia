@@ -1,5 +1,5 @@
 .content{
-
+	max-width: 1306px;
 
 	.header{
 		display: flex;
@@ -13,12 +13,43 @@
 
 	.headerOfData{
 		display: flex;
-		align-items: center;
 		justify-content: space-between;
+		background-color: #F4F8FE;
+		padding-top: 28px;
+		padding: 31px;
+		margin-top: 20px;
+		margin-bottom: 20px;
+		border-radius: 10px;
 
 		h1{
 			color: black;
 			font-size: 20px;
+			font-weight: 600;
+		}
+	}
+
+	.button{
+		margin-left: 40px;
+		margin-top: 10px;
+	}
+
+	.solutionRow{
+		background-color: #F8F8F8;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-top: 28px;
+		padding: 31px;
+		border-radius: 10px;
+		margin-bottom: 20px;
+
+		p{
+			color: black;
+		}
+
+		p:hover{
+			cursor: pointer;
+			color: #463ACB;
 		}
 	}
 }

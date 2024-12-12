@@ -47,9 +47,11 @@ export const ProfileCard = () => {
     navigate("/profile/me/edit"); // Редирект на страницу редактирования
   };
 
+	const showEditButton = pathname.endsWith("/me");
+
   return (
     <>
-      {!username && (
+      {showEditButton && (
         <Button
           className="h-[50px] bg-[#463ACB] hover:bg-[#3d33b0] text-[20px] self-end"
           onClick={handleEdit}
