@@ -45,6 +45,7 @@ class TeamManager(BaseManager):
             **attrs: Any,
     ) -> ModelT:
         create_data = in_obj.model_dump()
+        create_data.update(attrs)
 
         # Добавляем дефолтные значения полей для валидации уникальности
         for field, default in self.defaults.items():

@@ -1,3 +1,5 @@
+import datetime
+
 from pydantic import BaseModel
 from typing import Optional, Literal
 
@@ -45,5 +47,15 @@ class FullFederalRepresentation(BaseModel):
 class ReadFederalRepresentation(BaseModel):
     id: int
     name: str
+
+
+class MonthStatistic(BaseModel):
+    date: datetime.date
+    count_participants: int
+
+class ReadStatisticsDistrict(BaseModel):
+    region: ReadRegionsCard
+    months: list[MonthStatistic]
+
 
 

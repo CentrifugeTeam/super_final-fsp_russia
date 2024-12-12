@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Callable, Any, Annotated
 
 from pydantic import ValidationError
@@ -9,8 +10,9 @@ from sqlalchemy.orm import joinedload
 from starlette import status
 
 from crud.openapi_responses import bad_request_response, invalid_response
-from shared.crud import not_found_response
-from shared.storage.db.models import SportEvent, Team, TeamSolution, District, User
+from service_calendar.app.api.endpoints.events import event_manager
+from shared.crud import not_found_response, missing_token_or_inactive_user_response
+from shared.storage.db.models import SportEvent, Team, TeamSolution, District, User, TeamParticipation
 from web.app.dependencies import get_session
 from web.app.schemas.representation import ReadFederalRepresentation
 from web.app.utils.crud import MockCrudAPIRouter, CrudAPIRouter
@@ -26,26 +28,38 @@ class TeamsRouter(CrudAPIRouter):
         super().__init__(TeamRead, TeamManager(), TeamCreate, TeamUpdate, resource_identifier='id')
 
     def _create(self):
-        @self.post("/", response_model=TeamRead, responses={**invalid_response, **not_found_response},
+        @self.post("/", response_model=TeamRead,
+                   responses={**invalid_response, **not_found_response, **missing_token_or_inactive_user_response},
                    status_code=status.HTTP_201_CREATED)
         async def create_team(
+
                 name: Annotated[str, Form()],
+                event_id: Annotated[int, Form()],
                 area_id: Annotated[int, Form()],
                 about: Annotated[str | None, Form()] = None,
                 photo: UploadFile | None = None,
+                user=Depends(authenticator.get_user()),
                 session=Depends(get_session)
         ) -> TeamRead:
             """
             Создание команды.
             """
-            await area_manager.get_or_404(session, id=area_id)
+            area = await area_manager.get_or_404(session, id=area_id)
+            event = await event_manager.get_or_404(session, id=event_id)
             try:
                 team = self.create_schema(name=name, about=about,
                                           area_id=area_id)
             except ValidationError as e:
                 raise HTTPException(status_code=422, detail=e.errors())
             self.manager: TeamManager
-            return await self.manager.create_team(session, team, photo)
+            async with session.begin_nested():
+                team = await self.manager.create_team(session, team, photo, created_at=datetime.now().date())
+                participation = TeamParticipation(team_id=team.id, event_id=event.id)
+                session.add(participation)
+                user.area_id = area.id
+                session.add(user)
+
+            return team
 
     def _get_all(self):
 
@@ -64,8 +78,6 @@ class TeamsRouter(CrudAPIRouter):
                                                      options=[joinedload(Team.district), joinedload(Team.solutions),
                                                               joinedload(Team.events)]
                                                      )
-
-
 
         @self.get("/")
         async def get_all_teams(
@@ -123,7 +135,7 @@ class TeamsRouter(CrudAPIRouter):
 
     def _attach_to_team(self):
         @self.post('/{id}/attach', response_model=TeamRead, responses={**not_found_response,
-                                                                      **bad_request_response})
+                                                                       **bad_request_response})
         async def attach_to_team(
                 session=Depends(get_session),
                 user_in_db: User = Depends(authenticator.get_user()),
