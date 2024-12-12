@@ -10,7 +10,7 @@ export const SolutionEditPage = () => {
       </div>
       <div className={styles.profileEditComponenst}>
         <div className={styles.block}>
-          <h1>Репозиторий </h1>
+          <h1>Репозиторий</h1>
           <h2>dsad</h2>
           <h2>dsa</h2>
         </div>
@@ -19,10 +19,19 @@ export const SolutionEditPage = () => {
           <h2></h2>
         </div>
         <div className={styles.block}>
-          <h1>Напишите оценку</h1>
-          <Input placeholder="Оценка" />
+          <h1>
+            Напишите оценку{" "}
+            <span className="text-black text-sm">(от 0 до 200)</span>
+          </h1>
+          <Input
+            type="number"
+            placeholder="Оценка"
+            min={0}
+            max={200} // Ограничиваем ввод до 200
+            className="bg-white"
+          />
         </div>
-        <Button className="w-[362px] h-[60px] text-lg bg-[#463ACB]">
+        <Button className="w-[362px] h-[60px] text-lg bg-[#463ACB] self-center">
           Отправить
         </Button>
       </div>
