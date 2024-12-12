@@ -12,7 +12,7 @@ from ...dependencies.session import get_session
 from ...utils.crud import CrudAPIRouter
 from shared.storage.db.models import SportEvent, Location, AgeGroup, Competition, EventType
 from ...managers import EventManager
-from ...schemas.event import EventBulkRead, EventSearch
+from ...schemas.event import EventBulkRead, EventSearch, EventRead, SmallReadEvent
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -35,6 +35,14 @@ class CrudEventAPIRouter(CrudAPIRouter):
             return await self.manager.paginated_list(session, filter_expressions={
                 SportEvent.name.ilike: f'%{name}%' if name else None
             })
+
+        @self.get('/small')
+        async def func(
+                session: AsyncSession = Depends(self.get_session)
+        ) -> Page[SmallReadEvent]:
+            return await self.manager.paginated_list(session)
+
+
 
         @self.get('/')
         async def func(

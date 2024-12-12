@@ -90,7 +90,14 @@ class UsersManager(BaseManager):
 
         db_obj = self.model(**create_data)
         session.add(db_obj)
+        stmt = select(Role).where(Role.name == 'usual')
+        role = await session.scalar(stmt)
+        if not role:
+            role = Role(name='usual')
+
+        db_obj.roles.append(role)
         await self.save(session, commit=commit)
+
         await session.refresh(db_obj, attribute_names=refresh_attribute_names)
         return db_obj
 

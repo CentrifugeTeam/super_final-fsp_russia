@@ -14,7 +14,7 @@ from shared.storage.db.models import SportEvent, Team, TeamSolution, District, U
 from web.app.dependencies import get_session
 from web.app.schemas.representation import ReadFederalRepresentation
 from web.app.utils.crud import MockCrudAPIRouter, CrudAPIRouter
-from web.app.schemas.teams import TeamCreate, TeamRead, TeamUpdate, FullTeamRead
+from web.app.schemas.teams import TeamCreate, TeamRead, TeamUpdate, FullTeamRead, ReadCommandAndRatings
 from web.app.managers.team import TeamManager
 from web.app.utils.users import authenticator
 from ....managers.representation import area_manager
@@ -48,6 +48,23 @@ class TeamsRouter(CrudAPIRouter):
             return await self.manager.create_team(session, team, photo)
 
     def _get_all(self):
+
+        @self.get('/sports', responses={**not_found_response})
+        async def teams(team_id: int | None = None,
+                        sport_id: int | None = None,
+                        session=Depends(get_session)
+                        ) -> Page[ReadCommandAndRatings]:
+            filter_expressions = {}
+            if team_id:
+                filter_expressions[Team.id] = team_id
+            if sport_id:
+                filter_expressions[SportEvent.id] = sport_id
+            return await self.manager.paginated_list(session,
+                                                     filter_expressions=filter_expressions,
+                                                     options=[joinedload(Team.district), joinedload(Team.solutions),
+                                                              joinedload(Team.events)]
+                                                     )
+
         @self.get("/")
         async def get_all_teams(
                 federal_name: str | None = None,
@@ -103,7 +120,7 @@ class TeamsRouter(CrudAPIRouter):
                 from_attributes=True)
 
     def _attach_to_team(self):
-        @self.post('{id}/attach', response_model=TeamRead, responses={**not_found_response,
+        @self.post('/{id}/attach', response_model=TeamRead, responses={**not_found_response,
                                                                       **bad_request_response})
         async def attach_to_team(
                 session=Depends(get_session),
