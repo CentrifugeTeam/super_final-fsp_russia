@@ -7,47 +7,52 @@ import styles from "./profileeditcard.module.scss";
 import { Button } from "../ui/button";
 
 export const ProfileCard = () => {
-  // Получаем username из URL, если это профиль другого пользователя
   const location = useLocation();
   const pathname = location.pathname;
-  const username = pathname.split('/').pop(); // Получаем последний сегмент URL как username
+  const username = pathname.split("/").pop(); // Получаем последний сегмент URL как username
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  // Данные профиля из Redux (для текущего пользователя)
-  const { profile: reduxProfile, isLoading: reduxLoading, isError: reduxError } = useAppSelector(
-    (state) => state.profile
-  );
+  // Redux state for the current user's profile
+  const {
+    profile: reduxProfile,
+    isLoading: reduxLoading,
+    isError: reduxError,
+  } = useAppSelector((state) => state.profile);
 
-  // Хук для получения данных пользователя по username из API
-	const { data: userProfile, isLoading, isError } = username
-	? useUserByUsername(username)
-	: { data: reduxProfile, isLoading: reduxLoading, isError: reduxError };
+  // Call `useUserByUsername` unconditionally
+  const {
+    data: userProfile,
+    isLoading: userLoading,
+    isError: userError,
+  } = useUserByUsername(username || "");
 
-  // Логика для загрузки данных профиля
+  // Fetch current user's profile if not already loaded
   useEffect(() => {
     if (!reduxProfile && !reduxLoading && !username) {
-      dispatch(fetchProfile()); // Если нет username в URL, загружаем профиль текущего пользователя
+      dispatch(fetchProfile());
     }
   }, [dispatch, reduxProfile, reduxLoading, username]);
 
-  // Определяем, какие данные показывать
+  // Determine which data to use
   const profile = username ? userProfile : reduxProfile;
-  const isLoadingProfile = username ? isLoading : reduxLoading;
-  const isErrorProfile = username ? isError : reduxError;
+  const isLoadingProfile = username ? userLoading : reduxLoading;
+  const isErrorProfile = username ? userError : reduxError;
 
-  // Обрабатываем состояния загрузки, ошибки и отсутствия данных
+  // Handle loading, error, or missing data states
   if (isLoadingProfile) return <p className="text-black">Загрузка...</p>;
-  if (isErrorProfile) return <p className="text-red-500">Ошибка при загрузке данных профиля</p>;
-  if (!profile) return <p className="text-red-500">Данные профиля не найдены</p>;
+  if (isErrorProfile)
+    return <p className="text-red-500">Ошибка при загрузке данных профиля</p>;
+  if (!profile)
+    return <p className="text-red-500">Данные профиля не найдены</p>;
 
-  // Обработчик редактирования
+  // Edit button handler
   const handleEdit = () => {
-    navigate("/profile/me/edit"); // Редирект на страницу редактирования
+    navigate("/profile/me/edit");
   };
 
-	const showEditButton = pathname.endsWith("/me");
+  const showEditButton = pathname.endsWith("/me");
 
   return (
     <>

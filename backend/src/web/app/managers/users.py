@@ -91,13 +91,13 @@ class UsersManager(BaseManager):
             create_data['photo_url'] = None
 
         db_obj = self.model(**create_data)
-        session.add(db_obj)
         stmt = select(Role).where(Role.name == role_name)
         role = await session.scalar(stmt)
         if not role:
             role = Role(name=role_name)
-
         db_obj.roles.append(role)
+        session.add(db_obj)
+
         await self.save(session, commit=commit)
 
         await session.refresh(db_obj, attribute_names=refresh_attribute_names)

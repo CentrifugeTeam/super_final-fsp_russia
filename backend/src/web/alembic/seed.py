@@ -117,10 +117,10 @@ async def seed(session: AsyncSession):
         area = AreaFactory.build(district_id=Factory.__random__.choice(federation_ids))
         session.add(area)
         await session.commit()
-        leader = UserModelFactory.build(area_id=area.id, is_leader=True)
+        leader = UserModelFactory.build(password='password')
         area_ids.append(area.id)
         await users_manager.create_user(session, leader, area_id=area.id,
-                                        role_name='region')
+                                        role_name='region', is_leader=True)
 
     stmt = select(SportEvent.id).join(EventType, SportEvent.type_event_id == EventType.id).where(
         EventType.sport == 'Спортивное программирование')
@@ -156,7 +156,7 @@ async def seed(session: AsyncSession):
     for i in range(40):
         users = []
         for _ in range(3):
-            user = UserModelFactory.build()
+            user = UserModelFactory.build(password='password')
             user = await users_manager.create_user(session, user, area_id=Factory.__random__.choice(area_ids))
             users.append(user)
 

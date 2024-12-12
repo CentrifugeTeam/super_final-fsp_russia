@@ -9,8 +9,7 @@ class TeamSolutionBase(BaseModel):
 
 
 class CreateTeamSolution(TeamSolutionBase):
-    team_id: int
-
+    pass
 
 class ReadTeamSolution(TeamSolutionBase):
     id: int

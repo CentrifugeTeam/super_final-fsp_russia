@@ -38,11 +38,14 @@ class CrudEventAPIRouter(CrudAPIRouter):
 
         @self.get('/small')
         async def func(
-                session: AsyncSession = Depends(self.get_session)
+                session: AsyncSession = Depends(self.get_session),
+                event_type: str | None = None,
         ) -> Page[SmallReadEvent]:
-            return await self.manager.paginated_list(session)
-
-
+            filter_expressions = {}
+            if event_type:
+                filter_expressions[EventType.sport.ilike] = f"%{event_type}%"
+            return await self.manager.paginated_list(session, filter_expressions=filter_expressions,
+                                                     options=[joinedload(SportEvent.type_event)])
 
         @self.get('/')
         async def func(
