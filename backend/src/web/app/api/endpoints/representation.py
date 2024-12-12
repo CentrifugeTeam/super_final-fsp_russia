@@ -4,12 +4,13 @@ from fastapi import Depends
 from sqlalchemy.orm import joinedload
 
 from shared.crud import not_found_response
+from shared.crud.openapi_responses import bad_request_response
 from ...dependencies import get_session
 
 from ...utils.crud import CrudAPIRouter
 from ...schemas import ReadRegionRepresentationBase
 from ...schemas.representation import FullFederalRepresentation, ReadFederalRepresentation, ReadRegionsCard, \
-    ReadRepresentation, ReadArea
+    ReadRepresentation, ReadArea, ReadStatisticsDistrict
 from ...schemas import ReadCardRepresentation
 from ...managers.representation import RepresentationManager, area_manager
 
@@ -30,7 +31,8 @@ class RepresentationAPIRouter(CrudAPIRouter):
         :return: Список представлений.
         """
 
-        @self.get('/statistics')
+        @self.get('/statistics', response_model=ReadStatisticsDistrict,
+                  responses={**not_found_response, **bad_request_response})
         async def func(
                 session=Depends(get_session),
                 region_id: int | None = None,
