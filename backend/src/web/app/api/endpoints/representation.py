@@ -35,9 +35,9 @@ class RepresentationAPIRouter(CrudAPIRouter):
                   responses={**not_found_response, **bad_request_response})
         async def func(
                 session=Depends(get_session),
-                region_id: int | None = None,
+                federation_id: int | None = None,
         ):
-            return await reps_manager.statistics(session, region_id)
+            return await reps_manager.statistics(session, federation_id)
 
         @self.get('/', response_model=list[FullFederalRepresentation])
         async def func(
