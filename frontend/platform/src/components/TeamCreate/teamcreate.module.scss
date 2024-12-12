@@ -34,23 +34,13 @@
 		margin-top: 10px;
 	}
 
-	.solutionRow{
-		background-color: #F8F8F8;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding-top: 28px;
-		padding: 31px;
+	.divCreateTeam{
+		padding: 30px;
 		border-radius: 10px;
-		margin-bottom: 20px;
+		background-color: #F4F8FE;
 
 		p{
 			color: black;
-		}
-
-		p:hover{
-			cursor: pointer;
-			color: #463ACB;
 		}
 	}
 }

@@ -8,7 +8,6 @@ interface TeamResultsProps {
 }
 
 export const TeamResults: React.FC<TeamResultsProps> = ({ onClose, solutions }) => {
-	console.log(solutions)
   return (
     <div className={styles.content}>
       <div className={styles.header}>

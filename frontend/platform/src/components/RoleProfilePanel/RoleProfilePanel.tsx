@@ -1,45 +1,29 @@
 import style from "./roleprofilepanel.module.scss";
-import { useEffect } from "react";
-import { useAppSelector, useAppDispatch } from "@/app/redux/hooks";
-import { fetchProfile } from "@/app/redux/slices/profileSlice";
+import { useUserContext } from "@/app/providers/context/UserContext";
 
-export const RoleProfilePanel = () => {
-  const dispatch = useAppDispatch();
-  const { profile, isLoading, isError } = useAppSelector(
-    (state) => state.profile
-  );
+// Интерфейс для пропсов компонента
+interface RoleProfilePanelProps {
+  regionInfo: string | undefined;
+}
 
-  // Загружаем профиль при монтировании компонента
-  useEffect(() => {
-    if (!profile) {
-      dispatch(fetchProfile());
-    }
-  }, [dispatch, profile]);
-
-  // Если данные загружаются, показываем индикатор загрузки
-  if (isLoading) return <p>Загрузка...</p>;
-
-  // Если произошла ошибка, показываем сообщение об ошибке
-  if (isError) return <p>Ошибка при загрузке данных профиля</p>;
-
-  // Проверяем, существует ли representation
-  const representation = profile?.representation;
+export const RoleProfilePanel = ({ regionInfo }: RoleProfilePanelProps) => {
+  const { role } = useUserContext();  // Получаем роль из контекста
 
   // Определяем текст в зависимости от типа представительства
-  let roleText = "Представитель не указан";
-  if (representation?.type === "region") {
+  let roleText = "Участник";
+  if (role === "region") {
     roleText = "Региональный представитель";
-  } else if (representation?.type === "federal") {
+  } else if (role === "federal") {
     roleText = "Федеральный представитель";
   }
 
-  // Добавляем условие для отображения информации о регионе
-  const regionInfo = representation?.name || "Информация о регионе отсутствует";
+  // Если в пропсах не передана информация о регионе, используем значение по умолчанию
+  const regionText = regionInfo || "Информация о регионе отсутствует";
 
   return (
     <div className={style.content}>
       <h3 className={style.text}>{roleText}</h3>
-      <h3>{regionInfo}</h3>
+      {roleText !== "Участник" && <h3>{regionText}</h3>}
     </div>
   );
 };
