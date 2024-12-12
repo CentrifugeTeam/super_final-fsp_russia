@@ -33,7 +33,6 @@ def upgrade() -> None:
     # ### end Alembic commands ###
     async def wrapper(connection: AsyncConnection):
         session = AsyncSession(bind=connection, expire_on_commit=False, autoflush=False, autocommit=False)
-        await seed(session)
 
 
 #       Factory.__async_session__ = session
