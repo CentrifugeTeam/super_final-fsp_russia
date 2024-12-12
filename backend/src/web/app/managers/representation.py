@@ -53,6 +53,11 @@ class RepresentationManager(BaseManager):
     async def federations(self, session: AsyncSession):
         return await super().list(session)
 
+
+    async def statistics(self,session: AsyncSession):
+        pass
+
+
     async def list(
             self,
             session: AsyncSession,
@@ -125,7 +130,10 @@ class RepresentationManager(BaseManager):
 
         if not result:
             raise HTTPException(status_code=404, detail="Representation not found")
-        result = next(result)
+        try:
+            result = next(result)
+        except StopIteration:
+            raise HTTPException(status_code=404, detail="Representation not found")
         region = result['District'].areas[0]
         representation = ReadRepresentation.model_validate({'type': 'region', **region._asdict()},
                                                            from_attributes=True)

@@ -30,6 +30,12 @@ class RepresentationAPIRouter(CrudAPIRouter):
         :return: Список представлений.
         """
 
+        @self.get('/statistics')
+        async def func(
+                region_id: int | None = None,
+        ):
+            pass
+
         @self.get('/', response_model=list[FullFederalRepresentation])
         async def func(
                 session=Depends(get_session),

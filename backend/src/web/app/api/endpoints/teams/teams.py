@@ -65,12 +65,7 @@ class TeamsRouter(CrudAPIRouter):
                                                               joinedload(Team.events)]
                                                      )
 
-        @self.get('/statistics')
-        async def func(
-                region_id: int | None = None,
-                federation_id: int | None = None,
-        ):
-            pass
+
 
         @self.get("/")
         async def get_all_teams(

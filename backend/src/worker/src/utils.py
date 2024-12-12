@@ -152,7 +152,7 @@ async def create_user(session: AsyncSession, full_name: str, email: str):
 
     # Генерируем username на основе email (если он есть)
     username = email.split('@')[0]
-    user = await session.scalar(select(User).filter(User.username == username))
+    user = await session.scalar(select(User).filter(User.email == email))
 
     if user:
         return user
@@ -161,6 +161,11 @@ async def create_user(session: AsyncSession, full_name: str, email: str):
     password = generate_random_password()
 
     try:
+        about = None
+        if email == 'fsp_lnr@mail.ru сайт: www.fsp-lnr.ru':
+            email = 'fsp_lnr@mail.ru'
+            about = 'Наш сайт: www.fsp-lnr.ru'
+
         # Валидируем данные пользователя через Pydantic
         user_data = CreateUser(
             username=username,
@@ -168,6 +173,7 @@ async def create_user(session: AsyncSession, full_name: str, email: str):
             middle_name=middle_name,
             last_name=last_name,
             email=email,
+            about=about,
             password=password
         )
     except ValidationError as e:

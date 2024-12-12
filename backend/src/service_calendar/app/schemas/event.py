@@ -41,6 +41,7 @@ class EventBulk(EventBase):
 
 class SmallReadEvent(EventBase):
     id: int
+    type_event: EventTypeSchemaRead
 
 
 class EventBulkRead(EventBulk):
