@@ -42,7 +42,7 @@ export const Header = () => {
         <a href="https://hackcentrifuge.ru/calendar/?type=СПОРТИВНОЕ ПРОГРАММИРОВАНИЕ">
           Календарь
         </a>
-        <a>Статистика</a>
+        <Link to="/stats">Статистика</Link>
         <Link to="/contacts">Контакты</Link>
         <a onClick={handleAuthRedirect}>
           {isAuthenticated ? "Личный кабинет" : "Войти"}

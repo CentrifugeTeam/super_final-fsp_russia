@@ -1,6 +1,17 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "@/shared/api/base";
 
+// Интерфейс для представления команды
+interface Team {
+  name: string;
+  about: string;
+  id: number;
+  area_id: number;
+  created_at: string; // Дата в формате "YYYY-MM-DD"
+  photo_url: string;
+}
+
+// Интерфейс для представления пользователя
 interface Profile {
   username: string;
   first_name: string;
@@ -14,7 +25,9 @@ interface Profile {
     type: "region" | "federal";
     name?: string;
   };
+  teams: Team[]; // Массив команд, к которым принадлежит пользователь
 }
+
 
 interface ProfileState {
   profile: Profile | null;

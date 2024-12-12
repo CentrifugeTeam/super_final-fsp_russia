@@ -2,30 +2,22 @@ import { useNavigate } from "react-router-dom";
 import styles from "./profilepanel.module.scss";
 import { RoleProfilePanel } from "@/components/RoleProfilePanel";
 import { PersonInfoProfilePanel } from "@/components/PersonInfoProfilePanel";
+import { useUserContext } from "@/app/providers/context/UserContext";
+import { useAppSelector } from "@/app/redux/hooks";
 
 export const ProfilePanel = () => {
   const navigate = useNavigate();
-  // const location = useLocation(); // Определение текущего пути
-  // // const [isFederal, setIsFederal] = useState<boolean>(false); // Стейт для проверки роли
+  const { role } = useUserContext();
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("access_token");
-  //   if (token) {
-  //     try {
-  //       const payload = JSON.parse(atob(token.split(".")[1])); // Декодируем payload токена
-  //       if (payload.roles && payload.roles.includes("federal")) {
-  //         setIsFederal(true); // Разрешаем доступ к кнопке "Решение" только для federal
-  //       }
-  //     } catch (error) {
-  //       console.error("Ошибка при парсинге токена:", error);
-  //     }
-  //   }
-  // }, []);
+
+	const { profile: reduxProfile } = useAppSelector(
+    (state) => state.profile
+  );
 
   return (
     <div className={styles.profilePanel}>
       <div className={styles.role}>
-        <RoleProfilePanel />
+			<RoleProfilePanel regionInfo={reduxProfile?.representation?.name} />
       </div>
 
       <div className={styles.personInfo}>
@@ -44,16 +36,16 @@ export const ProfilePanel = () => {
           Мой профиль
         </h3>
         {/* Заявки */}
-        <h3
-          className={`${styles.active} ${
-            location.pathname === "/profile/requests"
-              ? styles.activeSelected
-              : ""
-          }`}
-          onClick={() => navigate("/profile/requests")}
-        >
-          Заявки
-        </h3>
+        {role !== "usual" && (
+          <h3
+            className={`${styles.active} ${
+              location.pathname === "/profile/requests" ? styles.activeSelected : ""
+            }`}
+            onClick={() => navigate("/profile/requests")}
+          >
+            Заявки
+          </h3>
+        )}
         {/* Решение - доступно только для "federal" */}
         {/* {isFederal && ( */}
         <h3

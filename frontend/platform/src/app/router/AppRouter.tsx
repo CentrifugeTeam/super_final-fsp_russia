@@ -29,6 +29,7 @@ import { ProfileEditChange } from "@/features/ProfileEditChange";
 import { Teams } from "@/features/Teams";
 import { TeamById } from "@/features/TeamById";
 import { ProfileByUsername } from "@/features/ProfileById";
+import { StatsPage } from "@/pages/StatsPage";
 
 export const AppRouter = () => {
   const routes = createRoutesFromElements(
@@ -48,6 +49,7 @@ export const AppRouter = () => {
       <Route path="/send_email" element={<SendEmail />} />
       <Route path="/email_verified" element={<EmailVerified />} />
       <Route path="/change_pass" element={<ChangePassword />} />
+      <Route path="/stats" element={<StatsPage />} />
 
       {/* Защищенные страницы */}
       <Route element={<ProtectedRoute />}>
