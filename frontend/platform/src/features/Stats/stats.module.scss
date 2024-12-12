@@ -21,6 +21,8 @@
       justify-content: center;
       padding: 20px;
       gap: 40px;
+      overflow: hidden; /* Скрыть содержимое, выходящее за пределы контейнера */
+      box-sizing: border-box;
 
       .image_wrapper {
         min-width: 239px;
@@ -58,6 +60,7 @@
         padding-left: 10px;
         padding-right: 10px;
         text-align: center;
+        align-items: center;
         background-color: #463acb;
         border-radius: 5px;
         font-size: 18px;
@@ -70,6 +73,8 @@
         padding-left: 10px;
         padding-right: 10px;
         text-align: center;
+        align-items: center;
+
         background-color: #71717a;
         border-radius: 5px;
         font-size: 18px;

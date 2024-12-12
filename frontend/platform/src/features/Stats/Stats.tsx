@@ -29,7 +29,7 @@ export const Stats = () => {
     <>
       <div className={styles.second_block}>
         <div className={styles.info_block}>
-          <h1>Лучшая область область</h1>
+          <h1>Лучшая область</h1>
           <div className={styles.block}>
             <div className={styles.image_wrapper}>
               <img src="" alt="" className={styles.image} />
