@@ -81,6 +81,8 @@ class Factory(BaseFactory):
 
 class UserModelFactory(ModelFactory):
     __model__ = CreateUser
+    about = None
+    photo_url = None
     email = Use(faker.unique.email)
 
 
@@ -152,9 +154,15 @@ async def seed(session: AsyncSession):
                                     role_name='federal')
 
     for i in range(40):
-        users = [UserFactory.build() for i in range(3)]
+        users = []
+        for _ in range(3):
+            user = UserModelFactory.build()
+            user = await users_manager.create_user(session, user, area_id=Factory.__random__.choice(area_ids))
+            users.append(user)
+
         team = Factory.build(area_id=Factory.__random__.choice(area_ids),
-                             users=users)
+                             users=users,
+                             )
         session.add(team)
         await session.commit()
         participation = TeamParticipation(team_id=team.id, event_id=Factory.__random__.choice(sport_event_ids))

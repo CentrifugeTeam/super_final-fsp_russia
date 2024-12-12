@@ -11,6 +11,7 @@ from shared.crud import missing_token_or_inactive_user_response, forbidden_respo
 from shared.storage.db.models import User, Area, Team
 from ...exceptions import FileDoesntSave
 from ...managers.files import _save_file_to_static
+from ...schemas import ReadRepresentation
 
 from ...utils.crud import CrudAPIRouter
 from ...schemas.users import ReadUser, CreateUser, UpdateUser
@@ -30,7 +31,8 @@ class UsersRouter(CrudAPIRouter):
             responses={**not_found_response}
 
         )
-        async def func(response=Depends(self.get_or_404(options=[joinedload(User.teams), joinedload(User.area)], unique=True))):
+        async def func(response=Depends(
+            self.get_or_404(options=[joinedload(User.teams), joinedload(User.area)], unique=True))):
             return self._response_me(response, response.area, response.teams)
 
     def _create(self):
@@ -79,6 +81,9 @@ class UsersRouter(CrudAPIRouter):
     def _response_me(user: User, representation: Area, teams: list[Team] | None):
         if not teams:
             teams = None
+        if representation:
+            representation = ReadRepresentation.model_validate({**representation._asdict(), 'type': 'region'},
+                                                               from_attributes=True)
         return ReadUserMe.model_validate({'representation': representation,
                                           'teams': teams,
                                           **user._asdict()}, from_attributes=True)
