@@ -1,18 +1,20 @@
+body {
+  overflow-x: hidden;
+}
+
 .layout {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh; /* Минимальная высота страницы - высота экрана */
   width: 100vw;
   align-items: center;
   background-color: #f4f8fe;
 
   .main {
-    // flex: 1; /* Занимает оставшееся пространство */
-    // margin-top: 192px;
+    flex: 1; /* Растягивает main, чтобы занять оставшееся пространство */
     overflow-x: hidden;
-
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 20px; /* Отступ перед футером */
   }
 
   @media (max-width: 768px) {

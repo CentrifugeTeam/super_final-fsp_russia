@@ -1,35 +1,16 @@
 .footer {
   width: 95vw;
-  height: 181px;
   background-color: #1b1c21;
   border-radius: 10px;
-  margin-top: auto;
-  margin-bottom: 10px;
+  margin: 0 auto 10px auto; /* Центрируем и добавляем нижний отступ */
+  padding: 40px 50px;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-  padding-left: 50px;
-  padding-right: 100px;
-  padding-top: 40px;
-  padding-bottom: 40px;
+  grid-template-columns: repeat(6, 1fr);
   gap: 23px;
 
-  /* Установим фиксированную высоту для всех ячеек */
-  grid-auto-rows: 111px; /* или можно использовать minmax для вариативности */
-
   .logoDesctop {
-    width: auto;
-    height: 100%;
-    object-fit: contain;
     max-height: 50px;
-  }
-
-  // .tgQr {
-  //   margin-top: 40px;
-  // }
-
-  .phone {
-    margin-top: 5px;
-    margin-bottom: 5px;
+    object-fit: contain;
   }
 
   .contacts {
@@ -37,10 +18,22 @@
     margin-left: -50px;
   }
 
+  h1 {
+    font-size: 18px;
+  }
+
+  h2 {
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover {
+      color: #8b84da;
+    }
+  }
   .qrs {
-    margin-left: 100px;
     display: flex;
     justify-content: space-between;
+    flex-direction: column;
     img {
       width: 50px;
     }
@@ -48,13 +41,13 @@
 
   @media (max-width: 768px) {
     display: flex;
-    padding-left: 20px;
-    padding-right: 20px;
-    height: auto; /* Высота адаптируется к содержимому */
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 20px;
+    height: auto;
 
-    /* Уменьшаем размеры шрифтов на мобильных устройствах */
     h1 {
-      font-size: 16px;
+      font-size: 18px;
     }
 
     h2 {
@@ -64,84 +57,11 @@
     .press {
       display: none;
     }
-    .qrs {
-      margin-left: 0;
-      //   justify-content: center; /* Центрируем QR-коды */
-      gap: 10px; /* Добавляем отступы между QR-кодами */
-      display: flex;
-      flex-direction: row;
-      width: auto;
-      img {
-        height: 100%;
-        object-fit: contain;
-        width: 100px;
-        display: none;
-      }
-    }
-  }
-}
-
-.footer > div {
-  height: 100%; /* Сюда мы применяем 100% от высоты родительского контейнера */
-  display: flex;
-  flex-direction: column;
-}
-
-// .qrs {
-//   margin-left: auto;
-//   justify-content: space-between;
-// }
-
-// h1 {
-//   font-size: 18px;
-// }
-
-// h2 {
-//   font-size: 14px;
-// }
-
-@media (max-width: 768px) {
-  .footer {
-    padding-top: 20px;
-    height: 230px;
   }
 
-  .logoDesctop {
-    display: none;
-  }
-
-  .logoMobile {
-    width: 60%;
-    display: flex !important;
-    margin-top: -80px;
-    margin-right: 30%;
-  }
-
-  .links {
-    margin-left: 20%;
-    margin-right: 7%;
-  }
-
-  .vkQr {
-    margin-left: 10%;
-    margin-right: 25%;
-  }
-}
-
-@media (min-width: 768px) {
-  .logoMobile {
-    display: none;
-  }
-}
-
-@media (max-width: 504px) {
-  .links {
-    margin-left: 1%;
-    margin-right: 1%;
-  }
-
-  .vkQr {
-    margin-left: 7%;
-    margin-right: 5%;
+  @media (max-width: 504px) {
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
   }
 }
