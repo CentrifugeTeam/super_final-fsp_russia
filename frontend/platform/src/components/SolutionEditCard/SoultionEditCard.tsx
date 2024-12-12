@@ -62,7 +62,15 @@ export const SolutionEditCard = ({
             {team.name}
           </h1>
           <h1>{team.federal.name}</h1>
-          <h1>Оценить</h1>
+          <h1>
+            {/* Кнопка "Оценить", при клике перенаправляет на страницу редактирования */}
+            <button
+              onClick={() => navigate(`/profile/solutions/${team.id}/edit`)}
+              className={styles.evaluateButton}
+            >
+              Оценить
+            </button>
+          </h1>
         </div>
       ))}
 

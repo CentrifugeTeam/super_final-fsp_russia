@@ -55,8 +55,8 @@ export const AppRouter = () => {
           {/* Профиль */}
           <Route path="me" element={<ProfileCard />} />
           <Route path="me/edit" element={<ProfileEditChange />} />
-					{/* Профиль пользователя по username */}
-					<Route path=":username" element={<ProfileByUsername />} />
+          {/* Профиль пользователя по username */}
+          <Route path=":username" element={<ProfileByUsername />} />
           {/* Заявки */}
           <Route path="requests" element={<Requests />} />
           <Route path="requests/new" element={<NewRequest />} />
@@ -66,9 +66,9 @@ export const AppRouter = () => {
           <Route path="solutions/:id/edit" element={<SolutionEditPage />} />
           {/* Рейтинг */}
           <Route path="rating" element={<RatingEdit />} />
-					{/* Команды */}
-					<Route path="teams" element={<Teams />} />
-					<Route path="team/:id" element={<TeamById />} />
+          {/* Команды */}
+          <Route path="teams" element={<Teams />} />
+          <Route path="team/:id" element={<TeamById />} />
         </Route>
       </Route>
     </Route>
