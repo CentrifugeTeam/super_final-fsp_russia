@@ -1,6 +1,5 @@
 from fastapi_permissions import Authenticated, Everyone
 
-from web.app.schemas.representation import RepresentationBase
 from .base import Base, IDMixin
 from sqlalchemy import Column, Integer, String, UniqueConstraint, ForeignKey, Boolean
 from sqlalchemy.orm import relationship, mapped_column, Mapped
@@ -23,11 +22,10 @@ class User(IDMixin, Base):
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     is_leader: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    team_id: Mapped[int] = mapped_column(ForeignKey('teams.id'), nullable=True, default=None)
     area_id: Mapped[int] = mapped_column(ForeignKey('areas.id'), nullable=True, default=None)
 
     area: Mapped['Area'] = relationship(back_populates='users', foreign_keys=[area_id])
-    team: Mapped['Team'] = relationship(back_populates='users')
+    teams: Mapped[list['Team']] = relationship(back_populates='users', secondary='user_teams')
     oauth_accounts: Mapped[list['OAuthAccount']] = relationship(back_populates='user')
     files: Mapped[list['File']] = relationship(back_populates='user', secondary='user_files', cascade='all, delete')
     roles: Mapped[list['Role']] = relationship(secondary='user_roles', back_populates='users')

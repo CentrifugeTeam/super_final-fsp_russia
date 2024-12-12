@@ -1,12 +1,13 @@
 from secrets import token_urlsafe
-from typing import Iterable, Any, Optional
+from typing import Iterable, Any, Optional, List
 import jwt
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException
 from fastapi_sqlalchemy_toolkit.model_manager import CreateSchemaT, ModelT
 from fastapi_users.password import PasswordHelperProtocol, PasswordHelper
-from sqlalchemy import UnaryExpression, select
+from sqlalchemy import UnaryExpression, select, Row, Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute, joinedload
+from starlette import status
 
 from shared.storage.cache.redis_client import RedisClient
 from shared.storage.db.models import User, Role, OAuthAccount
@@ -66,6 +67,7 @@ class UsersManager(BaseManager):
             *,
             commit: bool = True,
             refresh_attribute_names: Iterable[str] | None = None,
+            role_name: str = 'usual',
             **attrs: Any,
     ) -> ModelT:
 
@@ -90,10 +92,10 @@ class UsersManager(BaseManager):
 
         db_obj = self.model(**create_data)
         session.add(db_obj)
-        stmt = select(Role).where(Role.name == 'usual')
+        stmt = select(Role).where(Role.name == role_name)
         role = await session.scalar(stmt)
         if not role:
-            role = Role(name='usual')
+            role = Role(name=role_name)
 
         db_obj.roles.append(role)
         await self.save(session, commit=commit)
@@ -172,15 +174,6 @@ class UsersManager(BaseManager):
             await session.commit()
 
         return user
-
-    async def _create_partial_user(self, redis: RedisClient, user_info: YandexUserInfo):
-        token = self._generate_partial_token()
-        await redis.hset(token, mapping=user_info.model_dump())
-        return token
-
-    async def create_partial_user(self, redis: RedisClient, access_token: str):
-        user_info = await self.get_user_info(access_token)
-        return await self._create_partial_user(redis, user_info)
 
     def _generate_partial_token(self):
         return token_urlsafe()

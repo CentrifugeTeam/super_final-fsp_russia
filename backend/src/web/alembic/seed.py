@@ -34,15 +34,17 @@ class BaseFactory(SQLAlchemyFactory):
     __set_foreign_keys__ = False
     __is_base_factory__ = True
 
+
 class UserFactory(BaseFactory):
     __model__ = User
     id = Ignore()
-    username = faker.unique.user_name
-    first_name = faker.first_name
-    middle_name = faker.middle_name
-    last_name = faker.last_name
-    email = faker.unique.email
-    representation_id = Ignore()
+    username = Use(faker.unique.user_name)
+    first_name = Use(faker.first_name)
+    middle_name = Use(faker.middle_name)
+    last_name = Use(faker.last_name)
+    email = Use(faker.unique.email)
+    photo_url = None
+    area_id = Ignore()
     team_id = Ignore()
 
 
@@ -55,15 +57,15 @@ class TeamSolutionFactory(BaseFactory):
 class LocationFactory(BaseFactory):
     __model__ = Location
     id = Ignore()
-    city = faker.unique.city
-    country = faker.unique.country
-    region = faker.unique.region
+    city = Use(faker.unique.city)
+    country = Use(faker.unique.country)
+    region = Use(faker.unique.region)
 
 
 class SportFactory(BaseFactory):
     __model__ = SportEvent
     id = Ignore()
-    name = faker.unique.word
+    name = Use(faker.unique.word)
     format = Use(LocationFactory.__random__.choice, ['офлайн', 'онлайн', 'оба'])
     type_event_id = Ignore()
     location_id = Ignore()
@@ -71,7 +73,7 @@ class SportFactory(BaseFactory):
 
 class Factory(BaseFactory):
     __model__ = Team
-    name: faker.unique.word
+    name = Use(faker.unique.word)
     photo_url = None
     id = Ignore()
     area_id = Ignore()
@@ -79,37 +81,44 @@ class Factory(BaseFactory):
 
 class UserModelFactory(ModelFactory):
     __model__ = CreateUser
-    email = faker.unique.email
+    email = Use(faker.unique.email)
 
 
 class DistrictFactory(BaseFactory):
     __model__ = District
     id = Ignore()
-    name = faker.unique.word
+    name = Use(faker.address)
 
 
 class AreaFactory(BaseFactory):
     __model__ = Area
     id = Ignore()
-    name = faker.unique.word
+    name = Use(faker.city)
     photo_url = None
+    contacts = None
     district_id = Ignore()
 
 
-async def seed_db(session: AsyncSession):
+async def seed(session: AsyncSession):
+    users_manager = UsersManager()
     federation_ids = []
+
     for _ in range(3):
         district = DistrictFactory.build()
         session.add(district)
         await session.commit()
         federation_ids.append(district.id)
+
     area_ids = []
 
     for _ in range(3):
         area = AreaFactory.build(district_id=Factory.__random__.choice(federation_ids))
         session.add(area)
         await session.commit()
+        leader = UserModelFactory.build(area_id=area.id, is_leader=True)
         area_ids.append(area.id)
+        await users_manager.create_user(session, leader, area_id=area.id,
+                                        role_name='region')
 
     stmt = select(SportEvent.id).join(EventType, SportEvent.type_event_id == EventType.id).where(
         EventType.sport == 'Спортивное программирование')
@@ -135,19 +144,18 @@ async def seed_db(session: AsyncSession):
     usual_user = UserModelFactory.build(username='user', password='password')
     region_user = UserModelFactory.build(username='region', password='password')
     federation_user = UserModelFactory.build(username='federation', password='password')
-    users_manager = UsersManager()
 
     await users_manager.create_user(session, usual_user, area_id=Factory.__random__.choice(area_ids))
-    await users_manager.create_user(session, region_user, area_id=Factory.__random__.choice(area_ids))
-    await users_manager.create_user(session, federation_user, area_id=Factory.__random__.choice(area_ids))
+    await users_manager.create_user(session, region_user, area_id=Factory.__random__.choice(area_ids),
+                                    role_name='region')
+    await users_manager.create_user(session, federation_user, area_id=Factory.__random__.choice(area_ids),
+                                    role_name='federal')
 
     for i in range(40):
         users = [UserFactory.build() for i in range(3)]
         team = Factory.build(area_id=Factory.__random__.choice(area_ids),
                              users=users)
-
         session.add(team)
-
         await session.commit()
         participation = TeamParticipation(team_id=team.id, event_id=Factory.__random__.choice(sport_event_ids))
         session.add(participation)
@@ -158,7 +166,7 @@ async def seed_db(session: AsyncSession):
 
 async def main():
     async with async_session_maker() as session:
-        await seed_db(session)
+        await seed(session)
 
 
 if __name__ == '__main__':

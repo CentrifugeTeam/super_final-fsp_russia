@@ -13,12 +13,17 @@ class Team(IDMixin, CreatedAtMixin, Base):
 
     area_id: Mapped[int] = mapped_column(Integer, ForeignKey('areas.id'))
     solutions: Mapped[list['TeamSolution']] = relationship(back_populates='team')
-    users: Mapped[list['User']] = relationship(back_populates='team')
+    users: Mapped[list['User']] = relationship(back_populates='teams', secondary='user_teams')
     area: Mapped['Area'] = relationship(back_populates='teams')
     events: Mapped[list['SportEvent']] = relationship(back_populates='teams', secondary='team_participation')
     district: Mapped[list['District']] = relationship(back_populates='teams', secondary='areas')
 
     # participation: Mapped[list['TeamParticipation']] = relationship(back_populates='team')
+
+class UserTeams(IDMixin, Base):
+    __tablename__ = 'user_teams'
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
+    team_id: Mapped[int] = mapped_column(Integer, ForeignKey('teams.id'))
 
 
 class TeamParticipation(IDMixin, Base):

@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from fastapi_sqlalchemy_toolkit import make_partial_model
 
 from web.app.schemas.team_solution import ReadTeamSolution
-from .representation import ReadFederalRepresentation
-from .users import BaseUser, ReadUser
+from . import ReadUser
+from .representation import ReadFederalRepresentation, ReadRepresentation
 from service_calendar.app.schemas.event import SmallReadEvent
 
 
@@ -22,7 +22,7 @@ class TeamRead(BaseTeam):
     id: int
     area_id: int
     created_at: date
-    photo_url: str
+    photo_url: str | None = None
 
 
 class FullTeamRead(BaseTeam):
@@ -40,3 +40,14 @@ class ReadCommandAndRatings(BaseTeam):
     events: list[SmallReadEvent]
     district: list[ReadFederalRepresentation]
     solutions: list[ReadTeamSolution]
+
+
+
+class ReadUserMe(ReadUser):
+    representation: ReadRepresentation | None
+    teams: list[TeamRead] | None
+
+
+
+class ReadUserAndTeam(ReadUser):
+    teams: list[TeamRead] | None
