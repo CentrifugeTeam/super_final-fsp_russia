@@ -7,6 +7,7 @@ from sqlalchemy import UnaryExpression, Select, Row, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute, joinedload, aliased
 
+from shared.storage.db.models.teams import UserTeams, TeamParticipation
 from .base import BaseManager
 from shared.storage.db.models import District, Area, Team, User, SportEvent, Location, EventType
 from ..schemas import ReadCardRepresentation, MonthStatistics, ReadRegionRepresentationBase
@@ -108,8 +109,8 @@ class RepresentationManager(BaseManager):
         )
 
         user_stmt = (
-            select(func.count(User.id))
-            .join(Team, Team.id == User.team_id)
+            select(func.count(UserTeams.id))
+            .join(Team, UserTeams.team_id == Team.id)
             .where(Team.area_id == id)
             .scalar_subquery()
         )
@@ -136,12 +137,11 @@ class RepresentationManager(BaseManager):
 
         federal_name = result['District'].name
         top_month_stmt = (
-            select(SportEvent.start_date, func.count(User.id))
-            .join(User, User.team_id == SportEvent.id)
-            .join(Team, Team.id == User.team_id)
+            select(SportEvent.start_date, func.count(TeamParticipation.id))
+            .join(TeamParticipation, TeamParticipation.event_id == SportEvent.id)
+            .join(Team, Team.id == TeamParticipation.team_id)
             .where(Team.area_id == id)
             .group_by(func.date(SportEvent.start_date))
-            .order_by(func.count(Team.id).desc())
             .limit(3)
         )
 
