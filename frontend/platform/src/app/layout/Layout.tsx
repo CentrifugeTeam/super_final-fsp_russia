@@ -11,8 +11,12 @@ export const Layout = () => {
   // Список путей, где Footer должен отображаться
   const showFooterOnRoutes = ["/regions", "/contacts", "/about_us"];
 
-  const shouldShowHeader = showHeaderOnRoutes.includes(location.pathname) || location.pathname.startsWith("/regions/region");
-  const shouldShowFooter = showFooterOnRoutes.includes(location.pathname) || location.pathname.startsWith("/regions/region");
+  const shouldShowHeader =
+    showHeaderOnRoutes.includes(location.pathname) ||
+    location.pathname.startsWith("/regions/region");
+  const shouldShowFooter =
+    showFooterOnRoutes.includes(location.pathname) ||
+    location.pathname.startsWith("/regions/region");
 
   return (
     <div className={styles.layout}>

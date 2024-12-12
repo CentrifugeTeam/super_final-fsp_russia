@@ -1,6 +1,8 @@
 from fastapi_permissions import has_permission
 from fastapi_sqlalchemy_toolkit import ModelManager
 from pydantic import BaseModel
+from sqlalchemy import Select, UnaryExpression
+from sqlalchemy.orm import InstrumentedAttribute
 from starlette import status
 
 from shared.crud import CRUDTemplate
@@ -97,8 +99,17 @@ class CrudAPIRouter(CRUDTemplate):
             await self.manager.delete(session, obj_in_db)
             return
 
-    def get_or_404(self):
+    def get_or_404(self,
+                   options: list[Any] | Any | None = None,
+                   order_by: InstrumentedAttribute | UnaryExpression | None = None,
+                   where: Any | None = None,
+                   base_stmt: Select | None = None,
+                   **simple_filters: Any,
+                   ):
         async def wrapper(id: int, session: AsyncSession = Depends(self.get_session)):
-            return await self.manager.get_or_404(session, id=id)
+            return await self.manager.get_or_404(session, id=id, **simple_filters,
+                                                 options=options,
+                                                 where=where,
+                                                 base_stmt=base_stmt, )
 
         return wrapper

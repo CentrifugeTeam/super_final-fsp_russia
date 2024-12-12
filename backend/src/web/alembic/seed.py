@@ -14,99 +14,146 @@ from faker import Faker
 from polyfactory import Ignore, Use, AsyncPersistenceProtocol
 
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncConnection
-from shared.storage.db.models import Team, Representation, SportEvent, EventType, User, TeamSolution
-from web.app.managers.representation import RepresentationManager
-from fastapi_sqlalchemy_toolkit import ModelManager
+from shared.storage.db.models import Team, District, SportEvent, EventType, User, TeamSolution, Location, \
+    TeamParticipation, Area
 from web.app.schemas.users import CreateUser
 from web.app.managers.users import UsersManager
 from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
 from polyfactory.factories.pydantic_factory import ModelFactory, T
 from sqlalchemy import select
 from web.app.conf import async_session_maker
+from logging import getLogger
+
+logger = getLogger(__name__)
+
+faker = Faker('ru_RU')
+
+
+class BaseFactory(SQLAlchemyFactory):
+    id = Ignore()
+    __set_foreign_keys__ = False
+    __is_base_factory__ = True
+
+class UserFactory(BaseFactory):
+    __model__ = User
+    id = Ignore()
+    username = faker.unique.user_name
+    first_name = faker.first_name
+    middle_name = faker.middle_name
+    last_name = faker.last_name
+    email = faker.unique.email
+    representation_id = Ignore()
+    team_id = Ignore()
+
+
+class TeamSolutionFactory(BaseFactory):
+    __model__ = TeamSolution
+    id = Ignore()
+    score = Use(faker.pyint, min_value=0, max_value=100, step=1)
+
+
+class LocationFactory(BaseFactory):
+    __model__ = Location
+    id = Ignore()
+    city = faker.unique.city
+    country = faker.unique.country
+    region = faker.unique.region
+
+
+class SportFactory(BaseFactory):
+    __model__ = SportEvent
+    id = Ignore()
+    name = faker.unique.word
+    format = Use(LocationFactory.__random__.choice, ['офлайн', 'онлайн', 'оба'])
+    type_event_id = Ignore()
+    location_id = Ignore()
+
+
+class Factory(BaseFactory):
+    __model__ = Team
+    name: faker.unique.word
+    photo_url = None
+    id = Ignore()
+    area_id = Ignore()
+
+
+class UserModelFactory(ModelFactory):
+    __model__ = CreateUser
+    email = faker.unique.email
+
+
+class DistrictFactory(BaseFactory):
+    __model__ = District
+    id = Ignore()
+    name = faker.unique.word
+
+
+class AreaFactory(BaseFactory):
+    __model__ = Area
+    id = Ignore()
+    name = faker.unique.word
+    photo_url = None
+    district_id = Ignore()
 
 
 async def seed_db(session: AsyncSession):
-    faker = Faker('ru_RU')
+    federation_ids = []
+    for _ in range(3):
+        district = DistrictFactory.build()
+        session.add(district)
+        await session.commit()
+        federation_ids.append(district.id)
+    area_ids = []
 
-    class FederationFactory(SQLAlchemyFactory):
-        __model__ = User
-        __set_relationships__ = True
-        __session__ = session
-
-    class UserFactory(SQLAlchemyFactory):
-        __model__ = User
-        __session__ = session
-        id: Ignore()
-        username = faker.unique.user_name
-        first_name = faker.first_name
-        middle_name = faker.middle_name
-        last_name = faker.last_name
-        email = faker.unique.email
-        representation_id = Ignore()
-        team_id = Ignore()
-
-    class TeamSolutionFactory(SQLAlchemyFactory):
-        __model__ = TeamSolution
-        id: Ignore()
-        score = Use(faker.pyint, min_value=0, max_value=100, step=1)
-
-    class Factory(SQLAlchemyFactory):
-        __model__ = Team
-        __session__ = session
-        name: faker.unique.word
-        id: Ignore()
-
-    class UserModelFactory(ModelFactory):
-        __model__ = CreateUser
-        email = faker.unique.email
-
-    federation_ids = [federation.id for federation in await RepresentationManager().federations(session)]
-    if not federation_ids:
-        try:
-            federation = await FederationFactory.create_async()
-            federation_ids.append(federation.id)
-        except Exception:
-            return
+    for _ in range(3):
+        area = AreaFactory.build(district_id=Factory.__random__.choice(federation_ids))
+        session.add(area)
+        await session.commit()
+        area_ids.append(area.id)
 
     stmt = select(SportEvent.id).join(EventType, SportEvent.type_event_id == EventType.id).where(
         EventType.sport == 'Спортивное программирование')
-    sport_ids = list(await session.scalars(stmt))
-    if not sport_ids:
-        try:
-            event_type = EventType(sport='Спортивное программирование')
-            session.add(event_type)
-            await session.commit()
-            sport_ids.append(event_type.id)
-        except Exception:
-            return
-    try:
-        usual_user = UserModelFactory.build(username='user', password='password')
-        region_user = UserModelFactory.build(username='region', password='password')
-        federation_user = UserModelFactory.build(username='federation', password='password')
-        users_manager = UsersManager()
+    sport_event_ids = list(await session.scalars(stmt))
 
-        await users_manager.create_user(session, usual_user)
-        await users_manager.create_user(session, region_user)
-        await users_manager.create_user(session, federation_user)
-    except Exception as e:
-        pass
+    if not sport_event_ids:
+        event_type = EventType(sport='Спортивное программирование')
+        session.add(event_type)
+        await session.commit()
+        sport_event_ids = [event_type.id]
+
+    sport_ids = []
+    for i in range(3):
+        location = LocationFactory.build()
+        session.add(location)
+        await session.commit()
+        sport = SportFactory.build(location_id=location.id,
+                                   type_event_id=Factory.__random__.choice(sport_event_ids))
+        session.add(sport)
+        await session.commit()
+        sport_ids.append(sport.id)
+
+    usual_user = UserModelFactory.build(username='user', password='password')
+    region_user = UserModelFactory.build(username='region', password='password')
+    federation_user = UserModelFactory.build(username='federation', password='password')
+    users_manager = UsersManager()
+
+    await users_manager.create_user(session, usual_user, area_id=Factory.__random__.choice(area_ids))
+    await users_manager.create_user(session, region_user, area_id=Factory.__random__.choice(area_ids))
+    await users_manager.create_user(session, federation_user, area_id=Factory.__random__.choice(area_ids))
 
     for i in range(40):
         users = [UserFactory.build() for i in range(3)]
-        team = Factory.build(federal_representation_id=Factory.__random__.choice(federation_ids)
-                             , event_id=Factory.__random__.choice(sport_ids),
+        team = Factory.build(area_id=Factory.__random__.choice(area_ids),
                              users=users)
 
         session.add(team)
 
-        try:
-            await session.commit()
-            solution = TeamSolutionFactory.build(team_id=team.id)
-            session.add(solution)
-            await session.commit()
-
-        except Exception as e:
-            await session.rollback()
+        await session.commit()
+        participation = TeamParticipation(team_id=team.id, event_id=Factory.__random__.choice(sport_event_ids))
+        session.add(participation)
+        solution = TeamSolutionFactory.build(team_id=team.id, event_id=Factory.__random__.choice(sport_ids))
+        session.add(solution)
+        await session.commit()
 
 
 async def main():

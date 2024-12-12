@@ -50,3 +50,9 @@ conflict_response = {
         'model': ErrorModel
     }
 }
+
+invalid_response = {
+    status.HTTP_422_UNPROCESSABLE_ENTITY: {
+        'model': ErrorModel
+    }
+}

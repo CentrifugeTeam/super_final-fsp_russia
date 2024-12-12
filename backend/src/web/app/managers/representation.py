@@ -8,14 +8,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute, joinedload, aliased
 
 from .base import BaseManager
-from shared.storage.db.models import Representation, RegionRepresentation, Team, User, SportEvent, Location, EventType
-from ..schemas import ReadCardRepresentation, MonthStatistics
+from shared.storage.db.models import District, Area, Team, User, SportEvent, Location, EventType
+from ..schemas import ReadCardRepresentation, MonthStatistics, ReadRegionRepresentationBase
+from ..schemas.representation import ReadRegionsCard, FullFederalRepresentation, ReadRepresentation
+
+area_manager = BaseManager(Area)
 
 
 class RepresentationManager(BaseManager):
 
     def __init__(self):
-        super().__init__(Representation)
+        super().__init__(District)
 
     async def paginated_list(
             self,
@@ -39,8 +42,7 @@ class RepresentationManager(BaseManager):
             order_by=order_by,
             filter_expressions=filter_expressions,
             nullable_filter_expressions=nullable_filter_expressions,
-            options=[joinedload(Representation.regions).subqueryload(RegionRepresentation.leader),
-                     joinedload(Representation.regions).subqueryload(RegionRepresentation.representation)],
+            options=[joinedload(District.areas).subqueryload(Area.leader)],
             where=where,
             base_stmt=base_stmt,
             transformer=transformer,
@@ -48,7 +50,7 @@ class RepresentationManager(BaseManager):
         )
 
     async def federations(self, session: AsyncSession):
-        return await super().list(session, filter_expressions={Representation.type: 'federation'})
+        return await super().list(session)
 
     async def list(
             self,
@@ -68,48 +70,90 @@ class RepresentationManager(BaseManager):
         """
         List all representations.
         """
-        return await super().list(
+        result = await super().list(
             session,
             order_by=order_by,
             filter_expressions=filter_expressions,
             nullable_filter_expressions=nullable_filter_expressions,
-            options=[joinedload(Representation.regions).subqueryload(RegionRepresentation.leader),
-                     joinedload(Representation.regions).subqueryload(RegionRepresentation.representation)],
+            options=[joinedload(District.areas).subqueryload(Area.leader)],
             where=where,
             base_stmt=base_stmt,
             unique=True,
             **simple_filters,
         )
+        response = []
+        for item in result:
+            regions = []
+            for region in item.areas:
+                representation = ReadRepresentation.model_validate({'type': 'region', **region._asdict()},
+                                                                   from_attributes=True)
+                leader = self._handle_leader_response(region)
+                regions.append(
+                    ReadRegionsCard.model_validate({'leader': leader, 'representation': representation},
+                                                   from_attributes=True))
+            response.append(FullFederalRepresentation.model_validate({'name': item.name, 'regions': regions},
+                                                                     from_attributes=True))
+
+        return response
+
+    @staticmethod
+    def _handle_leader_response(area: Area):
+        return area.leader[0] if area.leader else None
 
     async def get_region_card(self, session: AsyncSession, id: int):
         team_stmt = (
             select(func.count(Team.id))
-            .filter(Team.federal_representation_id == id)
+            .filter(Team.area_id == id)
             .scalar_subquery()
         )
 
         user_stmt = (
-            select(func.count(User.id)).
-            where(User.representation_id == id)
+            select(func.count(User.id))
+            .join(Team, Team.id == User.team_id)
+            .where(Team.area_id == id)
             .scalar_subquery()
         )
 
         stmt = (
-            select(RegionRepresentation, team_stmt.label("team_count"), user_stmt.label("users_count"))
+            select(District, team_stmt.label("team_count"), user_stmt.label("users_count"))
         )
 
-        stmt = self.assemble_stmt(stmt, options=[joinedload(RegionRepresentation.leader),
-                                                 joinedload(RegionRepresentation.representation),
-                                                 joinedload(RegionRepresentation.federation_representation)],
-                                  where=RegionRepresentation.id == id)
+        stmt = self.assemble_stmt(stmt, options=[joinedload(District.areas).subqueryload(Area.leader)],
+                                  where=Area.id == id)
         result = (await session.execute(stmt)).mappings().unique()
+
         if not result:
             raise HTTPException(status_code=404, detail="Representation not found")
         result = next(result)
-        representation = result['RegionRepresentation'].representation
-        region = representation.name.split(' ')
+        region = result['District'].areas[0]
+        representation = ReadRepresentation.model_validate({'type': 'region', **region._asdict()},
+                                                           from_attributes=True)
+        leader = self._handle_leader_response(region)
+        region_representation = ReadRegionRepresentationBase.model_validate(
+            {'id': result['District'].id, 'leader': leader,
+             'representation': representation}, from_attributes=True)
+
+
+        federal_name = result['District'].name
+        top_month_stmt = (
+            select(SportEvent.start_date, func.count(User.id))
+            .join(User, User.team_id == SportEvent.id)
+            .join(Team, Team.id == User.team_id)
+            .where(Team.area_id == id)
+            .group_by(func.date(SportEvent.start_date))
+            .order_by(func.count(Team.id).desc())
+            .limit(3)
+        )
+
+        top_month = await session.execute(top_month_stmt)
+        top_months = [MonthStatistics(date=month[0], count_participants=month[1]) for month in top_month]
+
+        region = region.name.split(' ')
         if len(region) != 2:
-            raise HTTPException(status_code=404, detail="Representation not found")
+            return ReadCardRepresentation.model_validate(
+                {'top_months': top_months, 'events_count': None, 'last_events': None,
+                 'federal_name': federal_name, **result, 'RegionRepresentation': region_representation},
+                from_attributes=True)
 
         last_events_stmt = (
             select(SportEvent)
@@ -124,22 +168,11 @@ class RepresentationManager(BaseManager):
                             .where(Location.region.ilike(f"%{region[0]}%"))
                             )
 
-        federal_name = result['RegionRepresentation'].federation_representation.name
+
         last_events = await session.scalars(last_events_stmt)
         event_count = await session.scalar(event_count_stmt)
 
-        top_month_stmt = (
-            select(SportEvent.start_date, func.count(Team.id))
-            .join(Team, Team.event_id == SportEvent.id)
-            .where(Team.federal_representation_id == result['RegionRepresentation'].federation_representation.id)
-            .group_by(func.date(SportEvent.start_date))
-            .order_by(func.count(Team.id).desc())
-            .limit(3)
-        )
-
-        top_month = await session.execute(top_month_stmt)
-        top_months = [MonthStatistics(date=month[0], count_participants=month[1]) for month in top_month]
         return ReadCardRepresentation.model_validate(
             {'top_months': top_months, 'events_count': event_count, 'last_events': last_events,
-             'federal_name': federal_name, **result},
+             'federal_name': federal_name, **result, 'RegionRepresentation': region_representation},
             from_attributes=True)

@@ -21,29 +21,24 @@ class User(IDMixin, Base):
     about: Mapped[str] = mapped_column(String(length=100), nullable=True)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
-    representation_id: Mapped[int] = mapped_column(ForeignKey('representations.id'), nullable=True)
-    team_id: Mapped[int] = mapped_column(ForeignKey('teams.id'), nullable=True, default=None)
+    is_leader: Mapped[bool] = mapped_column(Boolean, default=False)
 
+    team_id: Mapped[int] = mapped_column(ForeignKey('teams.id'), nullable=True, default=None)
+    area_id: Mapped[int] = mapped_column(ForeignKey('areas.id'), nullable=True, default=None)
+
+    area: Mapped['Area'] = relationship(back_populates='users', foreign_keys=[area_id])
     team: Mapped['Team'] = relationship(back_populates='users')
     oauth_accounts: Mapped[list['OAuthAccount']] = relationship(back_populates='user')
     files: Mapped[list['File']] = relationship(back_populates='user', secondary='user_files', cascade='all, delete')
     roles: Mapped[list['Role']] = relationship(secondary='user_roles', back_populates='users')
     type_events: Mapped[list['EventType']] = relationship(back_populates='users', secondary='user_settings')
-    region_representation: Mapped['RegionRepresentation'] = relationship(back_populates='leader')
-    # representation: Mapped[list['Representation']] = relationship(back_populates='users')
-    representation: Mapped['Representation'] = relationship(back_populates='users')
     suggestions: Mapped[list['Suggestion']] = relationship(back_populates='user')
 
     async def get_principals(self):
-        rep = await self.awaitable_attrs.representation
+        """Права пользователя"""
         principals = set()
-        if rep is not None:
-            if rep.type == 'federation':
-                principals.add('federal')
-            else:
-                principals.add(rep.type)
         for role in await self.awaitable_attrs.roles:
-            principals.add(f"role:{role.name}")
+            principals.add(role.name)
         if self.is_superuser:
             principals.add(f'user:superuser')
         if self.is_verified:
