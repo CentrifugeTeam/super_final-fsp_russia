@@ -4,6 +4,8 @@
 
 	.header{
 		display: flex;
+		justify-content: space-between;
+		margin-bottom: 20px;
 
 		h1{
 			color: black;
@@ -39,8 +41,15 @@
 		border-radius: 10px;
 		background-color: #F4F8FE;
 
-		p{
-			color: black;
+		.divForInputs{
+			display: flex;
+			align-items: center;
+			margin-bottom: 20px;
+		}
+
+		.addPhoto{
+			margin-bottom: 20px;
+			display: flex;
 		}
 	}
 }
