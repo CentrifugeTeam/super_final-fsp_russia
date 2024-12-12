@@ -3,49 +3,61 @@ import { useSendReq } from "@/shared/api/requests";
 import { Input } from "@/components/ui/input";
 import styles from "./newrequest.module.scss";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom"; // Импортируем useNavigate
+import { useNavigate } from "react-router-dom";
 
 export const NewRequest = () => {
   const { mutate, status } = useSendReq();
-  const navigate = useNavigate(); // Инициализируем useNavigate
+  const navigate = useNavigate();
 
-  // Локальное состояние для управления полями формы
   const [formData, setFormData] = useState({
     name: "",
     competition: "",
     location: "",
     start_date: "",
     end_date: "",
-    format: "online", // Значение по умолчанию
+    format: "online",
     age: "",
     count_participants: 0,
   });
 
-  // Обработчик изменений в полях ввода
+  const [error, setError] = useState("");
+
+  // Проверка на заполнение всех полей
+  const isFormValid = () => {
+    return Object.values(formData).every(
+      (value) => value !== "" && value !== 0
+    );
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: name === "count_participants" ? Number(value) : value, // Преобразуем count_participants в число
+      [name]: name === "count_participants" ? Number(value) : value,
     });
+    setError(""); // Сбрасываем ошибку при изменении поля
   };
 
-  // Обработчик отправки формы
   const handleSubmit = () => {
+    if (!isFormValid()) {
+      setError("Все поля должны быть заполнены.");
+      return;
+    }
+
     const formattedData = {
       ...formData,
-      start_date: new Date(formData.start_date).toISOString().split("T")[0], // Форматируем дату
-      end_date: new Date(formData.end_date).toISOString().split("T")[0], // Форматируем дату
+      start_date: new Date(formData.start_date).toISOString().split("T")[0],
+      end_date: new Date(formData.end_date).toISOString().split("T")[0],
     };
 
     mutate(formattedData, {
       onSuccess: () => {
-        navigate("/profile/requests"); // Перенаправляем на страницу заявок
+        navigate("/profile/requests");
       },
       onError: () => {
-        alert("Ошибка при отправке заявки.");
+        setError("Ошибка при отправке заявки.");
       },
     });
   };
@@ -83,14 +95,14 @@ export const NewRequest = () => {
           onChange={handleChange}
         />
         <Input
-          type="date" // Используем input типа "date"
+          type="date"
           name="start_date"
           placeholder="Дата (начало)"
           value={formData.start_date}
           onChange={handleChange}
         />
         <Input
-          type="date" // Используем input типа "date"
+          type="date"
           name="end_date"
           placeholder="Дата (конец)"
           value={formData.end_date}
@@ -120,6 +132,7 @@ export const NewRequest = () => {
           value={formData.count_participants}
           onChange={handleChange}
         />
+        {error && <p className="text-red-500 mt-2 self-center">{error}</p>}
         {status === "error" && (
           <p className="text-red-500 mt-2 self-center">
             Ошибка при отправке заявки.
@@ -128,7 +141,7 @@ export const NewRequest = () => {
         <Button
           className="bg-[#463ACB]"
           onClick={handleSubmit}
-          disabled={status === "pending"} // Отключаем кнопку во время загрузки
+          disabled={!isFormValid() || status === "pending"} // Отключаем кнопку при незаполненных полях
         >
           {status === "pending" ? "Отправка..." : "Отправить"}
         </Button>
