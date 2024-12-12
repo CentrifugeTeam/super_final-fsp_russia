@@ -58,7 +58,7 @@ class TeamsRouter(CrudAPIRouter):
                 session.add(participation)
                 user.area_id = area.id
                 session.add(user)
-
+            await session.commit()
             return team
 
     def _get_all(self):
