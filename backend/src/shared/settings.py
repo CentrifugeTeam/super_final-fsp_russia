@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     SMTP_PORT: int
     SMTP_PASSWORD: str
     SMTP_SENDER: str
+    DOMAIN_URI: str
 
 
 

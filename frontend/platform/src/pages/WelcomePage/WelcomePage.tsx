@@ -1,7 +1,6 @@
-// WelcomePage.jsx
 import styles from "./welcomepage.module.scss";
-import { WelcomePageFirstContent } from '@/components/WelcomePageFirstContent';
-import { WelcomePageMiddleContent } from '@/components/WelcomePageMiddleContent';
+import { WelcomePageFirstContent } from "@/components/WelcomePageFirstContent";
+import { WelcomePageMiddleContent } from "@/components/WelcomePageMiddleContent";
 import { WelcomePageEndContent } from "@/components/WelcomePageEndContent";
 
 export const WelcomePage = () => {
@@ -12,7 +11,6 @@ export const WelcomePage = () => {
       <WelcomePageMiddleContent />
 
       <WelcomePageEndContent />
-
     </div>
   );
 };

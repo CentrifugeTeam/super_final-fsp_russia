@@ -8,8 +8,6 @@ from fastapi_permissions import Authenticated, Deny, Allow, All
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from pydantic.main import IncEx
 
-from .representation import RepresentationBase, ReadRepresentation
-
 
 class BaseUser(BaseModel):
     """
@@ -109,5 +107,3 @@ class UserCredentials(BaseModel):
     password: str
 
 
-class ReadUserMe(ReadUser):
-    representation: ReadRepresentation | None

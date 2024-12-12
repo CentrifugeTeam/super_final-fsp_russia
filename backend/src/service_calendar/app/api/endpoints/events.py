@@ -12,7 +12,7 @@ from ...dependencies.session import get_session
 from ...utils.crud import CrudAPIRouter
 from shared.storage.db.models import SportEvent, Location, AgeGroup, Competition, EventType
 from ...managers import EventManager
-from ...schemas.event import EventBulkRead, EventSearch
+from ...schemas.event import EventBulkRead, EventSearch, EventRead, SmallReadEvent
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -36,8 +36,17 @@ class CrudEventAPIRouter(CrudAPIRouter):
                 SportEvent.name.ilike: f'%{name}%' if name else None
             })
 
+        @self.get('/small')
+        async def func(
+                session: AsyncSession = Depends(self.get_session)
+        ) -> Page[SmallReadEvent]:
+            return await self.manager.paginated_list(session)
+
+
+
         @self.get('/')
         async def func(
+                name: str | None = None,
                 sports: str | None = None,
                 categories: str | None = None,
                 competitions: str | None = None,
@@ -53,10 +62,13 @@ class CrudEventAPIRouter(CrudAPIRouter):
             categories = categories if categories is None else categories.split(';')
             cities = cities if cities is None else cities.split(';')
             competitions = competitions if competitions is None else competitions.split(';')
-
+            filter_expressions = {}
+            if name:
+                filter_expressions[SportEvent.name.ilike] = f"%{name}%"
             return await self.manager.paginated_list(session,
                                                      participants_count=participants_count,
                                                      filter_expressions={
+                                                         **filter_expressions,
                                                          EventType.sport.in_: sports,
                                                          SportEvent.category.in_: categories,
                                                          Location.city.in_: cities,

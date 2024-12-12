@@ -13,7 +13,7 @@ import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncConnection
 from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
 
-from web.alembic.seed import seed_db
+from web.alembic.seed import seed
 
 #class Factory(SQLAlchemyFactory):
 #    __model__ =

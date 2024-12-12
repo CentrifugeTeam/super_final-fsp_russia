@@ -186,7 +186,7 @@ async def create_user(session: AsyncSession, full_name: str, email: str):
         user: User = await user_manager.create_user(session, in_obj=user_data, commit=False,
                                                     refresh_attribute_names=['roles'], is_leader=True)
         role1 = await _create_if_dont_exist(session, {'name': 'leader'}, Role, _if_dont_exist)
-        role2 = await _create_if_dont_exist(session, {'name': 'region_member'}, Role, _if_dont_exist)
+        role2 = await _create_if_dont_exist(session, {'name': 'region'}, Role, _if_dont_exist)
         user.roles = [role1, role2]
         await session.flush()
         return user
