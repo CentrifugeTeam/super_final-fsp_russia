@@ -12,7 +12,7 @@ from starlette import status
 from crud.openapi_responses import bad_request_response, invalid_response
 from service_calendar.app.api.endpoints.events import event_manager
 from shared.crud import not_found_response, missing_token_or_inactive_user_response
-from shared.storage.db.models import SportEvent, Team, TeamSolution, District, User, TeamParticipation
+from shared.storage.db.models import SportEvent, Team, TeamSolution, District, User, TeamParticipation, UserTeams
 from web.app.dependencies import get_session
 from web.app.schemas.representation import ReadFederalRepresentation
 from web.app.utils.crud import MockCrudAPIRouter, CrudAPIRouter
@@ -55,6 +55,8 @@ class TeamsRouter(CrudAPIRouter):
             async with session.begin_nested():
                 team = await self.manager.create_team(session, team, photo, created_at=datetime.now().date())
                 participation = TeamParticipation(team_id=team.id, event_id=event.id)
+                user_team = UserTeams(user_id=user.id, team_id=team.id)
+                session.add(user_team)
                 session.add(participation)
                 user.area_id = area.id
                 session.add(user)

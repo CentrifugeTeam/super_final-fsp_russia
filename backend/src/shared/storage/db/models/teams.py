@@ -31,9 +31,6 @@ class TeamParticipation(IDMixin, Base):
     team_id: Mapped[int] = mapped_column(Integer, ForeignKey('teams.id'))
     event_id: Mapped[int] = mapped_column(Integer, ForeignKey('events.id'))
 
-    # team: Mapped[Team] = relationship(back_populates='participation')
-    # event: Mapped['SportEvent'] = relationship(back_populates='participation')
-
 
 class TeamSolution(IDMixin, Base):
     __tablename__ = 'team_solutions'

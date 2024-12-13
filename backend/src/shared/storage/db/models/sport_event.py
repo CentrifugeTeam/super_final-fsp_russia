@@ -41,7 +41,7 @@ class SportEvent(Base):
     __tablename__ = 'events'
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     category: Mapped[str] = mapped_column(String(length=250), nullable=False)
-
+    task_url: Mapped[str] = mapped_column(String, nullable=True)
     name: Mapped[str] = mapped_column(String(length=700), nullable=False)
     start_date: Mapped[date] = mapped_column(Date, nullable=False)  # Дата начала
     end_date: Mapped[date] = mapped_column(Date, nullable=False)  # Дата окончания
