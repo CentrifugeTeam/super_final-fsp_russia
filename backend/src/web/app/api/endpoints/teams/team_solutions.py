@@ -20,9 +20,19 @@ class TeamSolutionsRouter(CrudAPIRouter):
         super().__init__(ReadTeamSolution, BaseManager(TeamSolution), CreateTeamSolution, UpdateTeamSolution)
 
     def _create(self):
-        @self.post('/{%s}/score' % self.resource_identifier, dependencies=[Depends(authenticator.get_user())])
-        async def func(team_solution=Depends(self.get_or_404())):
-            pass
+        @self.post('/{%s}/score' % self.resource_identifier, dependencies=[Depends(authenticator.get_user())],
+                   responses={**not_found_response},
+                   response_model=ReadTeamSolution)
+        async def func(
+                score: int,
+                team_solution=Depends(self.get_or_404()),
+                session=Depends(get_session),
+        ):
+            team_solution.score = score
+            session.add(team_solution)
+            await session.commit()
+            return team_solution
+
 
         @self.post('/events/{id}/', responses={**not_found_response, **bad_request_response},
                    response_model=ReadTeamSolution)

@@ -21,8 +21,6 @@ async def test(ctx, *, a):
 
 
 async def startup(ctx):
-    logger.info('ctx %s', ctx)
-    logger.info('settings %s', conf_settings)
     engine = create_async_engine(conf_settings.SQLALCHEMY_DATABASE_URL, echo=False)
     async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
     ctx["async_session_maker"] = async_session_maker
