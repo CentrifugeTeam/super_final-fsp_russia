@@ -88,8 +88,14 @@ export const ProfileCard = () => {
             <h2 className={styles.info}>Контакты</h2>
             <p className={styles.personIfo}>{profile.email}</p>
 
-            <h2 className={styles.info}>О ФСП</h2>
-            <p className={styles.personIfo}>{profile.about}</p>
+            <h2 className={styles.info}>Команда</h2>
+            <p
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate(`/profile/team/${profile.teams[0].id}`)}
+              className={styles.personIfo}
+            >
+              {profile.teams[0].name}
+            </p>
           </div>
         </div>
       </div>
