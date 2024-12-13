@@ -15,58 +15,66 @@ export const RegionByIdPage = () => {
   if (!data) {
     return <div>Регион не найден.</div>;
   }
-
+  const defaultAvatarUrl =
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4UmW5FE0dXoSm3h5meecSKpw0oX1Jk3bZvA&s";
   // Получаем полное имя лидера
   const leaderFullName = `${data.RegionRepresentation.leader.first_name} ${data.RegionRepresentation.leader.last_name} ${data.RegionRepresentation.leader.middle_name}`;
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.content}>
-        <h1 className={styles.nameOfPage}>{data.RegionRepresentation.representation.name}</h1>
+        <h1 className={styles.nameOfPage}>
+          {data.RegionRepresentation.representation.name}
+        </h1>
         <div className={styles.block}>
           <div className={styles.block2}>
             <div className={styles.image}>
               <img
-								className={styles.img}
-                src={data.RegionRepresentation.representation.photo_url}
+                className={styles.img}
+                src={
+                  data.RegionRepresentation.representation.photo_url ||
+                  defaultAvatarUrl
+                }
                 alt={data.RegionRepresentation.representation.name}
               />
             </div>
 
-						<div className={styles.secontData}>
-							<div className={styles.verticalContainer}>
-							<div className={styles.regionName}>
-								<h1>{data.RegionRepresentation.representation.name}</h1>
-							</div>
+            <div className={styles.secontData}>
+              <div className={styles.verticalContainer}>
+                <div className={styles.regionName}>
+                  <h1>{data.RegionRepresentation.representation.name}</h1>
+                </div>
 
-								<div className={styles.fspInfo}>
-									<h4 className={styles.nameOfInfo}>Руководитель</h4>
-									<p className={styles.info}>{leaderFullName}</p>
-								</div>
+                <div className={styles.fspInfo}>
+                  <h4 className={styles.nameOfInfo}>Руководитель</h4>
+                  <p className={styles.info}>{leaderFullName}</p>
+                </div>
 
-								<div className={styles.fspInfo}>
-									<h4 className={styles.nameOfInfo}>Контакты</h4>
-									<p className={styles.info}>{data.RegionRepresentation.representation.contacts}</p>
-								</div>
-							</div>
+                <div className={styles.fspInfo}>
+                  <h4 className={styles.nameOfInfo}>Контакты</h4>
+                  <p className={styles.info}>
+                    {data.RegionRepresentation.representation.contacts}
+                  </p>
+                </div>
+              </div>
 
-							<div>
-								<div className={styles.federalName}>
-									<h1>{data.federal_name}</h1>
-								</div>
+              <div>
+                <div className={styles.federalName}>
+                  <h1>{data.federal_name}</h1>
+                </div>
 
-								<div className={styles.infoUsers}>
-									<h4 className={styles.nameOfInfo}>Участники</h4>
-									<p className={styles.info}>{data.team_count}</p>
+                <div className={styles.infoUsers}>
+                  <h4 className={styles.nameOfInfo}>Участники</h4>
+                  <p className={styles.info}>{data.team_count}</p>
 
-									<h4 className={styles.nameOfInfo}>Команды</h4>
-									<p className={styles.info}>{data.team_count}</p>
-								</div>
-							</div>
-						</div>
+                  <h4 className={styles.nameOfInfo}>Команды</h4>
+                  <p className={styles.info}>{data.team_count}</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-			{/* button */}
+        {/* button */}
       </div>
     </div>
   );
