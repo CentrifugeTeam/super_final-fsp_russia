@@ -48,7 +48,7 @@ class RepresentationAPIRouter(CrudAPIRouter):
                 id: int | None = None,
         ):
             statistic = await reps_manager.statistics(session, id)
-            xls = write_xls(statistic)
+            xls = stream_xls(statistic)
             return StreamingResponse(xls, media_type='application/vnd.ms-excel',
                                      headers={"Content-Disposition": 'attachment; filename=federations.xls'})
 
