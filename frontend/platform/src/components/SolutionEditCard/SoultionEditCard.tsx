@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useTeams } from "@/shared/api/getTeams";
 import styles from "./solutioneditcard.module.scss";
 import { Team } from "@/shared/api/getTeams";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface SolutionEditCardProps {
   selectedRegion: string;
@@ -18,6 +18,7 @@ export const SolutionEditCard = ({
   onTotalPagesChange,
 }: SolutionEditCardProps) => {
   const navigate = useNavigate();
+	const location = useLocation();
   const [teams, setTeams] = useState<Team[]>([]);
 
   const { data, isLoading, isError } = useTeams({
@@ -57,7 +58,11 @@ export const SolutionEditCard = ({
         <div key={team.id} className={styles.table2}>
           <h1
             className={styles.teamName}
-            onClick={() => navigate(`/profile/team/${team.id}`)}
+            onClick={() =>
+              navigate(`/profile/team/${team.id}`, {
+                state: { from: location.pathname }, // передаем исходный путь как параметр state
+              })
+            }
           >
             {team.name}
           </h1>

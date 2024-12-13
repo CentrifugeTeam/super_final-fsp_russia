@@ -36,16 +36,14 @@ export const ProfilePanel = () => {
           Мой профиль
         </h3>
         {/* Заявки */}
-        {role !== "usual" && (
-          <h3
-            className={`${styles.active} ${
-              location.pathname === "/profile/requests" ? styles.activeSelected : ""
-            }`}
-            onClick={() => navigate("/profile/requests")}
-          >
-            Заявки
-          </h3>
-        )}
+				<h3
+					className={`${styles.active} ${
+						location.pathname === "/profile/requests" ? styles.activeSelected : ""
+					}`}
+					onClick={() => navigate("/profile/requests")}
+				>
+					Заявки
+				</h3>
         {/* Решение - доступно только для "federal" */}
         {/* {isFederal && ( */}
         <h3

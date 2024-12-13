@@ -4,10 +4,10 @@ import { TeamInfoCard } from "@/components/TeamInfoCard";
 
 type TeamCardProps = {
   team?: Team;
+	isMyTeam: boolean;
 };
 
-export const TeamCard = ({ team }: TeamCardProps) => {
-	console.log(team)
+export const TeamCard = ({ team, isMyTeam }: TeamCardProps) => {
   if (!team) {
     return <div>Команда не действительна</div>;
   }
