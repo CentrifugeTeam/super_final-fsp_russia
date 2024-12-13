@@ -28,10 +28,7 @@ async def save_region_to_db(session: AsyncSession, region_data):
         logger.error(f"Ошибка валидации данных для региона {region_data['region_name']}: {e}")
         return
 
-    # Ищем или создаем пользователя для лидера
-    leader_user = await create_user(session, block.leader, block.contacts)
-    if leader_user is None:
-        return
+
 
     # Создаем регион
 
@@ -60,6 +57,8 @@ async def save_region_to_db(session: AsyncSession, region_data):
                                            {'name': block.region_name, 'contacts': block.contacts,
                                             'district_id': federal_district_id
                                             }, Area, _if_dont_exist_repr)
+        # Ищем или создаем пользователя для лидера
+        await create_user(session, block.leader, block.contacts, area)
     except IntegrityError as e:
         logger.error(f"Ошибка сохранения региона {region_data['region_name']}: {e}")
         await session.rollback()
