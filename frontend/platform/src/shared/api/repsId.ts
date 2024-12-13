@@ -31,12 +31,12 @@ export interface IRegionResponse {
   RegionRepresentation: IRegionRepresentation; // Представление региона
   team_count: number; // Количество команд в регионе
   users_count: number; // Количество пользователей в регионе
-	federal_name: string;
+  federal_name: string;
 }
 
 // Функция для выполнения GET-запроса с использованием идентификатора региона
 const fetchRepsById = async (id: string): Promise<IRegionResponse> => {
-  const response = await api.get<IRegionResponse>(`/reps/${Number(id)-1}`);
+  const response = await api.get<IRegionResponse>(`/reps/${Number(id)}`);
   return response.data;
 };
 

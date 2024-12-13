@@ -10,7 +10,7 @@ from service_calendar.app.utils.email_sender import SMTPMessage, Message
 from worker.src.parser.parser_pdf.parser import Row
 from .settings import settings as conf_settings
 
-from shared.storage.db.models import EventType, SportEvent, AgeGroup, Location, Competition, User, Role
+from shared.storage.db.models import EventType, SportEvent, AgeGroup, Location, Competition, User, Role, Area
 from logging import getLogger
 from web.app.schemas.users import CreateUser
 from web.app.utils.users import user_manager
@@ -135,7 +135,7 @@ def generate_random_password(length: int = 12) -> str:
     return ''.join(random.choices(characters, k=length))
 
 
-async def create_user(session: AsyncSession, full_name: str, email: str):
+async def create_user(session: AsyncSession, full_name: str, email: str, area: Area):
     """
     Получаем пользователя по имени или создаем нового, если его нет в базе.
     """
@@ -190,7 +190,7 @@ async def create_user(session: AsyncSession, full_name: str, email: str):
             return obj
 
         user: User = await user_manager.create_user(session, in_obj=user_data, commit=True,
-                                                    refresh_attribute_names=['roles'], is_leader=True)
+                                                    refresh_attribute_names=['roles'], is_leader=True, area_id=area.id)
         role1 = await _create_if_dont_exist(session, {'name': 'leader'}, Role, _if_dont_exist)
         role2 = await _create_if_dont_exist(session, {'name': 'region'}, Role, _if_dont_exist)
         user.roles = [role1, role2]
