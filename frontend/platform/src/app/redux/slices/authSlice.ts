@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { AppDispatch } from "../store";
+import { fetchProfile } from "./profileSlice";
 
 interface AuthState {
   accessToken: string | null;
@@ -52,4 +54,15 @@ const authSlice = createSlice({
 });
 
 export const { login, logout, updateTokens } = authSlice.actions;
+
+export const loginAndFetchProfile =
+  (credentials: { accessToken: string; refreshToken: string }) =>
+  async (dispatch: AppDispatch) => {
+    // Диспатчим вход
+    dispatch(login(credentials));
+
+    // После входа загружаем профиль
+    await dispatch(fetchProfile());
+  };
+
 export default authSlice.reducer;
