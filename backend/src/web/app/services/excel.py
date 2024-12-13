@@ -20,7 +20,7 @@ def write_chart(worksheet: Worksheet, workbook: Workbook, statistics: ReadStatis
     months_date = [month.date.strftime("%d.%m.%Y") for month in statistics.months]
     months_count = [month.count_participants for month in statistics.months]
 
-    headings = ["Дата", "Кол-во участников"]
+    headings = ["Дата мероприятия", "Кол-во участников"]
 
     data = [
         months_date,
@@ -31,9 +31,47 @@ def write_chart(worksheet: Worksheet, workbook: Workbook, statistics: ReadStatis
     worksheet.write_column("A2", data[0])
     worksheet.write_column("B2", data[1])
     chart = build_chart(workbook)
+    chart2 = build_statistics(worksheet, workbook, statistics.statistics)
     # Insert the chart into the worksheet (with an offset).
-    worksheet.insert_chart("I15", chart, {"x_offset": 25, "y_offset": 10})
+    worksheet.insert_chart("A15", chart, {"x_offset": 25, "y_offset": 10})
 
+
+def build_statistics(worksheet: Worksheet, workbook: Workbook, statistics: DistrictStatistic):
+    bold = workbook.add_format({"bold": 1})
+    # Add the worksheet data that the charts will refer to.
+    headings = ["Категория", "Значения"]
+    data = [
+        ["Завершённые", "Текущие", "Будущие"],
+        [statistics.completed_events, statistics.current_events, statistics.upcoming_events],
+    ]
+
+    worksheet.write_row("G1", headings, bold)
+    worksheet.write_column("G2", data[0])
+    worksheet.write_column("H2", data[1])
+
+    #######################################################################
+    #
+    # Create a new chart object.
+    #
+    chart1 = workbook.add_chart({"type": "pie"})
+
+    # Configure the series. Note the use of the list syntax to define ranges:
+    chart1.add_series(
+        {
+            "name": "Pie sales data",
+            "categories": ["Sheet1", 1, 0, 3, 0],
+            "values": ["Sheet1", 1, 1, 3, 1],
+        }
+    )
+
+    # Add a title.
+    chart1.set_title({"name": "Popular Pie Types"})
+
+    # Set an Excel chart style. Colors with white outline and shadow.
+    chart1.set_style(10)
+
+    # Insert the chart into the worksheet (with an offset).
+    worksheet.insert_chart("C2", chart1, {"x_offset": 25, "y_offset": 10})
 
 def build_chart(workbook):
     chart = workbook.add_chart({"type": "column"})
@@ -58,26 +96,9 @@ def build_chart(workbook):
     )
 
     # Add a chart title.
-    chart.set_title({"name": "Mixed custom and default data labels"})
+    chart.set_title({"name": "Аналитика по округу"})
 
     # Turn off the chart legend.
     chart.set_legend({"none": True})
     return chart
 
-
-if __name__ == '__main__':
-    pass
-    # repr = ReadRepresentation(
-    #     **dict(name='something',
-    #            photo_url='something',
-    #            contacts='something',
-    #            id=1,
-    #            type='region',
-    #            ))
-    # leader = LeaderBase(first_name='something',last_name='something', username='something', middle_name=None)
-    # ReadRegionsCard(representation=repr, leader=leader)
-    # months: list[MonthStatistic]
-    # statistics: DistrictStatistic
-    # events: list[EventRead]
-    # stat = ReadStatisticsDistrict(region=)
-    # write_to_xls()
