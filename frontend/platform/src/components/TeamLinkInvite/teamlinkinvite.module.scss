@@ -1,0 +1,31 @@
+.content{
+	display: flex;
+	align-items: center;
+
+	.link{
+		padding: 15px;
+		background-color: white;
+		border-radius: 10px;
+		margin-right: 20px;
+		padding-right: 13px;
+		padding-top: 11px;
+
+		.linkImg{
+			margin-top: 3px;
+			margin-left: 6px;
+		}
+	}
+
+	.linkText{
+		color: black;
+		font-size: 17px;
+		font-weight: 500;
+		width: 200px;
+	}
+
+	.copiedMessage{
+		margin-bottom: 85px;
+		position: absolute;
+		color: green;
+	}
+}
