@@ -6,7 +6,6 @@ import { RootState } from "@/app/redux/store"; // Redux state type
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import baseAvatar from "../../assets/base_profile_avatar.png";
 import { setProfile } from "@/app/redux/slices/profileSlice"; // Redux action to update profile
 import styles from "./profileeditchange.module.scss";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +19,8 @@ export const ProfileEditChange = () => {
   const { mutate: sendVerificationEmail, status: verificationStatus } =
     useSendVerifyRequest();
 
+  const baseAvatar =
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4UmW5FE0dXoSm3h5meecSKpw0oX1Jk3bZvA&s";
   const [formData, setFormData] = useState({
     username: profile?.username || "",
     first_name: profile?.first_name || "",

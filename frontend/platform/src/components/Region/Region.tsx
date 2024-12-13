@@ -41,9 +41,11 @@ const Region: React.FC<{ region: IRegion }> = ({ region }) => {
 
   // Function to handle leader click
   const handleLeaderClick = () => {
+    // Проверяем, что роль пользователя "federal", чтобы открыть модальное окно
     if (role === "federal") {
-      setModalOpen(true); // Open modal if role is 'federal'
+      setModalOpen(true); // Открываем модальное окно
     }
+    // Для других ролей (region и usual) не делаем ничего, модальное окно не откроется
   };
 
   // Function to close modal
