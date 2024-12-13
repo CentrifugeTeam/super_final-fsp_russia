@@ -59,19 +59,19 @@ def build_statistics(worksheet: Worksheet, workbook: Workbook, statistics: Distr
     chart1.add_series(
         {
             "name": "Pie sales data",
-            "categories": ["Sheet1", 1, 0, 3, 0],
-            "values": ["Sheet1", 1, 1, 3, 1],
+            "categories": "=Sheet1!$G$2:$G$5",
+            "values": "=Sheet1!$H$2:$H$5",
         }
     )
 
     # Add a title.
-    chart1.set_title({"name": "Popular Pie Types"})
+    chart1.set_title({"name": "Количество соревнований"})
 
     # Set an Excel chart style. Colors with white outline and shadow.
     chart1.set_style(10)
 
     # Insert the chart into the worksheet (with an offset).
-    worksheet.insert_chart("C2", chart1, {"x_offset": 25, "y_offset": 10})
+    worksheet.insert_chart("H12", chart1, {"x_offset": 25, "y_offset": 10})
 
 def build_chart(workbook):
     chart = workbook.add_chart({"type": "column"})
@@ -89,8 +89,8 @@ def build_chart(workbook):
     # Configure the data series and add the data labels.
     chart.add_series(
         {
-            "categories": "=Sheet1!$A$2:$A$7",
-            "values": "=Sheet1!$B$2:$B$7",
+            "categories": "=Sheet1!$A$2:$A$14",
+            "values": "=Sheet1!$B$2:$B$14",
             "data_labels": {"value": True, "custom": custom_labels},
         }
     )

@@ -14,7 +14,7 @@ from crud.openapi_responses import bad_request_response, invalid_response
 from service_calendar.app.api.endpoints.events import event_manager
 from shared.crud import not_found_response, missing_token_or_inactive_user_response
 from shared.storage.db.models import SportEvent, Team, TeamSolution, District, User, TeamParticipation, UserTeams, \
-    ParticipationApplication
+    ParticipationApplication, Area
 from web.app.dependencies import get_session
 from web.app.schemas.representation import ReadFederalRepresentation
 from web.app.utils.crud import MockCrudAPIRouter, CrudAPIRouter
@@ -81,42 +81,67 @@ class TeamsRouter(CrudAPIRouter):
             await session.commit()
             return team
 
+    def _is_scored_transformer(self, solutions: list[TeamSolution], is_scored: bool):
+        results = []
+        for solution in solutions:
+            if is_scored:
+                if solution.score is not None:
+                    results.append(solution)
+            else:
+                if solution.score is None:
+                    results.append(solution)
+
+        return results
+
     def _get_all(self):
 
         @self.get('/sports', responses={**not_found_response})
         async def teams(team_id: int | None = None,
                         sport_id: int | None = None,
-                        is_scored: bool = True,
+                        is_scored: bool | None = None,
                         session=Depends(get_session)
                         ) -> Page[ReadCommandAndRatings]:
-            filter_expressions = {}
+
+            def _transformer(items: list[Team]) -> list[ReadCommandAndRatings]:
+                results = []
+                for item in items:
+                    result = ReadCommandAndRatings.model_validate(item, from_attributes=True)
+                    solutions = self._is_scored_transformer(item.solutions, is_scored)
+                    result.solutions = solutions
+                    results.append(result)
+                return results
+
             stmt = select(Team)
             if team_id:
                 stmt = stmt.where(Team.id == team_id)
-                filter_expressions[Team.id] = team_id
             if sport_id:
                 stmt = (stmt
                         .join(TeamParticipation, TeamParticipation.team_id == Team.id)
                         .join(SportEvent, SportEvent.id == TeamParticipation.event_id)
                         .where(SportEvent.id == sport_id)
                         )
+
+            stmt = stmt.options(joinedload(Team.district), joinedload(Team.solutions), joinedload(Team.events))
             if is_scored:
                 stmt = (stmt
                         .join(TeamSolution, TeamSolution.team_id == Team.id)
                         .where(TeamSolution.score != None)
-                        .options(joinedload(Team.district), joinedload(Team.solutions), joinedload(Team.events)))
-                return await paginate(session, stmt, transformer=None)
+                        )
+            elif is_scored is None:
+                pass
             else:
                 stmt = (stmt
                         .join(TeamSolution, TeamSolution.team_id == Team.id)
                         .where(TeamSolution.score == None)
-                        .options(joinedload(Team.district), joinedload(Team.solutions), joinedload(Team.events)))
-                return await paginate(session, stmt, transformer=None)
+                        )
+
+            return await paginate(session, stmt, transformer=_transformer)
 
         @self.get("/")
         async def get_all_teams(
                 federal_name: str | None = None,
                 score: int | NullableQuery | None = None,
+                is_scored: bool = True,
                 session=Depends(get_session)
         ) -> Page[FullTeamRead]:
             """
@@ -132,19 +157,26 @@ class TeamsRouter(CrudAPIRouter):
                 result = []
                 for item in items:
                     federal = ReadFederalRepresentation.model_validate(item.district[0], from_attributes=True)
+                    solutions = self._is_scored_transformer(item.solutions, is_scored)
                     result.append(FullTeamRead.model_validate(
-                        {'federal': federal, 'solutions': item.solutions, 'users': item.users, **item._asdict()},
+                        {'federal': federal, 'solutions': solutions, 'users': item.users, **item._asdict()},
                         from_attributes=True))
                 return result
 
-            result = await self.manager.paginated_list(session,
-                                                       options=[joinedload(Team.district), joinedload(Team.solutions),
-                                                                joinedload(Team.users)],
-                                                       filter_expressions={District.name: federal_name},
-                                                       nullable_filter_expressions={TeamSolution.score: score},
-                                                       transformer=_transformer)
-
-            return result
+            stmt = select(Team)
+            if federal_name:
+                stmt = (stmt
+                        .join(Area, Area.id == Team.area_id)
+                        .join(District, Area.district_id == District.id)
+                        .where(District.name == federal_name)
+                        )
+            stmt = stmt.join(TeamSolution, TeamSolution.team_id == Team.id)
+            if is_scored:
+                stmt = stmt.where(TeamSolution.score != None)
+            else:
+                stmt = stmt.where(TeamSolution.score == None)
+            stmt = stmt.options(joinedload(Team.district), joinedload(Team.solutions), joinedload(Team.users))
+            return await paginate(session, stmt, transformer=_transformer)
 
     def _get_team(self):
         @self.get("/{id}", response_model=FullTeamRead, responses={**not_found_response})
