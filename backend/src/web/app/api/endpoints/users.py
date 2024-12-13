@@ -41,7 +41,7 @@ class UsersRouter(CrudAPIRouter):
         @self.post(
             '/register',
             response_model=self.schema,
-            responses={**missing_token_or_inactive_user_response, **forbidden_response},
+            responses={**missing_token_or_inactive_user_response, **forbidden_response, **bad_request_response},
             status_code=201,
 
         )

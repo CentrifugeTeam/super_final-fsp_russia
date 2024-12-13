@@ -252,9 +252,10 @@ class RepresentationManager(BaseManager):
             .scalar_subquery()
         )
         # TODO
-        # distinct_select = (select(District)
-        #                    .join(Area, Area.district_id == District.id)
-        #                    .where(Area.id == id))
+        distinct_select = (select(District)
+                           .options(joinedload(District.areas).subqueryload(Area.leader))
+                           .join(Area, Area.district_id == District.id)
+                           .where(Area.id == id))
         stmt = (
             select(District, team_stmt.label("team_count"), user_stmt.label("users_count"))
         )

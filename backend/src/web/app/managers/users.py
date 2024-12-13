@@ -86,7 +86,7 @@ class UsersManager(BaseManager):
                 photo_url = await _save_file_to_static(file)
                 create_data['photo_url'] = photo_url
             except Exception as e:
-                pass
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Could not upload file')
         else:
             create_data['photo_url'] = None
 
