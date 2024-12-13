@@ -140,8 +140,44 @@ class UsersRouter(CrudAPIRouter):
             teams = await user.awaitable_attrs.teams
             return self._response_me(user, representation, teams)
 
+
+    def _patch_user(self):
+        @self.patch('/{%s}' % self.resource_identifier, response_model=ReadUserMe,
+                    responses={**missing_token_or_inactive_user_response, **bad_request_response,
+                               **not_found_response})
+        async def func(
+                username: str,
+                first_name: str = Form(None),
+                last_name: str = Form(None),
+                email: str = Form(None),
+                middle_name: str = Form(None),
+                about: str = Form(None),
+                file: UploadFile | None = None,
+                session: AsyncSession = Depends(self.get_session),
+                patcher: User = Depends(authenticator.get_user()),
+
+        ):
+            user_in_db = await self.manager.get_or_404(session, username=username)
+            try:
+                if file:
+                    file = await _save_file_to_static(file)
+
+                user = self.update_schema(username=username, first_name=first_name, middle_name=middle_name,
+                                          last_name=last_name,
+                                          photo_url=file,
+                                          email=email, about=about)
+            except ValidationError as e:
+                raise HTTPException(status_code=422, detail=e.errors())
+            except FileDoesntSave as e:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Could not upload file')
+
+            user = await user_manager.update(session, user_in_db, user, refresh_attribute_names=['area'])
+            representation = await user.awaitable_attrs.area
+            teams = await user.awaitable_attrs.teams
+            return self._response_me(user, representation, teams)
+
     def _register_routes(self) -> list[Callable[..., Any]]:
-        return [self._me, self._create, self._get_one, self._get_all]
+        return [self._me, self._create, self._get_one, self._get_all, self._patch_user]
 
     def get_or_404(self, *args, **kwargs):
         async def wrapper(username: str, session: AsyncSession = Depends(self.get_session)):

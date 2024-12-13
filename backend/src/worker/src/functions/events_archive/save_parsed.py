@@ -8,6 +8,13 @@ from shared.storage.db.models import EventType, SportEvent, Location, AgeGroup, 
 
 
 async def save(maker, rows: list[EventArchive]):
+    """
+    Функция для сохранения данных из списка объектов EventArchive в базу данных.
+
+    :param maker: Функция для создания сессии базы данных.
+    :param rows: Список объектов EventArchive, которые нужно сохранить.
+    :return: None
+    """
     async with maker() as session:
         for row in rows:
             try:

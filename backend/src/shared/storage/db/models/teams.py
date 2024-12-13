@@ -1,5 +1,5 @@
 from .base import Base, IDMixin, CreatedAtMixin
-from sqlalchemy import Column, Integer, String, UniqueConstraint, ForeignKey, Date
+from sqlalchemy import Column, Integer, String, UniqueConstraint, ForeignKey, Date, BigInteger
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 from datetime import date
 from fastapi_permissions import Allow, All
@@ -31,14 +31,14 @@ class UserTeams(IDMixin, Base):
 class TeamParticipation(IDMixin, Base):
     __tablename__ = 'team_participation'
     team_id: Mapped[int] = mapped_column(Integer, ForeignKey('teams.id'))
-    event_id: Mapped[int] = mapped_column(Integer, ForeignKey('events.id'))
+    event_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('events.id'))
 
 
 class TeamSolution(IDMixin, Base):
     __tablename__ = 'team_solutions'
 
     team_id: Mapped[int] = mapped_column(Integer, ForeignKey('teams.id'))
-    event_id: Mapped[int] = mapped_column(Integer, ForeignKey('events.id'))
+    event_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('events.id'))
 
     team_repository: Mapped[str] = mapped_column(String)
     solution: Mapped[str] = mapped_column(String)
@@ -49,6 +49,6 @@ class TeamSolution(IDMixin, Base):
 class ParticipationApplication(IDMixin, Base):
     __tablename__ = 'participation_applications'
     team_id: Mapped[int] = mapped_column(Integer, ForeignKey('teams.id'))
-    event_id: Mapped[int] = mapped_column(Integer, ForeignKey('events.id'))
+    event_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('events.id'))
     team: Mapped[Team] = relationship(back_populates='participation_applications')
     event: Mapped['SportEvent'] = relationship(back_populates='participation_applications')
