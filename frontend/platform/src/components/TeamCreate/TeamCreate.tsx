@@ -53,12 +53,12 @@ export const TeamCreate: React.FC<TeamCreateProps> = ({ onClose }) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("name", teamName); // Изменено на "name"
-    formData.append("about", teamAbout); // Изменено на "about"
+    formData.append("name", teamName);
+    formData.append("about", teamAbout);
 
     // Если есть изображение, добавляем его в FormData
     if (image) {
-      formData.append("photo", image); // Изменено на "photo"
+      formData.append("photo", image);
     }
 
     // Получаем выбранные id события и региона
