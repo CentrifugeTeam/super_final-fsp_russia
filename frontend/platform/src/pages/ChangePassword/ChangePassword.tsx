@@ -48,7 +48,7 @@ export const ChangePassword = () => {
 
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label className="text-black text-base mt-[30px]" htmlFor="password">
-            Введите новый пароль
+            Введите новый пароль <span style={{color: '#D82C20'}}>*</span>
           </Label>
           <Input
             type="password"

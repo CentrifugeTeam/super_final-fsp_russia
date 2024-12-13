@@ -51,7 +51,7 @@ export const RegistrationStep1: React.FC<RegistrationStep1Props> = ({
     <div className="flex flex-col gap-3">
       <div className="items-center gap-1.5">
         <Label size="text-lg" htmlFor="name" className="mb-4 text-[#333333]">
-          Имя
+          Имя <span style={{color: '#D82C20'}}>*</span>
         </Label>
         <Input
           type="text"
@@ -68,7 +68,7 @@ export const RegistrationStep1: React.FC<RegistrationStep1Props> = ({
 
       <div className="items-center gap-1.5">
         <Label size="text-lg" htmlFor="surname" className="text-[#333333]">
-          Фамилия
+          Фамилия <span style={{color: '#D82C20'}}>*</span>
         </Label>
         <Input
           type="text"
@@ -85,7 +85,7 @@ export const RegistrationStep1: React.FC<RegistrationStep1Props> = ({
 
       <div className="items-center gap-1.5">
         <Label size="text-lg" htmlFor="patronymic" className="text-[#333333]">
-          Отчество
+          Отчество <span style={{color: '#D82C20'}}>*</span>
         </Label>
         <Input
           type="text"

@@ -112,7 +112,7 @@ export const TeamCreate: React.FC<TeamCreateProps> = ({ onClose }) => {
                 htmlFor="team_name"
                 className="text-black  font-bold text-lg"
               >
-                Название команды
+                Название команды <span style={{color: '#D82C20'}}>*</span>
               </Label>
               <Input
                 className="w-[360px] h-[60px] bg-white"
@@ -128,7 +128,7 @@ export const TeamCreate: React.FC<TeamCreateProps> = ({ onClose }) => {
             {/* Выпадающий список для выбора события */}
             <div className="grid w-full max-w-sm gap-1.5 ml-5 mr-5">
               <Label htmlFor="event" className="text-black font-bold text-lg">
-                Выберите соревнование
+                Выберите соревнование <span style={{color: '#D82C20'}}>*</span>
               </Label>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -228,7 +228,7 @@ export const TeamCreate: React.FC<TeamCreateProps> = ({ onClose }) => {
                 htmlFor="event"
                 className="text-black font-bold text-lg h-0"
               >
-                Выберите регион
+                Выберите регион <span style={{color: '#D82C20'}}>*</span>
               </Label>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
