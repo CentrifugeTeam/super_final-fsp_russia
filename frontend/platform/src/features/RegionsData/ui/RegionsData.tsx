@@ -7,7 +7,7 @@ export const RegiosnData = () => {
   // Используем хук useReps для получения данных
   const { data: repsData, isLoading, isError, error } = useReps();
 
-	console.log(repsData, 'a')
+  console.log(repsData, "a");
 
   // Обработка состояния загрузки и ошибки
   if (isLoading) {
@@ -15,12 +15,17 @@ export const RegiosnData = () => {
   }
 
   if (isError) {
-    return <div>Произошла ошибка: {error instanceof Error ? error.message : "Неизвестная ошибка"}</div>;
+    return (
+      <div>
+        Произошла ошибка:{" "}
+        {error instanceof Error ? error.message : "Неизвестная ошибка"}
+      </div>
+    );
   }
 
   return (
     <>
-			<h1 className={styles.nameOfPage}>Регионы</h1>
+      <h1 className={styles.nameOfPage}>Регионы</h1>
       <div className={styles.regionsForm}>
         <div className={styles.headerForm}>
           <RegionsFormHeader />

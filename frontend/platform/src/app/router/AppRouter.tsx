@@ -64,8 +64,8 @@ export const AppRouter = () => {
           <Route path="requests" element={<Requests />} />
           <Route path="requests/new" element={<NewRequest />} />
           <Route path="requests/:id/edit" element={<EditRequest />} />
-					{/* Заявки пользователя от лица команды */}
-					<Route path=":team_name/requests/new" element={<NewRequestTeam />} />
+          {/* Заявки пользователя от лица команды */}
+          <Route path=":team_name/requests/new" element={<NewRequestTeam />} />
           {/* Решения */}
           <Route path="solutions" element={<Solutions />} />
           <Route path="solutions/:id/edit" element={<SolutionEditPage />} />

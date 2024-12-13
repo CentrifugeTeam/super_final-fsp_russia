@@ -123,3 +123,21 @@ export const useCreateTeam = () => {
     mutationFn: ({ data }) => CreateTeam(data),
   });
 };
+
+// Функция для добавления пользователя в команду
+const addUserToTeam = async (id: number) => {
+  const response = await api.post(`/teams/${id}/attach`);
+  return response.data; // возвращаем данные, которые получаем от API
+};
+
+// Создаем тип, который включает id
+interface AddUserToTeamParams {
+  id: number; // Параметр id, который передается в запрос
+}
+
+// Хук для добавления пользователя в команду
+export const useAddUserToTeam = () => {
+  return useMutation<unknown, Error, AddUserToTeamParams>({
+    mutationFn: ({ id }) => addUserToTeam(id), // Функция использует id
+  });
+};

@@ -152,6 +152,7 @@ export const StatsPage = () => {
             <Stats
               statistics={federationStats.statistics}
               region={federationStats.region}
+              months={federationStats.months}
             />
           )}
         </div>

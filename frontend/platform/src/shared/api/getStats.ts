@@ -61,6 +61,7 @@ interface FederationStatisticsResponse {
   events: Event[];
 }
 
+// Функция для получения статистики федерации
 const fetchFederationStatistics = async (
   federationId: number
 ): Promise<FederationStatisticsResponse> => {

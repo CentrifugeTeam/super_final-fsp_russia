@@ -4,7 +4,9 @@ import Region from "../Region/Region";
 import Open from "../../assets/open.svg";
 import style from "./FederalDistrictData.module.scss";
 
-const FederalDistrict: React.FC<{ district: IFederalDistrictData }> = ({ district }) => {
+const FederalDistrict: React.FC<{ district: IFederalDistrictData }> = ({
+  district,
+}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const toggleOpen = () => {
