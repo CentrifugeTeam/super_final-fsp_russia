@@ -252,16 +252,16 @@ class RepresentationManager(BaseManager):
             .scalar_subquery()
         )
         # TODO
-        distinct_select = (select(District).
-                           options(joinedload(District.areas).subqueryload(Area.leader))
-                            .join(Area, Area.id == District.id)
-                           .where(Area.id == id).subquery())
+        # distinct_select = (select(District)
+        #                    .join(Area, Area.district_id == District.id)
+        #                    .where(Area.id == id))
         stmt = (
-            select(distinct_select, team_stmt.label("team_count"), user_stmt.label("users_count"))
+            select(District, team_stmt.label("team_count"), user_stmt.label("users_count"))
         )
 
-        # stmt = self.assemble_stmt(stmt, options=[joinedload(District.areas).subqueryload(Area.leader)],
-        #                           )
+        stmt = self.assemble_stmt(stmt, options=[joinedload(District.areas).subqueryload(Area.leader)],
+                                  where=(Area.id == id)
+                                  )
         result = (await session.execute(stmt)).mappings().unique()
 
         if not result:
