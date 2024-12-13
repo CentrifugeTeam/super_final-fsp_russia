@@ -4,36 +4,6 @@
   border-radius: 10px;
   padding: 30px;
 
-  .table {
-    background-color: #eeeeee;
-
-    h1 {
-      color: #000;
-      font-size: 22px;
-      font-weight: bold;
-    }
-  }
-
-  .table2 {
-    background-color: #f3f0f093;
-    margin-top: 20px;
-
-    .teamName {
-      transition: color 0.3s ease;
-    }
-
-    .teamName:hover {
-      cursor: pointer;
-      color: #463acb;
-    }
-
-    h1 {
-      color: #000;
-      font-size: 14px;
-      // font-weight: bold;
-    }
-  }
-
   .table,
   .table2 {
     height: 80px;
@@ -44,5 +14,45 @@
     justify-content: space-between;
     padding-left: 30px;
     padding-right: 30px;
+  }
+
+  .table {
+    background-color: #eeeeee;
+
+    h1 {
+      color: #000;
+      font-size: 22px;
+      font-weight: bold;
+      flex: 1; /* Ensure columns take up equal space */
+      text-align: center; /* Center the text */
+    }
+  }
+
+  .table2 {
+    background-color: #f3f0f093;
+    margin-top: 20px;
+
+    .teamName {
+      transition: color 0.3s ease;
+      flex: 1; /* Ensure columns take up equal space */
+      text-align: center; /* Center the text */
+    }
+
+    .teamName:hover {
+      cursor: pointer;
+      color: #463acb;
+    }
+
+    h1 {
+      color: #000;
+      font-size: 14px;
+      flex: 1; /* Ensure columns take up equal space */
+      text-align: center; /* Center the text */
+    }
+
+    .evaluateButton {
+      flex: 1; /* Ensure columns take up equal space */
+      text-align: center; /* Center the text */
+    }
   }
 }

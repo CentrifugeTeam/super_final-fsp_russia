@@ -18,7 +18,7 @@ export const SolutionEditCard = ({
   onTotalPagesChange,
 }: SolutionEditCardProps) => {
   const navigate = useNavigate();
-	const location = useLocation();
+  const location = useLocation();
   const [teams, setTeams] = useState<Team[]>([]);
 
   const { data, isLoading, isError } = useTeams({
