@@ -1,7 +1,7 @@
 .endContent {
   margin-left: 0.6%;
   margin-right: 0.6%;
-  background-color: #11192C;
+  background-color: #11192c;
   border-radius: 10px;
   padding-top: 40px;
   padding-left: 90px;
@@ -37,38 +37,39 @@
   .roboticsProgramming,
   .POISS {
     padding: 40px;
-    padding-top: 33px;
-    padding-bottom: 23px;
+
     border-radius: 12px;
     text-align: center;
   }
 
   .productProgramming {
-    background-color: #463ACB;
+    background-color: #463acb;
     text-align: left;
     flex: 1 1 calc(33% - 20px); // Разделяем на 3 части, с отступами
   }
 
   .algorithmicProgramming {
-    background-color: #402FFF;
+    background-color: #402fff;
     text-align: center;
     flex: 1 1 calc(33% - 20px); // Разделяем на 3 части, с отступами
   }
 
   .basProgramming {
-    background-color: #D82C20;
+    background-color: #d82c20;
     text-align: right;
     flex: 1 1 calc(33% - 20px); // Разделяем на 3 части, с отступами
   }
 
   .roboticsProgramming {
-    background-color: #D82C20;
+    display: flex;
+    align-items: center;
+    background-color: #d82c20;
     text-align: left;
     flex: 1 1 calc(33% - 20px); // Разделяем на 3 части, с отступами
   }
 
   .POISS {
-    background-color: #463ACB;
+    background-color: #463acb;
     text-align: right;
     padding-left: 55px;
     padding-right: 55px;
@@ -117,7 +118,7 @@
     max-width: 100% !important;
     text-align: left !important;
     padding: 10px !important;
-		margin-bottom: 0px !important;
+    margin-bottom: 0px !important;
     height: auto;
   }
 

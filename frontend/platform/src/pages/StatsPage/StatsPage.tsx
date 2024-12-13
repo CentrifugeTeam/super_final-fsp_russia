@@ -14,6 +14,7 @@ import styles from "./statspage.module.scss";
 import { Stats } from "@/features/Stats";
 import { useFederations } from "@/shared/api/federations"; // Хук для получения федераций
 import { useFederationStatistics } from "@/shared/api/getStats"; // Хук для статистики
+import { api } from "@/shared/api/base";
 
 export const StatsPage = () => {
   const { data: federations, isLoading, isError } = useFederations();
@@ -31,6 +32,17 @@ export const StatsPage = () => {
   const { data: federationStats } = useFederationStatistics(
     selectedFederationId ? parseInt(selectedFederationId) : 0
   );
+
+  const handleExport = () => {
+    if (selectedFederationId) {
+      // Отправляем запрос на сервер с id федерации (region id)
+      api
+        .get(`/reps/federations/${selectedFederationId}/export`)
+        .catch((error) => {
+          console.error("Ошибка при экспорте:", error);
+        });
+    }
+  };
 
   // Логирование статистики
   useEffect(() => {
@@ -100,7 +112,7 @@ export const StatsPage = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-[#1B1C21] rounded-md w-[350px] border-[1px] border-white">
-              <DropdownMenuLabel className="p-2">
+              <DropdownMenuLabel className="p-2 cursor-pointer">
                 {isLoading ? "Загрузка..." : "Выберите регион"}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -138,7 +150,10 @@ export const StatsPage = () => {
             >
               Печать
             </Button>
-            <Button className="bg-[#463ACB] text-white w-[150px] border-none text-[18px] hover:bg-[#1B1C21] hover:text-white">
+            <Button
+              className="bg-[#463ACB] text-white w-[150px] border-none text-[18px] hover:bg-[#1B1C21] hover:text-white"
+              onClick={handleExport}
+            >
               Экспорт
             </Button>
           </div>
