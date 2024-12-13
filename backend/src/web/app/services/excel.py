@@ -9,7 +9,13 @@ from web.app.schemas.representation import ReadStatisticsDistrict, ReadAreaCard,
     ReadRepresentation, ReadRegionsCard, LeaderBase
 
 
-def write_to_xls(statistics: ReadStatisticsDistrict):
+def write_xls(statistics: ReadStatisticsDistrict):
+    workbook = xlsxwriter.Workbook('file.xlsx')
+    worksheet = workbook.add_worksheet()
+    write_chart(worksheet, workbook, statistics)
+    workbook.close()
+
+def stream_xls(statistics: ReadStatisticsDistrict):
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(output, {'in_memory': True})
     worksheet = workbook.add_worksheet()
