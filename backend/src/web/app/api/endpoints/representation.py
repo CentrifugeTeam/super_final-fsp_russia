@@ -13,6 +13,7 @@ from ...schemas.representation import FullFederalRepresentation, ReadFederalRepr
     ReadRepresentation, ReadArea, ReadStatisticsDistrict
 from ...schemas import ReadCardRepresentation
 from ...managers.representation import RepresentationManager, area_manager
+from ...services.excel import write_to_xls
 
 reps_manager = RepresentationManager()
 
@@ -38,6 +39,15 @@ class RepresentationAPIRouter(CrudAPIRouter):
                 federation_id: int | None = None,
         ):
             return await reps_manager.statistics(session, federation_id)
+
+        @self.get('/federations/{id}/export/statistics',
+                  responses={**not_found_response, **bad_request_response})
+        async def func(
+                session=Depends(get_session),
+                id: int | None = None,
+        ):
+            statistic = await reps_manager.statistics(session, id)
+            write_to_xls(statistic)
 
         @self.get('/', response_model=list[FullFederalRepresentation])
         async def func(

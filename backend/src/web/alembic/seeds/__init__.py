@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shared.storage.db.models import EventType, SportEvent, TeamParticipation, UserTeams
+from shared.storage.db.models import EventType, SportEvent, TeamParticipation, UserTeams, Location, Area
 from web.app.utils.users import user_manager
 
 from .factories import UserModelFactory, Factory, SportFactory, TeamSolutionFactory
@@ -20,11 +20,12 @@ async def seed_users(session: AsyncSession):
     return users
 
 
-async def seed_events(session, location_ids: list[int]):
+async def seed_events(session, locations: list[Location], count: int):
+    location_ids = [location.id for location in locations]
     stmt = select(EventType).where(EventType.sport == 'Спортивное программирование')
     event_type = await session.scalar(stmt)
     sports = []
-    for _ in range(10):
+    for _ in range(count):
         sport = SportFactory.build(location_id=SportFactory.__random__.choice(location_ids),
                                    type_event_id=event_type.id)
         session.add(sport)
@@ -33,8 +34,10 @@ async def seed_events(session, location_ids: list[int]):
     return sports
 
 
-async def seed_teams(session, sports: list[SportEvent], area_ids: list[int]):
-    for i in range(40):
+async def seed_teams(session, events: list[SportEvent], areas: list[Area]):
+    area_ids = [area.id for area in areas]
+    event_ids = [sport.id for sport in events]
+    for i in range(300):
         users = []
         for _ in range(3):
             user = UserModelFactory.build(password='password')
@@ -45,14 +48,14 @@ async def seed_teams(session, sports: list[SportEvent], area_ids: list[int]):
                              users=users,
                              )
         session.add(team)
-        await session.commit()
-        participation = TeamParticipation(team_id=team.id, event_id=Factory.__random__.choice(sport_event_ids))
+        await session.flush()
+        participation = TeamParticipation(team_id=team.id, event_id=Factory.__random__.choice(event_ids))
         session.add(participation)
         for user in users:
             user_team = UserTeams(user_id=user.id, team_id=team.id)
             session.add(user_team)
             user.area_id = team.area_id
             session.add(user)
-        solution = TeamSolutionFactory.build(team_id=team.id, event_id=Factory.__random__.choice(sport_ids))
+        solution = TeamSolutionFactory.build(team_id=team.id, event_id=Factory.__random__.choice(event_ids))
         session.add(solution)
         await session.commit()

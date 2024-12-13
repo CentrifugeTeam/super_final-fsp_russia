@@ -1,29 +1,38 @@
 import xlsxwriter
+from xlsxwriter import Workbook
+from xlsxwriter.worksheet import Worksheet
+
+from service_calendar.app.schemas.event import EventRead
+from web.app.schemas.representation import ReadStatisticsDistrict, ReadAreaCard, MonthStatistic, DistrictStatistic, \
+    ReadRepresentation, ReadRegionsCard, LeaderBase
 
 
-def write_to_xls():
+def write_to_xls(statistics: ReadStatisticsDistrict):
     workbook = xlsxwriter.Workbook('hello.xlsx')
     worksheet = workbook.add_worksheet()
+    write_chart(worksheet, workbook, statistics)
+    workbook.close()
+
+
+def write_chart(worksheet: Worksheet, workbook: Workbook, statistics: ReadStatisticsDistrict):
     bold = workbook.add_format({'bold': 1})
-    headings = ["Number", "Data", "Text"]
+
+    months_date = [month.date.strftime("%d.%m.%Y") for month in statistics.months]
+    months_count = [month.count_participants for month in statistics.months]
+
+    headings = ["Дата", "Кол-во участников"]
 
     data = [
-        [2, 3, 4, 5, 6, 7],
-        [20, 10, 20, 30, 40, 30],
-        ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        months_date,
+        months_count,
     ]
 
     worksheet.write_row("A1", headings, bold)
     worksheet.write_column("A2", data[0])
     worksheet.write_column("B2", data[1])
-    worksheet.write_column("C2", data[2])
     chart = build_chart(workbook)
     # Insert the chart into the worksheet (with an offset).
-    worksheet.insert_chart("D98", chart, {"x_offset": 25, "y_offset": 10})
-
-    workbook.close()
-
-
+    worksheet.insert_chart("I15", chart, {"x_offset": 25, "y_offset": 10})
 
 
 def build_chart(workbook):
@@ -57,4 +66,18 @@ def build_chart(workbook):
 
 
 if __name__ == '__main__':
-    write_to_xls()
+    pass
+    # repr = ReadRepresentation(
+    #     **dict(name='something',
+    #            photo_url='something',
+    #            contacts='something',
+    #            id=1,
+    #            type='region',
+    #            ))
+    # leader = LeaderBase(first_name='something',last_name='something', username='something', middle_name=None)
+    # ReadRegionsCard(representation=repr, leader=leader)
+    # months: list[MonthStatistic]
+    # statistics: DistrictStatistic
+    # events: list[EventRead]
+    # stat = ReadStatisticsDistrict(region=)
+    # write_to_xls()
