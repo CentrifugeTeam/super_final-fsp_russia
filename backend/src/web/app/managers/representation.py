@@ -251,34 +251,32 @@ class RepresentationManager(BaseManager):
             .where(Team.area_id == id)
             .scalar_subquery()
         )
-        # TODO
-        distinct_select = (select(District).
-                           options(joinedload(District.areas).subqueryload(Area.leader))
-                            .join(Area, Area.id == District.id)
-                           .where(Area.id == id).subquery())
+        area_select = (select(Area)
+                       .options(joinedload(Area.leader), joinedload(Area.district))
+                       .where(Area.id == id))
+
+        area = (await session.scalar(area_select))
+        if not area:
+            raise HTTPException(status_code=404, detail="Representation not found")
+
+        representation = ReadRepresentation.model_validate({'type': 'region', **area._asdict()},
+                                                           from_attributes=True)
+        leader = self._handle_leader_response(area)
+        if leader is None:
+            raise HTTPException(status_code=404, detail="Leader not found")
+
+        district = area.district
         stmt = (
-            select(distinct_select, team_stmt.label("team_count"), user_stmt.label("users_count"))
+            select(team_stmt.label("team_count"), user_stmt.label("users_count"))
         )
 
-        # stmt = self.assemble_stmt(stmt, options=[joinedload(District.areas).subqueryload(Area.leader)],
-        #                           )
-        result = (await session.execute(stmt)).mappings().unique()
+        team_count, users_count = (await session.execute(stmt)).all()[0]
 
-        if not result:
-            raise HTTPException(status_code=404, detail="Representation not found")
-        try:
-            result = next(result)
-        except StopIteration:
-            raise HTTPException(status_code=404, detail="Representation not found")
-        region = result['District'].areas[0]
-        representation = ReadRepresentation.model_validate({'type': 'region', **region._asdict()},
-                                                           from_attributes=True)
-        leader = self._handle_leader_response(region)
         region_representation = ReadRegionRepresentationBase.model_validate(
-            {'id': result['District'].id, 'leader': leader,
+            {'id': district.id, 'leader': leader,
              'representation': representation}, from_attributes=True)
 
-        federal_name = result['District'].name
+        federal_name = district.name
         top_month_stmt = (
             select(SportEvent.start_date, func.count(TeamParticipation.id))
             .join(TeamParticipation, TeamParticipation.event_id == SportEvent.id)
@@ -291,24 +289,26 @@ class RepresentationManager(BaseManager):
         top_month = await session.execute(top_month_stmt)
         top_months = [MonthStatistics(date=month[0], count_participants=month[1]) for month in top_month]
 
-        region = region.name.split(' ')
-        if len(region) != 2:
+        area = area.name.split(' ')
+        if len(area) != 2:
             return ReadCardRepresentation.model_validate(
                 {'top_months': top_months, 'events_count': None, 'last_events': None,
-                 'federal_name': federal_name, **result, 'RegionRepresentation': region_representation},
+                 'team_count': team_count,
+                 'users_count': users_count,
+                 'federal_name': federal_name, 'RegionRepresentation': region_representation},
                 from_attributes=True)
 
         last_events_stmt = (
             select(SportEvent)
             .options(joinedload(SportEvent.location), joinedload(SportEvent.type_event))
-            .where(Location.region.ilike(f"%{region[0]}%"))
+            .where(Location.region.ilike(f"%{area[0]}%"))
             .order_by(SportEvent.start_date.desc())
             .limit(6)
         )
         event_count_stmt = (select(
             func.count(SportEvent.id))
                             .join(Location, Location.id == SportEvent.location_id)
-                            .where(Location.region.ilike(f"%{region[0]}%"))
+                            .where(Location.region.ilike(f"%{area[0]}%"))
                             )
 
         last_events = await session.scalars(last_events_stmt)
@@ -316,5 +316,6 @@ class RepresentationManager(BaseManager):
 
         return ReadCardRepresentation.model_validate(
             {'top_months': top_months, 'events_count': event_count, 'last_events': last_events,
-             'federal_name': federal_name, **result, 'RegionRepresentation': region_representation},
+             'federal_name': federal_name, 'team_count': team_count,
+             'users_count': users_count, 'RegionRepresentation': region_representation},
             from_attributes=True)

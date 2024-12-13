@@ -15,6 +15,7 @@ class BaseSuggestion(BaseModel):
     count_participants: int
     age: str
     name: str
+    task_url: str | None = None
 
 
 class ReadSuggestion(BaseSuggestion):
