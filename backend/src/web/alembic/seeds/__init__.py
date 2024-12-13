@@ -37,7 +37,7 @@ async def seed_events(session, locations: list[Location], count: int):
 async def seed_teams(session, events: list[SportEvent], areas: list[Area]):
     area_ids = [area.id for area in areas]
     event_ids = [sport.id for sport in events]
-    for i in range(300):
+    for i in range(40):
         users = []
         for _ in range(3):
             user = UserModelFactory.build(password='password')

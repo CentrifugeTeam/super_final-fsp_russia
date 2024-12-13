@@ -15,6 +15,7 @@ def write_xls(statistics: ReadStatisticsDistrict):
     write_chart(worksheet, workbook, statistics)
     workbook.close()
 
+
 def stream_xls(statistics: ReadStatisticsDistrict):
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(output, {'in_memory': True})
@@ -28,20 +29,8 @@ def stream_xls(statistics: ReadStatisticsDistrict):
 def write_chart(worksheet: Worksheet, workbook: Workbook, statistics: ReadStatisticsDistrict):
     bold = workbook.add_format({'bold': 1})
 
-    months_date = [month.date.strftime("%d.%m.%Y") for month in statistics.months]
-    months_count = [month.count_participants for month in statistics.months]
+    chart = build_chart(worksheet, workbook, statistics.months)
 
-    headings = ["Дата мероприятия", "Кол-во участников"]
-
-    data = [
-        months_date,
-        months_count,
-    ]
-
-    worksheet.write_row("A1", headings, bold)
-    worksheet.write_column("A2", data[0])
-    worksheet.write_column("B2", data[1])
-    chart = build_chart(worksheet, workbook)
     chart2 = build_statistics(worksheet, workbook, statistics.statistics)
     # Insert the chart into the worksheet (with an offset).
 
@@ -71,6 +60,7 @@ def build_statistics(worksheet: Worksheet, workbook: Workbook, statistics: Distr
             "name": "Pie sales data",
             "categories": "=Sheet1!$G$2:$G$5",
             "values": "=Sheet1!$H$2:$H$5",
+            'data_labels': {'percentage': True},
         }
     )
 
@@ -84,7 +74,21 @@ def build_statistics(worksheet: Worksheet, workbook: Workbook, statistics: Distr
     worksheet.insert_chart("H12", chart1, {"x_offset": 25, "y_offset": 10})
 
 
-def build_chart(worksheet: Worksheet, workbook):
+def build_chart(worksheet: Worksheet, workbook, months: MonthStatistic):
+    bold = workbook.add_format({"bold": 1})
+    months_date = [month.date.strftime("%d.%m.%Y") for month in months]
+    months_count = [month.count_participants for month in months]
+
+    headings = ["Дата мероприятия", "Кол-во участников"]
+
+    data = [
+        months_date,
+        months_count,
+    ]
+
+    worksheet.write_row("A1", headings, bold)
+    worksheet.write_column("A2", data[0])
+    worksheet.write_column("B2", data[1])
     chart = workbook.add_chart({"type": "column"})
 
     # The following is used to get a mix of default and custom labels. The 'None'
