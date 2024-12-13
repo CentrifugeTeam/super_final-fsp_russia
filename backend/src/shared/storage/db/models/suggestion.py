@@ -8,6 +8,7 @@ class Suggestion(IDMixin, Base):
     __tablename__ = 'suggestions'
     name: Mapped[str] = mapped_column(String(length=200), nullable=False)
     competition: Mapped[str] = mapped_column(String(length=200), nullable=False)
+    task_url: Mapped[str] = mapped_column(String, nullable=True)
     location: Mapped[str] = mapped_column(String(length=200), nullable=False)
     start_date: Mapped[str] = mapped_column(Date, nullable=False)
     end_date: Mapped[str] = mapped_column(Date, nullable=False)

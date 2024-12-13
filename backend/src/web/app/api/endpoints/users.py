@@ -16,6 +16,7 @@ from ...schemas import ReadRepresentation
 from ...utils.crud import CrudAPIRouter
 from ...schemas.users import ReadUser, CreateUser, UpdateUser
 from ...schemas.teams import ReadUserMe
+from ...utils.permissions import Permission
 from ...utils.users import user_manager, backend, authenticator
 
 
@@ -142,6 +143,8 @@ class UsersRouter(CrudAPIRouter):
 
 
     def _patch_user(self):
+
+
         @self.patch('/{%s}' % self.resource_identifier, response_model=ReadUserMe,
                     responses={**missing_token_or_inactive_user_response, **bad_request_response,
                                **not_found_response})
