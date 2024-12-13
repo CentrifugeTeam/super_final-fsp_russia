@@ -37,8 +37,13 @@ export const TeamById = () => {
 
   // Получаем данные через хук useTeamById
   const { data, isLoading, isError } = useTeamById(id);
-  //человек без команды будет получать ошибку
-  const isMyTeam = reduxProfile?.teams[0].name === data?.name;
+
+  // Защита, если у пользователя нет команды
+  if (!reduxProfile?.teams || reduxProfile.teams.length === 0) {
+    return <div>Вы не состоите в команде.</div>;
+  }
+
+  const isMyTeam = reduxProfile?.teams?.[0]?.name === data?.name; // Убедимся, что есть доступ к команде
 
   // Обработка состояния загрузки и ошибок
   if (isLoading) return <div>Loading...</div>;
@@ -87,8 +92,14 @@ export const TeamById = () => {
         <></>
       )}
 
+      {/* Модальное окно */}
       {showModal && teamIdFromUrl && (
-        <TeamModalJoin teamId={teamIdFromUrl} onClose={() => setShowModal(false)} />
+        <>
+          <div className={styles['modal-overlay']} /> {/* Затемняющий фон */}
+          <div className={styles.modal}>
+            <TeamModalJoin teamId={teamIdFromUrl} onClose={() => setShowModal(false)} />
+          </div>
+        </>
       )}
     </div>
   );
