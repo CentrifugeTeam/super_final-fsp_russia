@@ -67,4 +67,4 @@ class ReadStatisticsDistrict(BaseModel):
     region: ReadRegionsCard
     months: list[MonthStatistic]
     statistics: DistrictStatistic
-    events: list[OneItemReadEvent]
+    events: list[EventRead]

@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute, joinedload, aliased
 from starlette import status
 
-from service_calendar.app.schemas.event import OneItemReadEvent
+from service_calendar.app.schemas.event import OneItemReadEvent, EventRead
 from shared.storage.db.models.teams import UserTeams, TeamParticipation
 from .base import BaseManager
 from shared.storage.db.models import District, Area, Team, User, SportEvent, Location, EventType
@@ -154,10 +154,12 @@ class RepresentationManager(BaseManager):
             .join(TeamParticipation, TeamParticipation.event_id == SportEvent.id)
             .join(Team, Team.id == TeamParticipation.team_id)
             .where(Area.id == area_id, SportEvent.end_date <= current_date)
+            .options(joinedload(SportEvent.type_event), joinedload(SportEvent.location))
             .limit(2)
         )
-        events = [OneItemReadEvent.model_validate(event._asdict(), from_attributes=True) for event in
-                  await session.scalars(two_events_from_area)]
+        events = [EventRead.model_validate(event, from_attributes=True) for event in
+                  (await session.scalars(two_events_from_area)).unique()
+                  ]
 
         return ReadStatisticsDistrict(region=region_card, months=months, statistics=distinct_statistics, events=events)
 
