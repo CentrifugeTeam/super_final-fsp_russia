@@ -41,10 +41,9 @@ def write_chart(worksheet: Worksheet, workbook: Workbook, statistics: ReadStatis
     worksheet.write_row("A1", headings, bold)
     worksheet.write_column("A2", data[0])
     worksheet.write_column("B2", data[1])
-    chart = build_chart(workbook)
+    chart = build_chart(worksheet, workbook)
     chart2 = build_statistics(worksheet, workbook, statistics.statistics)
     # Insert the chart into the worksheet (with an offset).
-    worksheet.insert_chart("A15", chart, {"x_offset": 25, "y_offset": 10})
 
 
 def build_statistics(worksheet: Worksheet, workbook: Workbook, statistics: DistrictStatistic):
@@ -85,7 +84,7 @@ def build_statistics(worksheet: Worksheet, workbook: Workbook, statistics: Distr
     worksheet.insert_chart("H12", chart1, {"x_offset": 25, "y_offset": 10})
 
 
-def build_chart(workbook):
+def build_chart(worksheet: Worksheet, workbook):
     chart = workbook.add_chart({"type": "column"})
 
     # The following is used to get a mix of default and custom labels. The 'None'
@@ -112,4 +111,5 @@ def build_chart(workbook):
 
     # Turn off the chart legend.
     chart.set_legend({"none": True})
+    worksheet.insert_chart("A15", chart, {"x_offset": 25, "y_offset": 10})
     return chart

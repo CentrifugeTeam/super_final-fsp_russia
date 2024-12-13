@@ -14,7 +14,7 @@ from ...schemas.representation import FullFederalRepresentation, ReadFederalRepr
     ReadRepresentation, ReadArea, ReadStatisticsDistrict
 from ...schemas import ReadCardRepresentation
 from ...managers.representation import RepresentationManager, area_manager
-from ...services.excel import stream_xls, write_xls
+from ...services.excel import stream_xls
 
 reps_manager = RepresentationManager()
 
@@ -48,9 +48,9 @@ class RepresentationAPIRouter(CrudAPIRouter):
                 id: int | None = None,
         ):
             statistic = await reps_manager.statistics(session, id)
-            xls = write_xls(statistic)
-            # return StreamingResponse(xls, media_type='application/vnd.ms-excel',
-            #                          headers={"Content-Disposition": 'attachment; filename=federations.xls'})
+            xls = stream_xls(statistic)
+            return StreamingResponse(xls, media_type='application/vnd.ms-excel',
+                                     headers={"Content-Disposition": 'attachment; filename=federations.xls'})
 
         @self.get('/', response_model=list[FullFederalRepresentation])
         async def func(
