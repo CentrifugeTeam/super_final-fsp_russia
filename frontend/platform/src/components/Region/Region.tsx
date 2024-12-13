@@ -11,12 +11,10 @@ import { useUserContext } from "@/app/providers/context/UserContext";
 const Region: React.FC<{ region: IRegion }> = ({ region }) => {
   const navigate = useNavigate(); // Initialize navigate
   const modalRef = useRef<HTMLDivElement>(null); // Reference for modal window
-
   const { role } = useUserContext(); // Get user role from context
 
   // State for modal window
   const [isModalOpen, setModalOpen] = useState(false);
-
   // State for form inputs and validation errors
   const [formData, setFormData] = useState({
     first_name: "",
@@ -24,7 +22,6 @@ const Region: React.FC<{ region: IRegion }> = ({ region }) => {
     middle_name: "",
     email: "",
   });
-
   const [emailError, setEmailError] = useState<string>("");
 
   // Check if leader exists to avoid TypeError
@@ -44,8 +41,8 @@ const Region: React.FC<{ region: IRegion }> = ({ region }) => {
 
   // Function to handle leader click
   const handleLeaderClick = () => {
-    if (role !== "federal") {
-      setModalOpen(true);
+    if (role === "federal") {
+      setModalOpen(true); // Open modal if role is 'federal'
     }
   };
 
@@ -64,9 +61,7 @@ const Region: React.FC<{ region: IRegion }> = ({ region }) => {
         setModalOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -98,7 +93,6 @@ const Region: React.FC<{ region: IRegion }> = ({ region }) => {
     } else {
       setEmailError(""); // Reset email error if valid
     }
-
     if (leader.username) {
       const data = {
         ...formData,
@@ -107,12 +101,7 @@ const Region: React.FC<{ region: IRegion }> = ({ region }) => {
         last_name: formData.last_name || leaderData?.last_name || "",
         middle_name: formData.middle_name || leaderData?.middle_name || "",
       };
-
-      updateUser({
-        username: leader.username,
-        data,
-      });
-
+      updateUser({ username: leader.username, data });
       closeModal();
     }
   };
@@ -126,32 +115,26 @@ const Region: React.FC<{ region: IRegion }> = ({ region }) => {
       >
         {region.representation?.name || "Неизвестный регион"}
       </h4>
-
       {/* Display leader info if exists */}
       {leader && leader.first_name !== "<Неизвестно>" ? (
         <h4
           className={`${style.text} ${style.leader} ${
-            role === "federal" ? style.disabled : ""
+            role !== "federal" ? style.disabled : ""
           }`}
-          onClick={role !== "federal" ? handleLeaderClick : undefined} // Disable click if role is federal
+          onClick={role === "federal" ? handleLeaderClick : undefined} // Allow click only for federal role
         >
           {leaderFullName}
         </h4>
       ) : (
         <h4 className={`${style.text} ${style.leader}`}>Нет данных о лидере</h4>
       )}
-
       <h4 className={`${style.text} ${style.contacts}`}>
         {region.representation?.contacts || "Нет контактов"}
       </h4>
-
       {/* Modal for editing leader info */}
       {isModalOpen && (
         <div className={style.modal}>
-          <div
-            className={style.modalContent}
-            ref={modalRef} // Attach ref to modal
-          >
+          <div className={style.modalContent} ref={modalRef}>
             <h2>Редактировать информацию о региональном представителе</h2>
             {/* Display loading or error state */}
             {isLoading ? (

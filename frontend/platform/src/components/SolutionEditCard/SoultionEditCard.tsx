@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTeamsByEventId } from "@/shared/api/getEvents"  // Импортируем хук для получения команд по ID события
 import { useTeams } from "@/shared/api/getTeams";
 import styles from "./solutioneditcard.module.scss";
 import { Team } from "@/shared/api/getTeams";
@@ -6,6 +7,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 interface SolutionEditCardProps {
   selectedRegion: string;
+  selectedEventId?: number | undefined | null;
   currentPage: number;
   pageSize: number;
   onTotalPagesChange?: (totalPages: number) => void;
@@ -13,36 +15,32 @@ interface SolutionEditCardProps {
 
 export const SolutionEditCard = ({
   selectedRegion,
+  selectedEventId,
   currentPage,
   pageSize,
   onTotalPagesChange,
 }: SolutionEditCardProps) => {
   const navigate = useNavigate();
-	const location = useLocation();
+  const location = useLocation();
   const [teams, setTeams] = useState<Team[]>([]);
 
-  const { data, isLoading, isError } = useTeams({
-    federal_name: selectedRegion !== "all" ? selectedRegion : undefined,
-    page: currentPage,
-    size: pageSize,
-  });
+  // Если находимся на /profile/teams, то используем хук для получения команд по eventId
+  const { data, isLoading, isError } = selectedEventId
+    ? useTeamsByEventId(selectedEventId, currentPage, pageSize) // Используем хук для получения команд по ID события
+    : useTeams({
+        federal_name: selectedRegion !== "all" ? selectedRegion : undefined,
+        page: currentPage,
+        size: pageSize,
+      });
 
-  // Логирование и проверка типа функции onTotalPagesChange
+  // Логика для обработки данных после загрузки
   useEffect(() => {
-    console.log(
-      "onTotalPagesChange type in SolutionEditCard:",
-      typeof onTotalPagesChange
-    );
-
     if (data) {
       setTeams(data.items);
       const totalPages = Math.ceil(data.total / pageSize);
 
-      // Проверка перед вызовом
       if (typeof onTotalPagesChange === "function") {
-        onTotalPagesChange(totalPages); // вызываем функцию, если она существует
-      } else {
-        console.error("onTotalPagesChange не является функцией!");
+        onTotalPagesChange(totalPages); // Вызываем callback, если он существует
       }
     }
   }, [data, onTotalPagesChange, pageSize]);
@@ -52,7 +50,7 @@ export const SolutionEditCard = ({
       <div className={styles.table}>
         <h1>Команды</h1>
         <h1>Регион</h1>
-        <h1>Рейтинг</h1>
+        <h1>{location.pathname === "/profile/solutions" ? "Оценка" : "Рейтинг"}</h1>
       </div>
       {teams.map((team) => (
         <div key={team.id} className={styles.table2}>
@@ -66,15 +64,14 @@ export const SolutionEditCard = ({
           >
             {team.name}
           </h1>
-          <h1>{team.federal.name}</h1>
+          <h1>{team.district?.[0]?.name || "Не указан"}</h1>
           <h1>
-            {/* Кнопка "Оценить", при клике перенаправляет на страницу редактирования */}
-            <button
-              onClick={() => navigate(`/profile/solutions/${team.id}/edit`)}
-              className={styles.evaluateButton}
-            >
-              Оценить
-            </button>
+            {/* Если находимся на /profile/solutions, показываем score */}
+            {location.pathname === "/profile/solutions" ? (
+              <span>{team.solutions?.[0]?.score || "Не оценено"}</span> // Показываем оценку
+            ) : (
+              <span>{team.solutions?.[0]?.score || "Нет оценки"}</span> // Показываем рейтинг, если не на /profile/solutions
+            )}
           </h1>
         </div>
       ))}

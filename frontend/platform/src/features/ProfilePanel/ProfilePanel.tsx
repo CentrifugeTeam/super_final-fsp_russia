@@ -9,15 +9,12 @@ export const ProfilePanel = () => {
   const navigate = useNavigate();
   const { role } = useUserContext();
 
-
-	const { profile: reduxProfile } = useAppSelector(
-    (state) => state.profile
-  );
+  const { profile: reduxProfile } = useAppSelector((state) => state.profile);
 
   return (
     <div className={styles.profilePanel}>
       <div className={styles.role}>
-			<RoleProfilePanel regionInfo={reduxProfile?.representation?.name} />
+        <RoleProfilePanel regionInfo={reduxProfile?.representation?.name} />
       </div>
 
       <div className={styles.personInfo}>
@@ -36,14 +33,19 @@ export const ProfilePanel = () => {
           Мой профиль
         </h3>
         {/* Заявки */}
-				<h3
-					className={`${styles.active} ${
-						location.pathname === "/profile/requests" ? styles.activeSelected : ""
-					}`}
-					onClick={() => navigate("/profile/requests")}
-				>
-					Заявки
-				</h3>
+				{ role === "usual" ? (<></>) : (
+					<h3
+          className={`${styles.active} ${
+            location.pathname === "/profile/requests"
+              ? styles.activeSelected
+              : ""
+          }`}
+          onClick={() => navigate("/profile/requests")}
+        >
+          Заявки
+        </h3>
+				)
+				}
         {/* Решение - доступно только для "federal" */}
         {/* {isFederal && ( */}
         <h3
@@ -66,7 +68,7 @@ export const ProfilePanel = () => {
         >
           Рейтинг
         </h3>
-				{/* Рейтинг */}
+        {/* Рейтинг */}
         <h3
           className={`${styles.active} ${
             location.pathname === "/profile/teams" ? styles.activeSelected : ""

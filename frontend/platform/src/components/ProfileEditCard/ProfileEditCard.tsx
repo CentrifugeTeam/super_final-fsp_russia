@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/redux/hooks";
 import { fetchProfile } from "@/app/redux/slices/profileSlice";
-import { useUserByUsername } from "@/shared/api/getProfile"; // Хук для получения данных пользователя по username
 import styles from "./profileeditcard.module.scss";
 import { Button } from "../ui/button";
 
@@ -21,24 +20,21 @@ export const ProfileCard = () => {
     isError: reduxError,
   } = useAppSelector((state) => state.profile);
 
-  // Call `useUserByUsername` unconditionally
-  const {
-    data: userProfile,
-    isLoading: userLoading,
-    isError: userError,
-  } = useUserByUsername(username || "");
-
   // Fetch current user's profile if not already loaded
   useEffect(() => {
     if (!reduxProfile && !reduxLoading && !username) {
+      console.log("Fetching profile...");
       dispatch(fetchProfile());
     }
   }, [dispatch, reduxProfile, reduxLoading, username]);
 
   // Determine which data to use
-  const profile = username ? userProfile : reduxProfile;
-  const isLoadingProfile = username ? userLoading : reduxLoading;
-  const isErrorProfile = username ? userError : reduxError;
+  const profile = reduxProfile;
+  const isLoadingProfile = reduxLoading;
+  const isErrorProfile = reduxError;
+
+  // Log data for debugging
+  console.log("Redux profile:", reduxProfile);
 
   // Handle loading, error, or missing data states
   if (isLoadingProfile) return <p className="text-black">Загрузка...</p>;
@@ -69,7 +65,10 @@ export const ProfileCard = () => {
         <div className={styles.imgContainer}>
           <img
             className={styles.img}
-            src={profile.photo_url || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4UmW5FE0dXoSm3h5meecSKpw0oX1Jk3bZvA&s"}
+            src={
+              profile.photo_url ||
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4UmW5FE0dXoSm3h5meecSKpw0oX1Jk3bZvA&s"
+            }
             alt="Profile"
           />
         </div>
@@ -97,3 +96,5 @@ export const ProfileCard = () => {
     </>
   );
 };
+
+export default ProfileCard;

@@ -3,15 +3,19 @@ import styles from "./ratingedit.module.scss";
 import { useEffect } from "react";
 import { useAppSelector } from "@/app/redux/hooks";
 import { useNavigate } from "react-router-dom";
+import { useUserContext } from "@/app/providers/context/UserContext";
 
 export const RatingEdit = () => {
+	const { role } = useUserContext();
 	const navigate = useNavigate();
 	const { profile: reduxProfile } = useAppSelector((state) => state.profile);
 
 	useEffect(() => {
-    if (!reduxProfile?.teams || reduxProfile?.teams.length === 0) {
-      navigate('/profile/teams'); // Редирект на страницу с командами
-    }
+		if (role === "usual"){
+			if (!reduxProfile?.teams || reduxProfile?.teams.length === 0) {
+				navigate('/profile/teams'); // Редирект на страницу с командами
+			}
+		}
   }, [reduxProfile, navigate]);
 
   return (

@@ -4,14 +4,14 @@ import { logout, updateTokens } from "@/app/redux/slices/authSlice"; // Redux ac
 
 const API_BASE_URL = "https://hackcentrifuge.ru/calendar/api";
 
-export const api = axios.create({
+export const apiCalendary = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-api.interceptors.request.use(
+apiCalendary.interceptors.request.use(
   (config) => {
     const state = store.getState();
     const accessToken = state.auth.accessToken;
@@ -25,7 +25,7 @@ api.interceptors.request.use(
   }
 );
 
-api.interceptors.response.use(
+apiCalendary.interceptors.response.use(
   (response) => {
     return response;
   },
@@ -52,7 +52,7 @@ api.interceptors.response.use(
         );
 
         originalRequest.headers.Authorization = `Bearer ${access_token}`;
-        return api(originalRequest);
+        return apiCalendary(originalRequest);
       } catch (refreshError) {
         store.dispatch(logout());
         return Promise.reject(refreshError);
