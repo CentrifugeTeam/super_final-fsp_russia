@@ -35,9 +35,30 @@ export const StatsPage = () => {
 
   const handleExport = () => {
     if (selectedFederationId) {
-      // Отправляем запрос на сервер с id федерации (region id)
       api
-        .get(`/reps/federations/${selectedFederationId}/export`)
+        .get(`/reps/federations/${selectedFederationId}/export/statistics`, {
+          responseType: "blob", // Expecting a file (blob)
+        })
+        .then((response) => {
+          // Create a temporary link to trigger the download
+          const blob = response.data;
+          const link = document.createElement("a");
+
+          // Create a URL for the blob and set it as the href of the link
+          const url = window.URL.createObjectURL(blob);
+          link.href = url;
+          link.download = "federations.xls"; // Specify the filename for download
+
+          // Append the link to the DOM (it won't be visible)
+          document.body.appendChild(link);
+
+          // Trigger the click event to start the download
+          link.click();
+
+          // Cleanup: remove the link after triggering the download
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url); // Release the object URL
+        })
         .catch((error) => {
           console.error("Ошибка при экспорте:", error);
         });
