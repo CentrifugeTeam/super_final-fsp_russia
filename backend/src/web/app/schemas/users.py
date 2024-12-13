@@ -23,7 +23,7 @@ class BaseUser(BaseModel):
     first_name: str
     middle_name: str | None = None
     last_name: str
-    email: EmailStr
+    email: str
     about: str | None = None
 
     def __acl__(self):
