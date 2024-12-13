@@ -68,7 +68,9 @@ export const SolutionEditCard = ({
           <h1>
             {/* Если находимся на /profile/solutions, показываем score */}
             {location.pathname === "/profile/solutions" ? (
-              <span>{team.solutions?.[0]?.score || "Не оценено"}</span> // Показываем оценку
+              <button style={{color: 'balck'}} onClick={(() => navigate(`/solutions/${team.id}/edit`))}>
+								{team.solutions?.[0]?.score || "оценить"}
+							</button>
             ) : (
               <span>{team.solutions?.[0]?.score || "Нет оценки"}</span> // Показываем рейтинг, если не на /profile/solutions
             )}
