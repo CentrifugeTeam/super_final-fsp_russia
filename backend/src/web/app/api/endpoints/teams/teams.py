@@ -1,10 +1,12 @@
 from datetime import datetime
 from typing import Callable, Any, Annotated
 
+from fastapi_pagination.ext.sqlalchemy import paginate
 from pydantic import ValidationError
 from fastapi import Depends, HTTPException, UploadFile, Form, Response
 from fastapi_pagination import Page
 from fastapi_sqlalchemy_toolkit import NullableQuery
+from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 from starlette import status
 
@@ -84,18 +86,32 @@ class TeamsRouter(CrudAPIRouter):
         @self.get('/sports', responses={**not_found_response})
         async def teams(team_id: int | None = None,
                         sport_id: int | None = None,
+                        is_scored: bool = True,
                         session=Depends(get_session)
                         ) -> Page[ReadCommandAndRatings]:
             filter_expressions = {}
+            stmt = select(Team)
             if team_id:
+                stmt = stmt.where(Team.id == team_id)
                 filter_expressions[Team.id] = team_id
             if sport_id:
-                filter_expressions[SportEvent.id] = sport_id
-            return await self.manager.paginated_list(session,
-                                                     filter_expressions=filter_expressions,
-                                                     options=[joinedload(Team.district), joinedload(Team.solutions),
-                                                              joinedload(Team.events)]
-                                                     )
+                stmt = (stmt
+                        .join(TeamParticipation, TeamParticipation.team_id == Team.id)
+                        .join(SportEvent, SportEvent.id == TeamParticipation.event_id)
+                        .where(SportEvent.id == sport_id)
+                        )
+            if is_scored:
+                stmt = (stmt
+                        .join(TeamSolution, TeamSolution.team_id == Team.id)
+                        .where(TeamSolution.score != None)
+                        .options(joinedload(Team.district), joinedload(Team.solutions), joinedload(Team.events)))
+                return await paginate(session, stmt, transformer=None)
+            else:
+                stmt = (stmt
+                        .join(TeamSolution, TeamSolution.team_id == Team.id)
+                        .where(TeamSolution.score == None)
+                        .options(joinedload(Team.district), joinedload(Team.solutions), joinedload(Team.events)))
+                return await paginate(session, stmt, transformer=None)
 
         @self.get("/")
         async def get_all_teams(
