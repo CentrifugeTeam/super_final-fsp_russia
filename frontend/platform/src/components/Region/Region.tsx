@@ -6,10 +6,13 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useUserByUsername, useUpdateUser } from "@/shared/api/users"; // Import the hooks
 import { validateEmail } from "@/features/Registration/utils/validators";
+import { useUserContext } from "@/app/providers/context/UserContext";
 
 const Region: React.FC<{ region: IRegion }> = ({ region }) => {
   const navigate = useNavigate(); // Initialize navigate
   const modalRef = useRef<HTMLDivElement>(null); // Reference for modal window
+
+  const { role } = useUserContext(); // Get user role from context
 
   // State for modal window
   const [isModalOpen, setModalOpen] = useState(false);
@@ -41,7 +44,9 @@ const Region: React.FC<{ region: IRegion }> = ({ region }) => {
 
   // Function to handle leader click
   const handleLeaderClick = () => {
-    setModalOpen(true);
+    if (role !== "federal") {
+      setModalOpen(true);
+    }
   };
 
   // Function to close modal
@@ -85,8 +90,8 @@ const Region: React.FC<{ region: IRegion }> = ({ region }) => {
 
   // Handle form submission
   const handleFormSubmit = () => {
-    // Validate email before submitting
-    const emailValidationError = validateEmail(formData.email);
+    const email = formData.email || leaderData?.email || "";
+    const emailValidationError = validateEmail(email);
     if (emailValidationError) {
       setEmailError(emailValidationError); // Set email error if invalid
       return; // Prevent form submission if the email is invalid
@@ -95,22 +100,20 @@ const Region: React.FC<{ region: IRegion }> = ({ region }) => {
     }
 
     if (leader.username) {
-      // Prepare form data to be sent
       const data = {
         ...formData,
+        email, // Ensure email is always present
         first_name: formData.first_name || leaderData?.first_name || "",
         last_name: formData.last_name || leaderData?.last_name || "",
         middle_name: formData.middle_name || leaderData?.middle_name || "",
-        email: formData.email || leaderData?.email || "",
       };
 
-      // Send the data to API
       updateUser({
         username: leader.username,
         data,
       });
 
-      closeModal(); // Close the modal after submitting
+      closeModal();
     }
   };
 
@@ -127,8 +130,10 @@ const Region: React.FC<{ region: IRegion }> = ({ region }) => {
       {/* Display leader info if exists */}
       {leader && leader.first_name !== "<Неизвестно>" ? (
         <h4
-          className={`${style.text} ${style.leader}`}
-          onClick={handleLeaderClick} // Open modal on click
+          className={`${style.text} ${style.leader} ${
+            role === "federal" ? style.disabled : ""
+          }`}
+          onClick={role !== "federal" ? handleLeaderClick : undefined} // Disable click if role is federal
         >
           {leaderFullName}
         </h4>
