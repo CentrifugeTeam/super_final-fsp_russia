@@ -3,31 +3,17 @@ import RequestEditCard from "@/components/RequestEditCard/RequestEditCard";
 import styles from "./requestedit.module.scss";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { useUserContext } from "@/app/providers/context/UserContext";
-import { useAppSelector } from "@/app/redux/hooks";
 
 export const Requests = () => {
   const navigate = useNavigate();
-	const { role } = useUserContext();
   const { data: suggestions, isLoading, isError } = useSuggestions();
-	const { profile: reduxProfile } = useAppSelector(
-    (state) => state.profile
-  );
 
   const handleNewRequest = () => {
-		if (role === "federal" || role === "region"){
-    	navigate("/profile/requests/new");
-		} else {
-			navigate(`/profile/${reduxProfile?.teams[0].name}/requests/new`)
-		}
+		navigate("/profile/requests/new");
   };
 
   const handleCardClick = (id: number) => {
-		if (role === "federal" || role === "region"){
-			navigate(`/profile/requests/${id}/edit`); // Navigate to EditRequest
-		} else {
-			// navigate(`/profile/requests/${id}/edit`)
-		}
+		navigate(`/profile/requests/${id}/edit`); // Navigate to EditRequest
   };
 
   return (

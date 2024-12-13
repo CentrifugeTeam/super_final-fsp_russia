@@ -2,12 +2,12 @@ import { useNavigate } from "react-router-dom";
 import styles from "./profilepanel.module.scss";
 import { RoleProfilePanel } from "@/components/RoleProfilePanel";
 import { PersonInfoProfilePanel } from "@/components/PersonInfoProfilePanel";
-// import { useUserContext } from "@/app/providers/context/UserContext";
+import { useUserContext } from "@/app/providers/context/UserContext";
 import { useAppSelector } from "@/app/redux/hooks";
 
 export const ProfilePanel = () => {
   const navigate = useNavigate();
-  // const { role } = useUserContext();
+  const { role } = useUserContext();
 
   const { profile: reduxProfile } = useAppSelector((state) => state.profile);
 
@@ -33,7 +33,8 @@ export const ProfilePanel = () => {
           Мой профиль
         </h3>
         {/* Заявки */}
-        <h3
+				{ role === "usual" ? (<></>) : (
+					<h3
           className={`${styles.active} ${
             location.pathname === "/profile/requests"
               ? styles.activeSelected
@@ -43,6 +44,8 @@ export const ProfilePanel = () => {
         >
           Заявки
         </h3>
+				)
+				}
         {/* Решение - доступно только для "federal" */}
         {/* {isFederal && ( */}
         <h3

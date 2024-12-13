@@ -14,8 +14,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/app/redux/hooks";
 import { TeamCreate } from "@/components/TeamCreate";
+import { useUserContext } from "@/app/providers/context/UserContext";
 
 export const Teams = () => {
+	const { role } = useUserContext();
   const [selectedEvent, setSelectedEvent] = useState<string>("all");
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null); // Хранение ID выбранного события
   const { data: events, isLoading, isError } = useEvents(1, 10);
@@ -39,13 +41,13 @@ export const Teams = () => {
     const selected = events?.items?.find((event) => event.name === value);
     setSelectedEventId(selected?.id || null); // Устанавливаем ID события
   };
-
+	console.log(role)
   return (
     <div className={styles.contet}>
       <div className={styles.header}>
         <h1 className={styles.headerText}>Команды и рейтинг</h1>
 
-        {reduxProfile?.teams ? (
+        {reduxProfile?.teams || role !== 'usual' ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="text-black">
@@ -106,7 +108,7 @@ export const Teams = () => {
       </div>
 
       <div className={styles.profileEditComponenst}>
-        {reduxProfile?.teams ? (
+        {reduxProfile?.teams || role !== 'usual' ? (
           <SolutionEditCard
             selectedRegion={selectedEvent}
             selectedEventId={selectedEventId}

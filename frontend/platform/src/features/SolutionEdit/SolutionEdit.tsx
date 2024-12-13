@@ -14,9 +14,11 @@ import { useState, useEffect } from "react";
 import { useFederations } from "@/shared/api/federations";
 import { useAppSelector } from "@/app/redux/hooks";
 import { useNavigate } from "react-router-dom";
+import { useUserContext } from "@/app/providers/context/UserContext";
 
 export const Solutions = () => {
 	const navigate = useNavigate();
+	const { role } = useUserContext();
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState<number>(1); // Текущее состояние страницы
   const [totalPages, setTotalPages] = useState<number>(1); // Общее количество страниц
@@ -46,9 +48,11 @@ export const Solutions = () => {
   };
 
 	useEffect(() => {
-    if (!reduxProfile?.teams || reduxProfile?.teams.length === 0) {
-      navigate('/profile/teams'); // Редирект на страницу с командами
-    }
+		if (role === "usual"){
+			if (!reduxProfile?.teams || reduxProfile?.teams.length === 0) {
+				navigate('/profile/teams'); // Редирект на страницу с командами
+			}
+		}
   }, [reduxProfile, navigate]);
 
   return (
