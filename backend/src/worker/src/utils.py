@@ -152,7 +152,7 @@ async def create_user(session: AsyncSession, full_name: str, email: str):
 
     # Генерируем username на основе email (если он есть)
     username = email.split('@')[0]
-    user = await session.scalar(select(User).filter(User.email == email))
+    user = await session.scalar(select(User).filter(User.username == username))
 
     if user:
         return user
@@ -189,7 +189,7 @@ async def create_user(session: AsyncSession, full_name: str, email: str):
             await session.commit()
             return obj
 
-        user: User = await user_manager.create_user(session, in_obj=user_data, commit=False,
+        user: User = await user_manager.create_user(session, in_obj=user_data, commit=True,
                                                     refresh_attribute_names=['roles'], is_leader=True)
         role1 = await _create_if_dont_exist(session, {'name': 'leader'}, Role, _if_dont_exist)
         role2 = await _create_if_dont_exist(session, {'name': 'region'}, Role, _if_dont_exist)
