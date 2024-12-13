@@ -20,7 +20,6 @@ class BaseUser(BaseModel):
 
     Метод __acl__ используется для определения списка контроля доступа для пользователя.
     """
-    username: str
     first_name: str
     middle_name: str | None = None
     last_name: str
@@ -46,6 +45,8 @@ class CreateUser(BaseUser):
     - password: Пароль пользователя.
     """
     password: str
+    username: str
+
 
 
 class ReadUser(BaseUser):
@@ -56,6 +57,7 @@ class ReadUser(BaseUser):
     # is_superuser: Булево значение, указывающее, является ли пользователь суперпользователем.
     """
     id: int
+    username: str
     photo_url: str | None
     is_superuser: bool
     is_verified: bool

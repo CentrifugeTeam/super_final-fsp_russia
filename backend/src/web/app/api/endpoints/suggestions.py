@@ -8,7 +8,7 @@ from crud.openapi_responses import missing_token_or_inactive_user_response, forb
 from service_calendar.app.utils.email_sender import Message
 from shared.crud.openapi_responses import bad_request_response
 from worker.src.exceptions import ResourceExistsException
-from ...conf import smtp_message
+from ...conf import smtp_message, settings
 from ...utils.crud import PermissionCrudAPIRouter, CrudAPIRouter
 from shared.storage.db.models import Suggestion
 from fastapi_sqlalchemy_toolkit import ordering_depends
@@ -109,7 +109,7 @@ class Router(CrudAPIRouter):
 
 
             await smtp_message.asend_email(model.user.email,
-                                           Message(url_for_button=f'https://centrifugo.tech/suggestions/{id}',
+                                           Message(url_for_button=f'{settings.DOMAIN_URI}/suggestions/{id}',
                                                    title='На вашу заявку отреагировали! Смотрите подробнее:',
                                                    text_on_button='Заявка', text=text)
                                            )

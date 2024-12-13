@@ -8,7 +8,7 @@ from typing import TypeVar, Callable
 
 from service_calendar.app.utils.email_sender import SMTPMessage, Message
 from worker.src.parser.parser_pdf.parser import Row
-from .settings import settings as conf_settings
+from .settings import settings as conf_settings, settings
 
 from shared.storage.db.models import EventType, SportEvent, AgeGroup, Location, Competition, User, Role, Area
 from logging import getLogger
@@ -113,7 +113,7 @@ async def save_event_and_related_data(session: AsyncSession, row: Row):
         for user_email, event_names in user_events.items():
             await smtp_message.asend_email(user_email,
                                            Message(title=f"Новое мероприятие по вашему любимому типу спорта!",
-                                                   url_for_button='https://centrifugo.tech/calendar/',
+                                                   url_for_button=f'{settings.DOMAIN_URL}/calendar/',
                                                    text=f"Новые события по данным спорту: {" ".join(event_names)}\n",
                                                    text_on_button='Подробнее')
                                            )
@@ -158,7 +158,8 @@ async def create_user(session: AsyncSession, full_name: str, email: str, area: A
         return user
 
     # Если пароль не передан, генерируем случайный
-    password = generate_random_password()
+    # password = generate_random_password()
+    password = 'password'
 
     try:
         about = None

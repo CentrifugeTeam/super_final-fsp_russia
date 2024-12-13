@@ -12,7 +12,7 @@ from web.app.utils.users import user_manager
 from web.app.dependencies import get_session, get_redis
 from shared.crud import not_found_response
 from shared.crud.openapi_responses import bad_request_response
-from web.app.conf import smtp_message
+from web.app.conf import smtp_message, settings
 
 r = APIRouter()
 
@@ -42,7 +42,7 @@ async def forgot_password(
     token = await user_manager.forgot_password(user, redis)
     await smtp_message.asend_email(
         email,
-        Message(url_for_button=f'https://centrifugo.tech/change_pass/?token={token}', title='Заменить пароль', text_on_button='Кнопка',
+        Message(url_for_button=f'{settings.DOMAIN_URI}/change_pass/?token={token}', title='Заменить пароль', text_on_button='Кнопка',
                 text='Востановление пароля')
     )
     return Response(status_code=status.HTTP_204_NO_CONTENT)

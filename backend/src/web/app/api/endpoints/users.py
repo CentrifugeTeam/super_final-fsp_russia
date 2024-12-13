@@ -150,31 +150,14 @@ class UsersRouter(CrudAPIRouter):
                                **not_found_response})
         async def func(
                 username: str,
-                first_name: str = Form(None),
-                last_name: str = Form(None),
-                email: str = Form(None),
-                middle_name: str = Form(None),
-                about: str = Form(None),
-                file: UploadFile | None = None,
+                obj: UpdateUser,
                 session: AsyncSession = Depends(self.get_session),
                 patcher: User = Depends(authenticator.get_user()),
 
         ):
             user_in_db = await self.manager.get_or_404(session, username=username)
-            try:
-                if file:
-                    file = await _save_file_to_static(file)
 
-                user = self.update_schema(username=username, first_name=first_name, middle_name=middle_name,
-                                          last_name=last_name,
-                                          photo_url=file,
-                                          email=email, about=about)
-            except ValidationError as e:
-                raise HTTPException(status_code=422, detail=e.errors())
-            except FileDoesntSave as e:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Could not upload file')
-
-            user = await user_manager.update(session, user_in_db, user, refresh_attribute_names=['area'])
+            user = await user_manager.update(session, user_in_db, obj, refresh_attribute_names=['area'])
             representation = await user.awaitable_attrs.area
             teams = await user.awaitable_attrs.teams
             return self._response_me(user, representation, teams)
