@@ -186,7 +186,7 @@ async def create_user(session: AsyncSession, full_name: str, email: str):
     async with session.begin_nested():
         async def _if_dont_exist(session, _dict, model):
             obj = model(**_dict)
-            await session.flush()
+            await session.commit()
             return obj
 
         user: User = await user_manager.create_user(session, in_obj=user_data, commit=False,

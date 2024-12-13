@@ -2,8 +2,7 @@ from datetime import datetime
 from typing import Callable, Any, Annotated
 
 from pydantic import ValidationError
-from sqlalchemy import select
-from fastapi import Depends, HTTPException, UploadFile, Form
+from fastapi import Depends, HTTPException, UploadFile, Form, Response
 from fastapi_pagination import Page
 from fastapi_sqlalchemy_toolkit import NullableQuery
 from sqlalchemy.orm import joinedload
@@ -12,7 +11,8 @@ from starlette import status
 from crud.openapi_responses import bad_request_response, invalid_response
 from service_calendar.app.api.endpoints.events import event_manager
 from shared.crud import not_found_response, missing_token_or_inactive_user_response
-from shared.storage.db.models import SportEvent, Team, TeamSolution, District, User, TeamParticipation, UserTeams
+from shared.storage.db.models import SportEvent, Team, TeamSolution, District, User, TeamParticipation, UserTeams, \
+    ParticipationApplication
 from web.app.dependencies import get_session
 from web.app.schemas.representation import ReadFederalRepresentation
 from web.app.utils.crud import MockCrudAPIRouter, CrudAPIRouter
@@ -28,6 +28,22 @@ class TeamsRouter(CrudAPIRouter):
         super().__init__(TeamRead, TeamManager(), TeamCreate, TeamUpdate, resource_identifier='id')
 
     def _create(self):
+
+        @self.post('/register', responses={**not_found_response, **bad_request_response},
+                   status_code=status.HTTP_204_NO_CONTENT)
+        async def register_team(event_id: int,
+                                user=Depends(authenticator.get_user()),
+                                session=Depends(get_session)):
+            event = await event_manager.get_or_404(session, id=event_id)
+            teams = await user.awaitable_attrs.teams
+            if not teams:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            team = teams[0]
+            participation = ParticipationApplication(team_id=team.id, event_id=event.id)
+            session.add(participation)
+            await session.commit()
+            return Response(status_code=status.HTTP_204_NO_CONTENT)
+
         @self.post("/", response_model=TeamRead,
                    responses={**invalid_response, **not_found_response, **missing_token_or_inactive_user_response},
                    status_code=status.HTTP_201_CREATED)

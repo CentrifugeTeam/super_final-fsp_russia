@@ -58,7 +58,7 @@ class LocationFactory(BaseFactory):
     __model__ = Location
     id = Ignore()
     city = Use(faker.unique.city)
-    country = Use(faker.unique.country)
+    country = Use(lambda: "Россия")
     region = Use(faker.unique.region)
 
 

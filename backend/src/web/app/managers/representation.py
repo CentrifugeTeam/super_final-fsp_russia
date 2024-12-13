@@ -15,7 +15,7 @@ from .base import BaseManager
 from shared.storage.db.models import District, Area, Team, User, SportEvent, Location, EventType
 from ..schemas import ReadCardRepresentation, MonthStatistics, ReadRegionRepresentationBase
 from ..schemas.representation import ReadRegionsCard, FullFederalRepresentation, ReadRepresentation, \
-    ReadStatisticsDistrict, LeaderBase, DistrictStatistic, MonthStatistic
+    ReadStatisticsDistrict, LeaderBase, DistrictStatistic, MonthStatistic, ReadAreaCard
 
 area_manager = BaseManager(Area)
 
@@ -128,7 +128,34 @@ class RepresentationManager(BaseManager):
         representation = ReadRepresentation.model_validate({**the_best_district[0]._asdict(), 'type': 'federal'},
                                                            from_attributes=True)
         leader = LeaderBase.model_validate(the_best_district[1], from_attributes=True)
-        region_card = ReadRegionsCard(representation=representation, leader=leader)
+
+        team_stmt = (
+            select(func.count(Team.id))
+            .filter(Team.area_id == area_id)
+            .scalar_subquery()
+        )
+
+        user_stmt = (
+            select(func.count(UserTeams.id))
+            .join(Team, UserTeams.team_id == Team.id)
+            .where(Team.area_id == area_id)
+            .scalar_subquery()
+        )
+
+        stmt = (
+            select(team_stmt.label("team_count"), user_stmt.label("users_count"))
+        )
+
+        result = (await session.execute(stmt)).mappings()
+
+        if not result:
+            raise HTTPException(status_code=404, detail="Representation not found")
+        try:
+            result = next(result)
+        except StopIteration:
+            raise HTTPException(status_code=404, detail="Representation not found")
+
+        region_card = ReadAreaCard(representation=representation, leader=leader, **result)
         distinct_statistics = await self._district_statictics(session, district_id)
 
         current_date = datetime.now().date()

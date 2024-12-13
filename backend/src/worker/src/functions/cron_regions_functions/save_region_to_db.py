@@ -52,7 +52,7 @@ async def save_region_to_db(session: AsyncSession, region_data):
                     photo_url=region_url,
                     )
         session.add(obj)
-        await session.flush()
+        await session.commit()
         return obj
 
     try:

@@ -14,7 +14,7 @@ async def get_or_create_federal(session: AsyncSession, federal_district_name: st
         # Если федеральный округ не найден, создаем его
         repr = District(name=federal_district_name)
         session.add(repr)
-        await session.flush()
+        await session.commit()
         return repr
 
     return federal_district

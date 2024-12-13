@@ -56,3 +56,4 @@ class SportEvent(Base):
     age_groups: Mapped[list[AgeGroup]] = relationship(back_populates='sport', cascade='delete')
     competitions: Mapped[list[Competition]] = relationship(back_populates='sport', cascade='delete')
     teams: Mapped[list['Team']] = relationship(back_populates='events', secondary='team_participation')
+    participation_applications: Mapped['ParticipationApplication'] = relationship(back_populates='event')
