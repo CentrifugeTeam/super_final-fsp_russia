@@ -1,5 +1,4 @@
 import style from "./personinfoprofilepanel.module.scss";
-import baseAvatar from "../../assets/base_profile_avatar.png";
 import { useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/app/redux/hooks";
 import { fetchProfile } from "@/app/redux/slices/profileSlice";
@@ -28,13 +27,14 @@ export const PersonInfoProfilePanel = () => {
     dispatch(logout());
     navigate("/login"); // Используем роутинг для редиректа
   };
-
+	console.log(profile)
+	console.log(profile?.photo_url)
   return (
     <div className={style.container}>
       <div className={style.avatar}>
         <img
           className={style.img}
-          src={profile?.photo_url || baseAvatar}
+          src={profile?.photo_url || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4UmW5FE0dXoSm3h5meecSKpw0oX1Jk3bZvA&s"}
           alt="Аватар"
         />
       </div>

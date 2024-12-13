@@ -23,23 +23,24 @@ export interface User {
 }
 
 export interface Team {
-	name: string;
-	created_at: string;
-	about: string;
-	id: number;
-	users: User[]; // Reference the new User interface here
-	event_id: number;
-	federal: {
-			id: number;
-			name: string;
-	};
-	solutions: Array<{
-			team_repository: string;
-			solution: string;
-			score: number;
-			id: number;
-			team_id: number;
-	}>;
+  name: string;
+  created_at: string;
+  about: string;
+  id: number;
+  area_id: number; // добавили поле area_id
+  photo_url: string; // добавили поле photo_url
+  event_id: number;
+  federal: {
+    id: number;
+    name: string;
+  };
+  solutions: Array<{
+    team_repository: string;
+    solution: string;
+    score: number;
+    id: number;
+    team_id: number;
+  }>;
 }
 
 // Теперь используем интерфейс Team в TeamResponse
@@ -58,14 +59,15 @@ export interface TeamById {
   id: number;
   event_id: number;
   federal_representation_id: number;
+	photo_url: string | null;
 }
 
-interface ICreateTeam {
+export interface ICreateTeam {
 	name: string;
 	event_id: number;
 	area_id: number;
 	about?: string;
-	photo?: string;
+	photo_url?: string;
 }
 
 // Функция для получения списка команд

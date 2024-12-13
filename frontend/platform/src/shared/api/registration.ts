@@ -25,8 +25,9 @@ export const registerRequest = async (
   formData.append("last_name", input.last_name);
   formData.append("email", input.email);
   formData.append("password", input.password);
-  formData.append("photo", input.photo);
-
+	if (input.photo.name !== "") {
+		formData.append("photo", input.photo);
+	}
   const response = await api.post("/users/register", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
