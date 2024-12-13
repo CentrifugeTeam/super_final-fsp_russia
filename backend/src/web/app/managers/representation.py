@@ -153,7 +153,7 @@ class RepresentationManager(BaseManager):
             select(SportEvent)
             .join(TeamParticipation, TeamParticipation.event_id == SportEvent.id)
             .join(Team, Team.id == TeamParticipation.team_id)
-            .where(Area.id == area_id)
+            .where(Area.id == area_id, SportEvent.end_date <= current_date)
             .limit(2)
         )
         events = [OneItemReadEvent.model_validate(event._asdict(), from_attributes=True) for event in
