@@ -22,7 +22,7 @@ async def parse_and_save(ctx):
             # Получаем данные о Москве
             moscow_data = parse_moscow(soup)
             if moscow_data:
-                await save_region_to_db(session, moscow_data)
+                return
 
             # Получаем список федеральных округов
             # Парсим регионы по федеральным округам
