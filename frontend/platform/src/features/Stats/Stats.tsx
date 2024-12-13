@@ -9,7 +9,36 @@ import {
 } from "recharts";
 import styles from "./stats.module.scss";
 
-export const Stats = () => {
+interface StatsProps {
+  statistics: {
+    total_events: number;
+    completed_events: number;
+    current_events: number;
+    upcoming_events: number;
+  };
+  region: {
+    team_count: number;
+    users_count: number;
+    representation: {
+      name: string;
+      photo_url: string | null;
+      contacts: string | null;
+      type: string;
+      id: number;
+    };
+    leader: {
+      first_name: string;
+      middle_name: string | null;
+      last_name: string;
+      username: string;
+    };
+  };
+}
+
+const defaultAvatarUrl =
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4UmW5FE0dXoSm3h5meecSKpw0oX1Jk3bZvA&s"; // Замените на ваш базовый URL
+
+export const Stats = ({ statistics, region }: StatsProps) => {
   const data = [
     { name: "Я", value: 65 },
     { name: "Ф", value: 59 },
@@ -32,28 +61,36 @@ export const Stats = () => {
           <h1>Лучшая область</h1>
           <div className={styles.block}>
             <div className={styles.image_wrapper}>
-              <img src="" alt="" className={styles.image} />
+              <img
+                src={region.representation.photo_url || defaultAvatarUrl}
+                alt="Avatar"
+                className={styles.image}
+              />
             </div>
             <div className="flex flex-col gap-10">
-              <div className={styles.panel}>Белгородская область</div>
+              <div className={styles.panel}>{region.representation.name}</div>
               <div className={styles.titles}>
                 <h1>Руководитель</h1>
-                <h2>fsdf</h2>
+                <h2>
+                  {region.leader.first_name || "-"}{" "}
+                  {region.leader.middle_name || "-"}{" "}
+                  {region.leader.last_name || "-"}
+                </h2>
               </div>
               <div className={styles.titles}>
                 <h1>Контакты</h1>
-                <h2>dasd</h2>
+                <h2>{region.representation.contacts || "-"}</h2>
               </div>
             </div>
             <div className="flex flex-col gap-10">
               <div className={styles.panel2}>Белгородская область</div>
               <div className={styles.titles}>
                 <h1>Команды</h1>
-                <h2>dasd</h2>
+                <h2>{region.team_count || "-"}</h2>
               </div>
               <div className={styles.titles}>
                 <h1>Участники</h1>
-                <h2>dsad</h2>
+                <h2>{region.users_count || "-"}</h2>
               </div>
             </div>
           </div>
@@ -97,19 +134,19 @@ export const Stats = () => {
       <div className={styles.third_block}>
         <div className={styles.block}>
           <h2>Всего мероприятий</h2>
-          <p>15</p>
+          <p>{statistics.total_events}</p>
         </div>
         <div className={styles.block}>
           <h2>Завершились</h2>
-          <p>15</p>
+          <p>{statistics.completed_events}</p>
         </div>
         <div className={styles.block}>
           <h2>Сейчас идут</h2>
-          <p>15</p>
+          <p>{statistics.current_events}</p>
         </div>
         <div className={styles.block}>
           <h2>Будущие мероприятия</h2>
-          <p>15</p>
+          <p>{statistics.upcoming_events}</p>
         </div>
       </div>
     </>

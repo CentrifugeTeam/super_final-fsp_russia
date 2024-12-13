@@ -1,16 +1,17 @@
-.contet {
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-left: 20px;
-  }
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-left: 20px;
 
-  .headerText {
+	.headerText {
     color: black;
     font-size: 25px;
     font-weight: 600;
   }
+}
+
+.contet {
 
   .profileEditComponenst {
     margin-top: 30px;

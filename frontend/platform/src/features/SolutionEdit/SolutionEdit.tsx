@@ -10,13 +10,17 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@radix-ui/react-dropdown-menu";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFederations } from "@/shared/api/federations";
+import { useAppSelector } from "@/app/redux/hooks";
+import { useNavigate } from "react-router-dom";
 
 export const Solutions = () => {
+	const navigate = useNavigate();
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState<number>(1); // Текущее состояние страницы
   const [totalPages, setTotalPages] = useState<number>(1); // Общее количество страниц
+	const { profile: reduxProfile } = useAppSelector((state) => state.profile);
 
   const {
     data: regions,
@@ -40,6 +44,12 @@ export const Solutions = () => {
       setCurrentPage((prev) => prev - 1);
     }
   };
+
+	useEffect(() => {
+    if (!reduxProfile?.teams || reduxProfile?.teams.length === 0) {
+      navigate('/profile/teams'); // Редирект на страницу с командами
+    }
+  }, [reduxProfile, navigate]);
 
   return (
     <div className={styles.contet}>

@@ -19,6 +19,7 @@ import { FeedPage } from "@/pages/FeedPage";
 import { ContactsPage } from "@/pages/ContactsPage";
 import { WelcomePage } from "@/pages/WelcomePage";
 import { EditRequest } from "@/pages/EditRequest";
+import { NewRequestTeam } from "@/features/NewRequestTeam";
 import { SendEmail } from "@/pages/SendEmail";
 import { RegionByIdPage } from "@/pages/RegionByIdPage";
 import { EmailVerified } from "@/pages/EmailVerified";
@@ -63,6 +64,8 @@ export const AppRouter = () => {
           <Route path="requests" element={<Requests />} />
           <Route path="requests/new" element={<NewRequest />} />
           <Route path="requests/:id/edit" element={<EditRequest />} />
+					{/* Заявки пользователя от лица команды */}
+					<Route path=":team_name/requests/new" element={<NewRequestTeam />} />
           {/* Решения */}
           <Route path="solutions" element={<Solutions />} />
           <Route path="solutions/:id/edit" element={<SolutionEditPage />} />
