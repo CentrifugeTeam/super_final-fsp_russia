@@ -1,3 +1,5 @@
+import io
+
 import xlsxwriter
 from xlsxwriter import Workbook
 from xlsxwriter.worksheet import Worksheet
@@ -8,10 +10,13 @@ from web.app.schemas.representation import ReadStatisticsDistrict, ReadAreaCard,
 
 
 def write_to_xls(statistics: ReadStatisticsDistrict):
-    workbook = xlsxwriter.Workbook('hello.xlsx')
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output, {'in_memory': True})
     worksheet = workbook.add_worksheet()
     write_chart(worksheet, workbook, statistics)
     workbook.close()
+    output.seek(0)
+    return output
 
 
 def write_chart(worksheet: Worksheet, workbook: Workbook, statistics: ReadStatisticsDistrict):
@@ -73,6 +78,7 @@ def build_statistics(worksheet: Worksheet, workbook: Workbook, statistics: Distr
     # Insert the chart into the worksheet (with an offset).
     worksheet.insert_chart("H12", chart1, {"x_offset": 25, "y_offset": 10})
 
+
 def build_chart(workbook):
     chart = workbook.add_chart({"type": "column"})
 
@@ -101,4 +107,3 @@ def build_chart(workbook):
     # Turn off the chart legend.
     chart.set_legend({"none": True})
     return chart
-

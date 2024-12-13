@@ -1,6 +1,7 @@
 from typing import Callable, Any
 
 from fastapi import Depends
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import joinedload
 
 from shared.crud import not_found_response
@@ -47,7 +48,9 @@ class RepresentationAPIRouter(CrudAPIRouter):
                 id: int | None = None,
         ):
             statistic = await reps_manager.statistics(session, id)
-            write_to_xls(statistic)
+            xls = write_to_xls(statistic)
+            return StreamingResponse(xls, media_type='application/vnd.ms-excel',
+                                     headers={"Content-Disposition": 'attachment; filename=federations.xls'})
 
         @self.get('/', response_model=list[FullFederalRepresentation])
         async def func(
