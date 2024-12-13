@@ -33,26 +33,22 @@ interface StatsProps {
       username: string;
     };
   };
+  months: {
+    date: string;
+    count_participants: number;
+  }[];
 }
 
 const defaultAvatarUrl =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4UmW5FE0dXoSm3h5meecSKpw0oX1Jk3bZvA&s"; // Замените на ваш базовый URL
 
-export const Stats = ({ statistics, region }: StatsProps) => {
-  const data = [
-    { name: "Я", value: 65 },
-    { name: "Ф", value: 59 },
-    { name: "М", value: 80 },
-    { name: "А", value: 81 },
-    { name: "М", value: 56 },
-    { name: "И", value: 55 },
-    { name: "И", value: 40 },
-    { name: "А", value: 60 },
-    { name: "С", value: 70 },
-    { name: "О", value: 90 },
-    { name: "Н", value: 100 },
-    { name: "Д", value: 160 },
-  ];
+export const Stats = ({ statistics, region, months }: StatsProps) => {
+  const data = months.map((month) => ({
+    name: new Date(month.date).toLocaleDateString("ru-RU", {
+      month: "short",
+    }), // Преобразуем дату к сокращенному формату месяца
+    value: month.count_participants,
+  }));
 
   return (
     <>
