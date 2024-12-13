@@ -47,6 +47,7 @@ class SmallReadEvent(EventBase):
 
 class OneItemReadEvent(EventBase):
     id: int
+    format: str | None
 
 
 class EventBulkRead(EventBulk):
