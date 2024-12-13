@@ -18,7 +18,9 @@ class Team(IDMixin, CreatedAtMixin, Base):
     events: Mapped[list['SportEvent']] = relationship(back_populates='teams', secondary='team_participation')
     district: Mapped[list['District']] = relationship(back_populates='teams', secondary='areas')
 
+    participation_applications: Mapped['ParticipationApplication'] = relationship(back_populates='team')
     # participation: Mapped[list['TeamParticipation']] = relationship(back_populates='team')
+
 
 class UserTeams(IDMixin, Base):
     __tablename__ = 'user_teams'
@@ -31,9 +33,6 @@ class TeamParticipation(IDMixin, Base):
     team_id: Mapped[int] = mapped_column(Integer, ForeignKey('teams.id'))
     event_id: Mapped[int] = mapped_column(Integer, ForeignKey('events.id'))
 
-    # team: Mapped[Team] = relationship(back_populates='participation')
-    # event: Mapped['SportEvent'] = relationship(back_populates='participation')
-
 
 class TeamSolution(IDMixin, Base):
     __tablename__ = 'team_solutions'
@@ -45,3 +44,11 @@ class TeamSolution(IDMixin, Base):
     solution: Mapped[str] = mapped_column(String)
     score: Mapped[int] = mapped_column(Integer, nullable=True)
     team: Mapped[Team] = relationship(back_populates='solutions')
+
+
+class ParticipationApplication(IDMixin, Base):
+    __tablename__ = 'participation_applications'
+    team_id: Mapped[int] = mapped_column(Integer, ForeignKey('teams.id'))
+    event_id: Mapped[int] = mapped_column(Integer, ForeignKey('events.id'))
+    team: Mapped[Team] = relationship(back_populates='participation_applications')
+    event: Mapped['SportEvent'] = relationship(back_populates='participation_applications')

@@ -12,6 +12,8 @@ class EventBase(BaseModel):
     end_date: date
     participants_count: int
     category: str
+    format: str | None = None
+    task_url: str | None = None
 
 
 class Event(EventBase):
@@ -46,6 +48,7 @@ class SmallReadEvent(EventBase):
 
 class OneItemReadEvent(EventBase):
     id: int
+
 
 class EventBulkRead(EventBulk):
     id: int

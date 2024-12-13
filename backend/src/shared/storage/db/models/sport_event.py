@@ -41,7 +41,7 @@ class SportEvent(Base):
     __tablename__ = 'events'
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     category: Mapped[str] = mapped_column(String(length=250), nullable=False)
-
+    task_url: Mapped[str] = mapped_column(String, nullable=True)
     name: Mapped[str] = mapped_column(String(length=700), nullable=False)
     start_date: Mapped[date] = mapped_column(Date, nullable=False)  # Дата начала
     end_date: Mapped[date] = mapped_column(Date, nullable=False)  # Дата окончания
@@ -56,3 +56,4 @@ class SportEvent(Base):
     age_groups: Mapped[list[AgeGroup]] = relationship(back_populates='sport', cascade='delete')
     competitions: Mapped[list[Competition]] = relationship(back_populates='sport', cascade='delete')
     teams: Mapped[list['Team']] = relationship(back_populates='events', secondary='team_participation')
+    participation_applications: Mapped['ParticipationApplication'] = relationship(back_populates='event')

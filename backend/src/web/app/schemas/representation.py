@@ -41,6 +41,11 @@ class ReadRegionsCard(BaseModel):
     leader: LeaderBase | None
 
 
+class ReadAreaCard(ReadRegionsCard):
+    team_count: int
+    users_count: int
+
+
 class FullFederalRepresentation(BaseModel):
     regions: list[ReadRegionsCard]
     name: str
@@ -64,7 +69,7 @@ class DistrictStatistic(BaseModel):
 
 
 class ReadStatisticsDistrict(BaseModel):
-    region: ReadRegionsCard
+    region: ReadAreaCard
     months: list[MonthStatistic]
     statistics: DistrictStatistic
-    events: list[OneItemReadEvent]
+    events: list[EventRead]

@@ -9,13 +9,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute, joinedload, aliased
 from starlette import status
 
-from service_calendar.app.schemas.event import OneItemReadEvent
+from service_calendar.app.schemas.event import OneItemReadEvent, EventRead
 from shared.storage.db.models.teams import UserTeams, TeamParticipation
 from .base import BaseManager
 from shared.storage.db.models import District, Area, Team, User, SportEvent, Location, EventType
 from ..schemas import ReadCardRepresentation, MonthStatistics, ReadRegionRepresentationBase
 from ..schemas.representation import ReadRegionsCard, FullFederalRepresentation, ReadRepresentation, \
-    ReadStatisticsDistrict, LeaderBase, DistrictStatistic, MonthStatistic
+    ReadStatisticsDistrict, LeaderBase, DistrictStatistic, MonthStatistic, ReadAreaCard
 
 area_manager = BaseManager(Area)
 
@@ -128,7 +128,34 @@ class RepresentationManager(BaseManager):
         representation = ReadRepresentation.model_validate({**the_best_district[0]._asdict(), 'type': 'federal'},
                                                            from_attributes=True)
         leader = LeaderBase.model_validate(the_best_district[1], from_attributes=True)
-        region_card = ReadRegionsCard(representation=representation, leader=leader)
+
+        team_stmt = (
+            select(func.count(Team.id))
+            .filter(Team.area_id == area_id)
+            .scalar_subquery()
+        )
+
+        user_stmt = (
+            select(func.count(UserTeams.id))
+            .join(Team, UserTeams.team_id == Team.id)
+            .where(Team.area_id == area_id)
+            .scalar_subquery()
+        )
+
+        stmt = (
+            select(team_stmt.label("team_count"), user_stmt.label("users_count"))
+        )
+
+        result = (await session.execute(stmt)).mappings()
+
+        if not result:
+            raise HTTPException(status_code=404, detail="Representation not found")
+        try:
+            result = next(result)
+        except StopIteration:
+            raise HTTPException(status_code=404, detail="Representation not found")
+
+        region_card = ReadAreaCard(representation=representation, leader=leader, **result)
         distinct_statistics = await self._district_statictics(session, district_id)
 
         current_date = datetime.now().date()
@@ -153,11 +180,13 @@ class RepresentationManager(BaseManager):
             select(SportEvent)
             .join(TeamParticipation, TeamParticipation.event_id == SportEvent.id)
             .join(Team, Team.id == TeamParticipation.team_id)
-            .where(Area.id == area_id)
+            .where(Area.id == area_id, SportEvent.end_date <= current_date)
+            .options(joinedload(SportEvent.type_event), joinedload(SportEvent.location))
             .limit(2)
         )
-        events = [OneItemReadEvent.model_validate(event._asdict(), from_attributes=True) for event in
-                  await session.scalars(two_events_from_area)]
+        events = [EventRead.model_validate(event, from_attributes=True) for event in
+                  (await session.scalars(two_events_from_area)).unique()
+                  ]
 
         return ReadStatisticsDistrict(region=region_card, months=months, statistics=distinct_statistics, events=events)
 

@@ -15,7 +15,7 @@ from polyfactory import Ignore, Use, AsyncPersistenceProtocol
 
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncConnection
 from shared.storage.db.models import Team, District, SportEvent, EventType, User, TeamSolution, Location, \
-    TeamParticipation, Area
+    TeamParticipation, Area, UserTeams
 from web.app.schemas.users import CreateUser
 from web.app.managers.users import UsersManager
 from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
@@ -58,7 +58,7 @@ class LocationFactory(BaseFactory):
     __model__ = Location
     id = Ignore()
     city = Use(faker.unique.city)
-    country = Use(faker.unique.country)
+    country = Use(lambda: "Россия")
     region = Use(faker.unique.region)
 
 
@@ -167,6 +167,11 @@ async def seed(session: AsyncSession):
         await session.commit()
         participation = TeamParticipation(team_id=team.id, event_id=Factory.__random__.choice(sport_event_ids))
         session.add(participation)
+        for user in users:
+            user_team = UserTeams(user_id=user.id, team_id=team.id)
+            session.add(user_team)
+            user.area_id = team.area_id
+            session.add(user)
         solution = TeamSolutionFactory.build(team_id=team.id, event_id=Factory.__random__.choice(sport_ids))
         session.add(solution)
         await session.commit()

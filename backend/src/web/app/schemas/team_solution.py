@@ -5,7 +5,6 @@ from pydantic import BaseModel
 class TeamSolutionBase(BaseModel):
     team_repository: str
     solution: str
-    score: int
 
 
 class CreateTeamSolution(TeamSolutionBase):
@@ -13,6 +12,7 @@ class CreateTeamSolution(TeamSolutionBase):
 
 class ReadTeamSolution(TeamSolutionBase):
     id: int
+    score: int | None
     team_id: int
 
 
