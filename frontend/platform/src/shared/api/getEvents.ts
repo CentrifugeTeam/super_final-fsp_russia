@@ -56,7 +56,7 @@ interface TeamsResponse {
 
 // Функция для получения команд по id соревнования
 const fetchTeamsByEventId = async (id: number, page: number, size: number): Promise<TeamsResponse> => {
-  const response = await api.get<TeamsResponse>(`/teams/sports?sport_id=${id}&page=${page}&size=${size}`);
+  const response = await api.get<TeamsResponse>(`/teams/sports?sport_id=${id}&is_scored=true&page=${page}&size=${size}`);
   return response.data;
 };
 

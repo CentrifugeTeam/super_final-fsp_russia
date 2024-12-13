@@ -16,6 +16,7 @@ import { useAppSelector } from "@/app/redux/hooks";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "@/app/providers/context/UserContext";
 
+
 export const Solutions = () => {
 	const navigate = useNavigate();
 	const { role } = useUserContext();

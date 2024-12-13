@@ -72,7 +72,7 @@ export const SolutionEditCard = ({
 								{team.solutions?.[0]?.score || "оценить"}
 							</button>
             ) : (
-              <span>{team.solutions?.[0]?.score || "Нет оценки"}</span> // Показываем рейтинг, если не на /profile/solutions
+              <span style={{color: 'black'}}>{team.solutions?.[0]?.score || "Нет оценки"}</span> // Показываем рейтинг, если не на /profile/solutions
             )}
           </h1>
         </div>
