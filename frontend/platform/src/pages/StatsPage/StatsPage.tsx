@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,58 +12,84 @@ import {
 
 import styles from "./statspage.module.scss";
 import { Stats } from "@/features/Stats";
-import { useFederations } from "@/shared/api/federations"; // Подключение кастомного хука
+import { useFederations } from "@/shared/api/federations"; // Хук для получения федераций
+import { useFederationStatistics } from "@/shared/api/getStats"; // Хук для статистики
 
 export const StatsPage = () => {
   const { data: federations, isLoading, isError } = useFederations();
-  const [selectedRegion, setSelectedRegion] = useState<string>(""); // Состояние для выбранного региона
+  const [selectedRegion, setSelectedRegion] = useState<string>("");
+  const [selectedFederationId, setSelectedFederationId] = useState<string>("");
 
+  // Выбор федерации
   const handleSelect = (regionId: string) => {
     const region = federations?.find((f) => f.id === regionId);
-    setSelectedRegion(region?.name || ""); // Устанавливаем название региона
+    setSelectedRegion(region?.name || "");
+    setSelectedFederationId(regionId);
   };
 
-  // Функция для печати
+  // Получение статистики по федерации
+  const { data: federationStats } = useFederationStatistics(
+    selectedFederationId ? parseInt(selectedFederationId) : 0
+  );
+
+  // Логирование статистики
+  useEffect(() => {
+    if (federationStats) {
+      console.log("Fetched Federation Stats:", federationStats);
+    }
+  }, [federationStats]);
+
+  // Форматирование даты в формате "DD.MM.YY"
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0"); // день с ведущим нулем
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // месяц с ведущим нулем
+    const year = String(date.getFullYear()).slice(-2); // последние 2 цифры года
+    return `${day}.${month}.${year}`;
+  };
+
+  // Функция для обрезки текста и добавления многоточия
+  const truncateText = (text: string, maxLength: number) => {
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
+
+  // Печать статистики
   const handlePrint = () => {
     const printWindow = window.open("", "", "width=800,height=600");
 
     if (printWindow) {
-      printWindow.document.write(`
-        <html>
+      printWindow.document.write(
+        `<html>
           <head>
             <title>Печать статистики</title>
             <style>
               body { font-family: Arial, sans-serif; padding: 20px; font-size: 12px; }
-              .title { font-size: 14px; font-weight: bold; }
-              .region { font-size: 10px; margin-top: 10px; }
-              .stats-container { margin-top: 20px; font-size: 10px; } /* Уменьшаем размер текста в блоке статистики */
-              .status { color: green; font-size: 10px; }
             </style>
           </head>
           <body>
-            <div>
-              <h1 class="title">Статистика</h1>
-              <p class="region"><strong>Выбранный регион: </strong>${selectedRegion}</p>
-              <div class="stats-container">
-                <!-- Вставляем компонент Stats -->
-                <div id="stats">
-                  ${document.getElementById("stats")?.outerHTML || ""}
-                </div>
-              </div>
-            </div>
+            <h1>Статистика</h1>
+            <p>Выбранный регион: ${selectedRegion}</p>
+            <div id="stats">${
+              document.getElementById("stats")?.outerHTML || ""
+            }</div>
           </body>
-        </html>
-      `);
-      printWindow.document.close(); // Закрываем документ, чтобы инициировать загрузку
-      printWindow.print(); // Запускаем процесс печати
+        </html>`
+      );
+      printWindow.document.close();
+      printWindow.print();
     }
   };
+
+  // Условие для проверки, скрыть блоки при ошибке или отсутствии выбранного региона
+  const shouldShowStats = !isError && selectedFederationId;
+  const shouldShowButtons = !isError && selectedFederationId; // Условие для отображения кнопок
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.first_block}>
         <div className={styles.dropdown}>
           <h1 className={styles.title}>Статистика</h1>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -101,42 +127,78 @@ export const StatsPage = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className={styles.buttons}>
-          <Button
-            className="bg-[#463ACB] text-white w-[150px] border-none text-[18px] hover:bg-[#1B1C21] hover:text-white"
-            onClick={handlePrint} // Обработчик печати
-          >
-            Печать
-          </Button>
-          <Button className="bg-[#463ACB] text-white w-[150px] border-none text-[18px] hover:bg-[#1B1C21] hover:text-white">
-            Экспорт
-          </Button>
-        </div>
-      </div>
+        {/* Текст подсказки, если регион не выбран */}
 
-      <div id="stats">
-        <Stats /> {/* Компонент Stats, который будет напечатан */}
-      </div>
-
-      <h1 className="text-[32px]">Завершенные мероприятия</h1>
-      <div className={styles.fourth_block}>
-        <div className={styles.block}>
-          <div className={styles.left}>
-            <h1>Чемпионат и Первенство России</h1>
-            <h2>Продуктовое программирование</h2>
-            <h2>Студенты от 16 лет, 150 участников</h2>
-            <h1>Россия, Белгород</h1>
+        {/* Кнопки Печать и Экспорт отображаются только если регион выбран и нет ошибки */}
+        {shouldShowButtons && (
+          <div className={styles.buttons}>
+            <Button
+              className="bg-[#463ACB] text-white w-[150px] border-none text-[18px] hover:bg-[#1B1C21] hover:text-white"
+              onClick={handlePrint}
+            >
+              Печать
+            </Button>
+            <Button className="bg-[#463ACB] text-white w-[150px] border-none text-[18px] hover:bg-[#1B1C21] hover:text-white">
+              Экспорт
+            </Button>
           </div>
-          <div className={styles.right}>
-            <div>
-              <h1>Чемпионат и Первенство России</h1>
-              <h2>Продуктовое программирование</h2>
-            </div>
-
-            <div className={styles.status}>Завершено</div>
-          </div>
-        </div>
+        )}
       </div>
+
+      {/* Показываем статистику только, если регион выбран и нет ошибки */}
+      {shouldShowStats && (
+        <div id="stats">
+          {federationStats && (
+            <Stats
+              statistics={federationStats.statistics}
+              region={federationStats.region}
+            />
+          )}
+        </div>
+      )}
+      {!selectedRegion && (
+        <h1 className="self-center text-[25px]">
+          Выберите подходящий вам регион, на странице отобразится статистика,
+          завершенные события и многое другое
+        </h1>
+      )}
+      {/* Показываем только, если регион выбран и нет ошибки */}
+      {shouldShowStats && (
+        <>
+          <h1 className="text-[32px]">Завершенные мероприятия</h1>
+          <div className={styles.fourth_block}>
+            {/* Выводим все события, ожидая, что всегда будет два */}
+            {federationStats?.events && federationStats.events.length > 0 ? (
+              federationStats.events.map((event) => (
+                <div key={event.id} className={styles.block}>
+                  <div className={styles.left}>
+                    <h1>{event.name}</h1>
+                    <h2>{truncateText(event.category, 30)}</h2>{" "}
+                    {/* Обрезка текста */}
+                    <h2>{event.participants_count} участников</h2>
+                    <h1>
+                      {event.location.city}, {event.location.region},{" "}
+                      {event.location.country}
+                    </h1>
+                  </div>
+                  <div className={styles.right}>
+                    <div>
+                      <h1>
+                        {formatDate(event.start_date)} по{" "}
+                        {formatDate(event.end_date)}
+                      </h1>
+                      <h2>{event.format}</h2>
+                    </div>
+                    <div className={styles.status}>Завершено</div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p>Нет мероприятий для отображения</p>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };
