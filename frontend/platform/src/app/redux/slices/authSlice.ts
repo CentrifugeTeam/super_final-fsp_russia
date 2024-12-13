@@ -63,6 +63,9 @@ export const loginAndFetchProfile =
 
     // После входа загружаем профиль
     await dispatch(fetchProfile());
+
+    // Перезагружаем страницу после успешного входа
+    window.location.reload();
   };
 
 export default authSlice.reducer;

@@ -266,6 +266,8 @@ class RepresentationManager(BaseManager):
             raise HTTPException(status_code=404, detail="Leader not found")
 
         district = area.district
+        if not district:
+            raise HTTPException(status_code=404, detail="District not found")
         stmt = (
             select(team_stmt.label("team_count"), user_stmt.label("users_count"))
         )

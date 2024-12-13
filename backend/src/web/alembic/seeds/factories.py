@@ -31,6 +31,8 @@ class UserFactory(BaseFactory):
 class TeamSolutionFactory(BaseFactory):
     __model__ = TeamSolution
     id = Ignore()
+    repository_url = Use(faker.url)
+    text = Use(faker.text)
     score = Use(faker.pyint, min_value=0, max_value=100, step=1)
 
 
@@ -45,7 +47,11 @@ class LocationFactory(BaseFactory):
 class SportFactory(BaseFactory):
     __model__ = SportEvent
     id = Ignore()
+    category = Use(faker.word)
+    task_url = Use(lambda: None)
+
     name = Use(faker.unique.word)
+    participants_count = Use(faker.pyint, min_value=0, max_value=100, step=1)
     format = Use(LocationFactory.__random__.choice, ['офлайн', 'онлайн', 'оба'])
     type_event_id = Ignore()
     location_id = Ignore()
@@ -53,6 +59,7 @@ class SportFactory(BaseFactory):
 
 class Factory(BaseFactory):
     __model__ = Team
+    about = Use(faker.text)
     name = Use(faker.unique.word)
     photo_url = None
     id = Ignore()
