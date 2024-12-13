@@ -38,7 +38,7 @@ export const RegistrationStep2: React.FC<RegistrationStep2Props> = ({
     <div className="flex flex-col gap-3">
       <div className="items-center gap-1.5">
         <Label size="text-lg" htmlFor="login" className="mb-4 text-[#333333]">
-          Логин
+          Логин <span style={{color: '#D82C20'}}>*</span>
         </Label>
         <Input
           type="text"
@@ -55,7 +55,7 @@ export const RegistrationStep2: React.FC<RegistrationStep2Props> = ({
 
       <div className="items-center gap-1.5">
         <Label size="text-lg" htmlFor="email" className="text-[#333333]">
-          Email
+          Email <span style={{color: '#D82C20'}}>*</span>
         </Label>
         <Input
           type="email"
@@ -72,7 +72,7 @@ export const RegistrationStep2: React.FC<RegistrationStep2Props> = ({
 
       <div className="items-center gap-1.5">
         <Label size="text-lg" htmlFor="password" className="text-[#333333]">
-          Пароль
+          Пароль <span style={{color: '#D82C20'}}>*</span>
         </Label>
         <Input
           type="password"
@@ -93,7 +93,7 @@ export const RegistrationStep2: React.FC<RegistrationStep2Props> = ({
           htmlFor="confirmPassword"
           className="text-[#333333]"
         >
-          Повторите пароль
+          Повторите пароль <span style={{color: '#D82C20'}}>*</span>
         </Label>
         <Input
           type="password"

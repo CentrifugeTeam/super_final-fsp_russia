@@ -69,7 +69,7 @@ export const ProfileCard = () => {
         <div className={styles.imgContainer}>
           <img
             className={styles.img}
-            src={profile.photo_url || "/default-photo.jpg"}
+            src={profile.photo_url || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4UmW5FE0dXoSm3h5meecSKpw0oX1Jk3bZvA&s"}
             alt="Profile"
           />
         </div>

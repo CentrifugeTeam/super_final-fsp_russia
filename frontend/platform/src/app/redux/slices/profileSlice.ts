@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "@/shared/api/base";
 
 // Интерфейс для представления команды
-interface Team {
+export interface Team {
   name: string;
   about: string;
   id: number;
@@ -12,7 +12,7 @@ interface Team {
 }
 
 // Интерфейс для представления пользователя
-interface Profile {
+export interface Profile {
   username: string;
   first_name: string;
   last_name: string;

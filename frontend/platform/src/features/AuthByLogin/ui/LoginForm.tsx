@@ -80,7 +80,7 @@ export const LoginForm = () => {
       <form onSubmit={handleSubmit}>
         <div className="items-center">
           <Label className="text-[#333333]" size="text-lg" htmlFor="login">
-            Логин (английский)
+            Логин (английский) <span style={{color: '#D82C20'}}>*</span>
           </Label>
           <Input
             className="rounded-[5px]"
@@ -95,7 +95,7 @@ export const LoginForm = () => {
         </div>
         <div className="items-center">
           <Label className="text-[#333333]" size="text-lg" htmlFor="password">
-            Пароль
+            Пароль <span style={{color: '#D82C20'}}>*</span>
           </Label>
           <Input
             className="rounded-[5px]"

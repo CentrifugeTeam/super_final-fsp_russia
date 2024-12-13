@@ -91,7 +91,7 @@ export const SendPassword = () => {
             <h1 className={styles.title}>Сброс пароля</h1>
             <div className="grid w-full max-w-sm items-center gap-1.5">
               <Label className="text-[#333333]" htmlFor="password">
-                Новый пароль
+                Новый пароль <span style={{color: '#D82C20'}}>*</span>
               </Label>
               <Input
                 type="password"

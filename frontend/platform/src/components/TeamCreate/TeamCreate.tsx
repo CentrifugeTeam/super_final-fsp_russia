@@ -17,6 +17,10 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import styles from "./teamcreate.module.scss";
 import { ContactInfo } from "@/shared/api/reps";
+import { useAppSelector, useAppDispatch } from "@/app/redux/hooks";
+import { Team, setProfile } from "@/app/redux/slices/profileSlice";
+import { Profile } from "@/app/redux/slices/profileSlice";
+import { TeamById } from "@/shared/api/getTeams";
 
 interface TeamCreateProps {
   onClose: () => void;
@@ -35,6 +39,8 @@ export const TeamCreate: React.FC<TeamCreateProps> = ({ onClose }) => {
   const { data: events, isLoading, isError } = useEvents();
   const { data: areas } = useRepsAreas();
   const { mutateAsync: createTeam } = useCreateTeam(); // Хук для создания команды
+	const { profile: reduxProfile } = useAppSelector((state) => state.profile);
+	const dispatch = useAppDispatch();
 
   const evetsAreas: EvetsAreas = {
     items: Array.isArray(areas) ? areas : [],
@@ -50,44 +56,70 @@ export const TeamCreate: React.FC<TeamCreateProps> = ({ onClose }) => {
 
   // Обработчик отправки формы
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+		e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("name", teamName);
-    formData.append("about", teamAbout);
+		const formData = new FormData();
+		formData.append("name", teamName);
+		formData.append("about", teamAbout);
 
-    // Если есть изображение, добавляем его в FormData
-    if (image) {
-      formData.append("photo", image);
-    }
+		// Если есть изображение, добавляем его в FormData
+		if (image) {
+			formData.append("photo", image);
+		}
 
-    // Получаем выбранные id события и региона
-    const eventId =
-      selectedEvent === ""
-        ? 0
-        : events && events.items
-        ? events.items.find((e) => e.name === selectedEvent)?.id || 0
-        : 0;
+		// Получаем выбранные id события и региона
+		const eventId =
+			selectedEvent === ""
+				? 0
+				: events && events.items
+				? events.items.find((e) => e.name === selectedEvent)?.id || 0
+				: 0;
 
-    const areaId =
-      selectedArea === ""
-        ? 0
-        : evetsAreas.items
-        ? evetsAreas.items.find((a) => a.name === selectedArea)?.id || 0
-        : 0;
+		const areaId =
+			selectedArea === ""
+				? 0
+				: evetsAreas.items
+				? evetsAreas.items.find((a) => a.name === selectedArea)?.id || 0
+				: 0;
 
-    // Добавляем id события и региона в FormData
-    formData.append("event_id", eventId.toString()); // Без изменений
-    formData.append("area_id", areaId.toString()); // Без изменений
+		// Добавляем id события и региона в FormData
+		formData.append("event_id", eventId.toString()); // Без изменений
+		formData.append("area_id", areaId.toString()); // Без изменений
 
-    try {
-      // Отправляем запрос с FormData
-      await createTeam({ data: formData });
-      onClose(); // Закрыть форму при успешном создании команды
-    } catch (error) {
-      console.error("Ошибка при создании команды:", error);
-    }
-  };
+		try {
+			const response = await createTeam({ data: formData });
+
+			const newTeam: TeamById = response; // Получаем созданную команду из ответа
+
+			// Преобразуем ICreateTeam в Team, добавляя недостающие свойства
+			const fullTeam: Team = {
+				...newTeam,
+				area_id: areaId, // Добавляем missing area_id
+				photo_url: newTeam.photo_url || "", // Если фото не было передано, присваиваем пустую строку
+			};
+
+			// Обновляем профиль с новой командой
+			const updatedProfile: Profile = {
+				...reduxProfile,
+				username: reduxProfile?.username || "",
+				first_name: reduxProfile?.first_name || "",
+				last_name: reduxProfile?.last_name || "",
+				middle_name: reduxProfile?.middle_name || "", // Добавьте проверку для undefined
+				email: reduxProfile?.email || "", // Добавьте проверку для email
+				about: reduxProfile?.about || "",
+				photo_url: reduxProfile?.photo_url || "",
+				is_superuser: reduxProfile?.is_superuser || false,
+				teams: [...(reduxProfile?.teams || []), fullTeam], // Добавляем новую команду в список команд
+			};
+
+			// Диспатчим обновленный профиль в Redux
+			dispatch(setProfile(updatedProfile));
+
+			onClose(); // Закрываем форму при успешном создании команды
+		} catch (error) {
+			console.error("Ошибка при создании команды:", error);
+		}
+	};
 
   const isFormValid =
     selectedEvent !== "" && selectedArea !== "" && teamName !== "";
@@ -112,7 +144,7 @@ export const TeamCreate: React.FC<TeamCreateProps> = ({ onClose }) => {
                 htmlFor="team_name"
                 className="text-black  font-bold text-lg"
               >
-                Название команды
+                Название команды <span style={{color: '#D82C20'}}>*</span>
               </Label>
               <Input
                 className="w-[360px] h-[60px] bg-white"
@@ -128,7 +160,7 @@ export const TeamCreate: React.FC<TeamCreateProps> = ({ onClose }) => {
             {/* Выпадающий список для выбора события */}
             <div className="grid w-full max-w-sm gap-1.5 ml-5 mr-5">
               <Label htmlFor="event" className="text-black font-bold text-lg">
-                Выберите соревнование
+                Выберите соревнование <span style={{color: '#D82C20'}}>*</span>
               </Label>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -228,7 +260,7 @@ export const TeamCreate: React.FC<TeamCreateProps> = ({ onClose }) => {
                 htmlFor="event"
                 className="text-black font-bold text-lg h-0"
               >
-                Выберите регион
+                Выберите регион <span style={{color: '#D82C20'}}>*</span>
               </Label>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
