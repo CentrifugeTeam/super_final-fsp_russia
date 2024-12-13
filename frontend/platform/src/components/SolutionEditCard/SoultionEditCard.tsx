@@ -22,8 +22,6 @@ export const SolutionEditCard = ({
 }: SolutionEditCardProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  console.log(location.pathname); // Для отладки
-
   const [teams, setTeams] = useState<Team[]>([]);
 
   // Если находимся на /profile/teams, то используем хук для получения команд по eventId

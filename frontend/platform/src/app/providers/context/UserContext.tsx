@@ -1,4 +1,10 @@
-import { createContext, useState, useEffect, ReactNode, useContext } from 'react';
+import {
+  createContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useContext,
+} from "react";
 
 // Типы для данных пользователя
 interface UserContextType {
@@ -18,15 +24,15 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 
   // Извлекаем роль пользователя из токена
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
     if (token) {
       try {
-        const payload = JSON.parse(atob(token.split('.')[1])); // Декодируем payload токена
+        const payload = JSON.parse(atob(token.split(".")[1])); // Декодируем payload токена
         if (payload.roles) {
           setRole(payload.roles[0]); // Предположим, что роль одна
         }
       } catch (error) {
-        console.error('Ошибка при парсинге токена:', error);
+        console.error("Ошибка при парсинге токена:", error);
       }
     }
   }, []);
@@ -42,7 +48,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 export const useUserContext = (): UserContextType => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error('useUserContext must be used within a UserProvider');
+    throw new Error("useUserContext must be used within a UserProvider");
   }
   return context;
 };

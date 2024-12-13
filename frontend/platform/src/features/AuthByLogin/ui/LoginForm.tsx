@@ -6,20 +6,19 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useLoginMutation } from "@/features/AuthByLogin/model/authByLogin";
 import { useDispatch } from "react-redux";
-import { login } from "@/app/redux/slices/authSlice";
+import { AppDispatch } from "@/app/redux/store";
+import { loginAndFetchProfile } from "@/app/redux/slices/authSlice";
 import {
   validateLogin,
   validatePassword,
 } from "@/features/Registration/utils/validators";
-// import { useVkAuth } from "@/shared/api/vkAuth";
 
 export const LoginForm = () => {
   const [loginInput, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const { mutate, status, error, data } = useLoginMutation();
   const nav = useNavigate();
-  const dispatch = useDispatch();
-  // const { startAuth } = useVkAuth(); // Импортируем функцию начала авторизации
+  const dispatch = useDispatch<AppDispatch>();
 
   // Состояния для ошибок
   const [errors, setErrors] = useState({
@@ -55,7 +54,7 @@ export const LoginForm = () => {
   useEffect(() => {
     if (status === "success" && data) {
       dispatch(
-        login({
+        loginAndFetchProfile({
           accessToken: data.access_token,
           refreshToken: data.refresh_token,
         })
@@ -80,7 +79,7 @@ export const LoginForm = () => {
       <form onSubmit={handleSubmit}>
         <div className="items-center">
           <Label className="text-[#333333]" size="text-lg" htmlFor="login">
-            Логин (английский) <span style={{color: '#D82C20'}}>*</span>
+            Логин (английский) <span style={{ color: "#D82C20" }}>*</span>
           </Label>
           <Input
             className="rounded-[5px]"
@@ -95,7 +94,7 @@ export const LoginForm = () => {
         </div>
         <div className="items-center">
           <Label className="text-[#333333]" size="text-lg" htmlFor="password">
-            Пароль <span style={{color: '#D82C20'}}>*</span>
+            Пароль <span style={{ color: "#D82C20" }}>*</span>
           </Label>
           <Input
             className="rounded-[5px]"
