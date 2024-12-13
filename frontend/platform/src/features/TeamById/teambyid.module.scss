@@ -41,6 +41,5 @@
   padding: 20px;
   border-radius: 8px;
   z-index: 101; /* Выше overlay */
-  width: 80%;
-  max-width: 400px;
+  width: max-content;
 }
