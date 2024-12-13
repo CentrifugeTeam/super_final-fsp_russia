@@ -2,7 +2,7 @@ import xlsxwriter
 
 
 def write_to_xls():
-    workbook = xlsxwriter.Workbook()
+    workbook = xlsxwriter.Workbook('hello.xlsx')
     worksheet = workbook.add_worksheet()
     bold = workbook.add_format({'bold': 1})
     headings = ["Number", "Data", "Text"]
@@ -20,6 +20,10 @@ def write_to_xls():
     chart = build_chart(workbook)
     # Insert the chart into the worksheet (with an offset).
     worksheet.insert_chart("D98", chart, {"x_offset": 25, "y_offset": 10})
+
+    workbook.close()
+
+
 
 
 def build_chart(workbook):
@@ -50,3 +54,7 @@ def build_chart(workbook):
     # Turn off the chart legend.
     chart.set_legend({"none": True})
     return chart
+
+
+if __name__ == '__main__':
+    write_to_xls()

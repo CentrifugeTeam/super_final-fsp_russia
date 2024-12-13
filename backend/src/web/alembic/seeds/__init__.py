@@ -10,10 +10,10 @@ from .factories import UserModelFactory, Factory, SportFactory, TeamSolutionFact
 async def seed_users(session: AsyncSession):
     usual_user = UserModelFactory.build(username='user', password='password')
     region_user = UserModelFactory.build(username='region', password='password')
-    federation_user = UserModelFactory.build(username='federation', password='password')
+    federation_user = UserModelFactory.build(username='federal', password='password')
 
     users = []
-    for seed in [(usual_user, 'usual'), (region_user, 'region'), (federation_user, 'federation')]:
+    for seed in [(usual_user, 'usual'), (region_user, 'region'), (federation_user, 'federal')]:
         user = await user_manager.create_user(session, seed[0], role_name=seed[1])
         users.append(user)
 
