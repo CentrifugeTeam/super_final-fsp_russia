@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request
 from sqlalchemy.orm import DeclarativeBase
 
 from .api.api import api
-from .conf import engine
+from .conf import engine, async_session_maker
 from contextlib import asynccontextmanager
 from fastapi_pagination import add_pagination
 from starlette_admin.contrib.sqla import Admin, ModelView
@@ -11,9 +11,15 @@ from shared.storage.db import models
 from shared.storage.db.models import Base
 from inspect import isclass
 
+from worker.src.functions.cron_regions_functions.parse_and_save import parse_and_save
+from worker.src.functions.events_archive.function import cron_job
+
 
 @asynccontextmanager
 async def lifespan(app):
+    ctx = {"async_session_maker": async_session_maker}
+    await parse_and_save(ctx)
+    await cron_job(ctx)
     yield
 
 
