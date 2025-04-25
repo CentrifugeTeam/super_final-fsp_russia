@@ -17,7 +17,7 @@ logger = getLogger(__name__)
 
 
 async def fetch_calendar_data():
-    url = "https://fsp-russia.com/calendar/archive/"
+    url = "https://fsp-russia.ru/calendar/archive/"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             if response.status == 200:
